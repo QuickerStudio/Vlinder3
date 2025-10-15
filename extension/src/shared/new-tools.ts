@@ -1,6 +1,9 @@
 import { SpawnAgentOptions } from "../agent/v1/tools/schema/agents/agent-spawner"
 import { ToolStatus } from "./messages/extension-message"
 
+// Re-export ToolStatus for external use
+export type { ToolStatus }
+
 /**
  * This is the input and output for execute_command tool
  */
@@ -206,6 +209,82 @@ export type ThinkTool = {
 	next_action?: string
 }
 
+export type PatternSearchTool = {
+	tool: "pattern_search"
+	searchPattern: string
+	files?: string[]
+	caseSensitive?: boolean
+	contextLinesBefore?: number
+	contextLinesAfter?: number
+	content?: string
+}
+
+export type GrepSearchTool = {
+	tool: "grep_search"
+	query: string
+	isRegexp?: boolean
+	includePattern?: string
+	maxResults?: number
+	content?: string
+}
+
+export type ReadProgressTool = {
+	tool: "read_progress"
+	terminalId?: number
+	terminalName?: string
+	includeFullOutput?: boolean
+	filterKeywords?: string[]
+	contextLines?: number
+	extractData?: boolean
+	smartSummary?: boolean
+	waitForCompletion?: boolean
+	maxWaitTime?: number
+	maxChars?: number
+	content?: string
+}
+
+export type RenameTool = {
+	tool: "rename"
+	path: string
+	new_name: string
+	type?: "file" | "directory" | "auto"
+	overwrite?: boolean
+}
+
+export type RemoveTool = {
+	tool: "remove"
+	path: string
+	type?: "file" | "directory" | "auto"
+	recursive?: boolean
+}
+
+export type ReplaceStringTool = {
+	tool: "replace_string"
+	path: string
+	old_string: string
+	new_string: string
+}
+
+export type MultiReplaceStringTool = {
+	tool: "multi_replace_string"
+	path: string
+	replacements: Array<{ old_string: string; new_string: string }>
+}
+
+export type InsertEditTool = {
+	tool: "insert_edit"
+	path: string
+	insert_line: number
+	content: string
+}
+
+export type FastEditorTool = {
+	tool: "fast_editor"
+	path: string
+	mode: "create" | "update" | "delete"
+	content?: string
+}
+
 export type ChatTool = (
 	| ExitAgentTool
 	| SpawnAgentTool
@@ -228,6 +307,15 @@ export type ChatTool = (
 	| MoveTool
 	| TimerTool
 	| ThinkTool
+	| PatternSearchTool
+	| GrepSearchTool
+	| ReadProgressTool
+	| RenameTool
+	| RemoveTool
+	| ReplaceStringTool
+	| MultiReplaceStringTool
+	| InsertEditTool
+	| FastEditorTool
 ) & {
 	ts: number
 	approvalState?: ToolStatus

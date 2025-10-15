@@ -49,6 +49,15 @@ import {
 	MoveTool,
 	TimerTool,
 	ThinkTool,
+	PatternSearchTool,
+	GrepSearchTool,
+	ReadProgressTool,
+	RenameTool,
+	RemoveTool,
+	ReplaceStringTool,
+	MultiReplaceStringTool,
+	InsertEditTool,
+	FastEditorTool,
 } from "extension/shared/new-tools"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
@@ -57,6 +66,17 @@ import { EnhancedWebSearchBlock } from "./tools/web-search-tool"
 import { FileEditorTool } from "./tools/file-editor-tool"
 import { ThinkToolBlock } from "./tools/think-tool"
 import { SpawnAgentBlock, ExitAgentBlock } from "./tools/agent-tools"
+import { PatternSearchToolBlock } from "./tools/pattern-search-tool"
+import { ReadProgressToolBlock } from "./tools/read-progress-tool"
+import { GrepSearchToolBlock } from "./tools/grep-search-tool"
+import {
+	RenameToolBlock,
+	RemoveToolBlock,
+	ReplaceStringToolBlock,
+	MultiReplaceStringToolBlock,
+	InsertEditToolBlock,
+	FastEditorToolBlock,
+} from "./tools/file-operations-tool"
 import MarkdownRenderer from "./markdown-renderer"
 import { CodeBlock } from "./code-block"
 import { getLanguageFromPath } from "@/utils/get-language-from-path"
@@ -1185,6 +1205,24 @@ export const ToolRenderer: React.FC<{
 			return <TimerToolBlock {...tool} />
 		case "think":
 			return <ThinkToolBlock {...tool} />
+		case "pattern_search":
+			return <PatternSearchToolBlock {...tool} />
+		case "grep_search":
+			return <GrepSearchToolBlock {...tool} />
+		case "read_progress":
+			return <ReadProgressToolBlock {...tool} />
+		case "rename":
+			return <RenameToolBlock {...tool} />
+		case "remove":
+			return <RemoveToolBlock {...tool} />
+		case "replace_string":
+			return <ReplaceStringToolBlock {...tool} />
+		case "multi_replace_string":
+			return <MultiReplaceStringToolBlock {...tool} />
+		case "insert_edit":
+			return <InsertEditToolBlock {...tool} />
+		case "fast_editor":
+			return <FastEditorToolBlock {...tool} />
 		default:
 			return null
 	}
