@@ -10,7 +10,7 @@ interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
-  ({ className, value = 0, size = 30, strokeWidth = 4, showPercentage = true, ...props }, ref) => {
+  ({ className, value = 0, size = 30, strokeWidth = 4, showPercentage = true, style, ...props }, ref) => {
     const normalizedValue = Math.min(100, Math.max(0, value || 0))
     const radius = (size - strokeWidth) / 2
     const circumference = 2 * Math.PI * radius
@@ -20,7 +20,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       <div
         ref={ref}
         className={cn("circular-progress-container", className)}
-        style={{ width: size, height: size }}
+        style={{ width: size, height: size, ...style }}
         {...props}
       >
         <svg

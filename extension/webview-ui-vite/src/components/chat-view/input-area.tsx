@@ -66,11 +66,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 	const [handleAbort, isAborting] = useHandleAbort(isRequestRunning)
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [textareaHeight, setTextareaHeight] = useState(120) // Control textarea height
+	const [isDragHandleHovered, setIsDragHandleHovered] = useState(false) // Shared hover state for drag handle and circular progress
 
 	return (
 		<>
 			<div style={{ position: "relative" }}>
-				{/* Circular progress - centered above drag handle */}
+				{/* Circular progress - centered above drag handle, linked hover state */}
 				<div
 					style={{
 						position: "absolute",
@@ -83,9 +84,15 @@ const InputArea: React.FC<InputAreaProps> = ({
 						zIndex: 11,
 					}}
 				>
-					<CircularProgress />
+					<CircularProgress isHovered={isDragHandleHovered} />
 				</div>
-				<DragHandle onHeightChange={setTextareaHeight} initialHeight={textareaHeight} minHeight={120} />
+				<DragHandle 
+					onHeightChange={setTextareaHeight} 
+					initialHeight={textareaHeight} 
+					minHeight={120}
+					onHoverChange={setIsDragHandleHovered}
+					isHovered={isDragHandleHovered}
+				/>
 				<div
 					ref={containerRef}
 					className="flex flex-col justify-end"

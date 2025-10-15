@@ -15,6 +15,8 @@ interface DragHandleProps {
 	defaultColor?: string
 	title?: string
 	className?: string
+	onHoverChange?: (isHovered: boolean) => void
+	isHovered?: boolean
 }
 
 export const DragHandle: React.FC<DragHandleProps> = ({
@@ -28,7 +30,11 @@ export const DragHandle: React.FC<DragHandleProps> = ({
 	defaultColor = "rgba(128, 128, 128, 0.3)",
 	title = "Drag to resize input area",
 	className = "",
+	onHoverChange,
+	isHovered: externalIsHovered,
 }) => {
+	const [internalIsHovered, setInternalIsHovered] = useState(false)
+	const isHovered = externalIsHovered !== undefined ? externalIsHovered : internalIsHovered
 	const dragHandleRef = useRef<HTMLDivElement>(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [currentHeight, setCurrentHeight] = useState(initialHeight)
@@ -82,15 +88,23 @@ export const DragHandle: React.FC<DragHandleProps> = ({
 				...position,
 				width,
 				height,
-				backgroundColor: defaultColor,
+				backgroundColor: isHovered ? hoverColor : defaultColor,
 				borderRadius: "2px",
 				zIndex: 10,
 			}}
 			onMouseEnter={(e) => {
-				e.currentTarget.style.backgroundColor = hoverColor
+				if (onHoverChange) {
+					onHoverChange(true)
+				} else {
+					setInternalIsHovered(true)
+				}
 			}}
 			onMouseLeave={(e) => {
-				e.currentTarget.style.backgroundColor = defaultColor
+				if (onHoverChange) {
+					onHoverChange(false)
+				} else {
+					setInternalIsHovered(false)
+				}
 			}}
 			title={title}
 		/>
