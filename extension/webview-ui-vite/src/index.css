@@ -241,12 +241,12 @@
 
 	.circular-progress-bg {
 		fill: none;
-		stroke: hsl(var(--primary) / 0.2);
+		stroke: rgba(102, 255, 218, 0.3);
 	}
 
 	.circular-progress-indicator {
 		fill: none;
-		stroke: hsl(var(--primary));
+		stroke: #66FFDA;
 		stroke-linecap: round;
 		transition: stroke-dashoffset 0.3s ease;
 	}
