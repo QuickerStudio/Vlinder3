@@ -23,6 +23,7 @@ type InputOpts = {
 	onPaste: (e: React.ClipboardEvent) => void
 	thumbnailsHeight: number
 	onInsertAt?: () => void
+	height?: number // Add height property
 }
 
 const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef) => {
@@ -213,14 +214,15 @@ const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef)
 					resources={attachedResources}
 					onRemove={handleRemoveResource}
 				/>
-				<InputTextArea
-					{...props}
-					ref={localTextareaRef}
-					value={props.value}
-					onChange={handleTextareaChange}
-					onKeyDown={handleKeyDown}
-					setShowPopover={setShowPopover}
-				/>
+			<InputTextArea
+				{...props}
+				ref={localTextareaRef}
+				value={props.value}
+				onChange={handleTextareaChange}
+				onKeyDown={handleKeyDown}
+				setShowPopover={setShowPopover}
+				height={props.height}
+			/>
 			</div>
 
 			<FileDialog
