@@ -16,11 +16,9 @@ import { gitBashToolPrompt } from './git-bash';
 import { killBashToolPrompt } from './kill-bash';
 import { readProgressPrompt } from './read-progress';
 import { terminalToolPrompt } from './terminal';
-import { getErrorsPrompt } from './get-errors';
 import { replaceStringPrompt } from './replace-string';
 import { multiReplaceStringPrompt } from './multi-replace-string';
 import { insertEditPrompt } from './insert-edit';
-import { fetchWebpagePrompt } from './fetch-webpage';
 import { vscodeApiPrompt } from './vscode-api';
 import { grepSearchPrompt } from './grep-search';
 import { thinkToolPrompt } from './think';
@@ -28,8 +26,6 @@ import { fastEditorToolPrompt } from './fast-editor';
 import { timerPrompt } from './timer';
 import { patternSearchPrompt } from './pattern-search';
 import { readImagePrompt } from './read-image';
-import { context7Prompt } from './context7';
-import { compressContextPrompt } from './compress-context';
 
 export const toolPrompts = [
 	// Core interaction
@@ -71,18 +67,14 @@ export const toolPrompts = [
 	readProgressPrompt,
 	
 	// Network
-	fetchWebpagePrompt,
 	urlScreenshotPrompt,
 	
 	// VSCode integration
-	getErrorsPrompt,
 	vscodeApiPrompt,
 	
 	// Agent management
 	spawnAgentPrompt,
 	
 	// Advanced features
-	context7Prompt,
-	compressContextPrompt,
 	timerPrompt,
 ];

@@ -65,6 +65,7 @@ export interface ToolPromptSchema {
 	capabilities: string[]
 	examples: ToolExample[]
 	requiresFeatures?: ConditionalBlock[]
+	usageNotes?: string
 }
 
 // Section type
