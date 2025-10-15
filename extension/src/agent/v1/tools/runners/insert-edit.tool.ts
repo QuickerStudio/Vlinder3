@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { BaseAgentTool } from '../base-agent.tool';
 import { InsertEditToolParams } from '../schema/insert-edit';
-import { ToolResponseV2 } from '../types';
+import { ToolResponseV2 } from '../../types';
 
 /**
  * Tool for inserting or replacing code at specific line numbers in a file
@@ -150,7 +150,7 @@ export class InsertEditTool extends BaseAgentTool<InsertEditToolParams> {
 			'tool',
 			{
 				tool: {
-					tool: 'insert_edit_into_file',
+					tool: 'insert_edit',
 					explanation,
 					filePath,
 					startLine,
@@ -178,7 +178,7 @@ export class InsertEditTool extends BaseAgentTool<InsertEditToolParams> {
 			'tool',
 			{
 				tool: {
-					tool: 'insert_edit_into_file',
+					tool: 'insert_edit',
 					explanation,
 					filePath,
 					startLine,
@@ -247,7 +247,7 @@ export class InsertEditTool extends BaseAgentTool<InsertEditToolParams> {
 				'tool',
 				{
 					tool: {
-						tool: 'insert_edit_into_file',
+						tool: 'insert_edit',
 						explanation,
 						filePath,
 						startLine,
@@ -270,7 +270,7 @@ export class InsertEditTool extends BaseAgentTool<InsertEditToolParams> {
 			'tool',
 			{
 				tool: {
-					tool: 'insert_edit_into_file',
+					tool: 'insert_edit',
 					explanation,
 					filePath,
 					startLine,

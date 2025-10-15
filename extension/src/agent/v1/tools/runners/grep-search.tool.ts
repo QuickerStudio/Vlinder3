@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { BaseAgentTool } from '../base-agent.tool';
 import { GrepSearchToolParams } from '../schema/grep-search';
-import { ToolResponseV2 } from '../types';
+import { ToolResponseV2 } from '../../types';
 
 /**
  * Tool for searching text in files using VS Code's workspace search API

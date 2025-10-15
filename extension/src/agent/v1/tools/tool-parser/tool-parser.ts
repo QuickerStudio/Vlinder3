@@ -4,7 +4,7 @@ import { tools } from "../schema"
 
 type ToolSchema = {
 	name: string
-	schema: z.ZodObject<any>
+	schema: z.ZodObject<any> | z.ZodEffects<any>
 }
 
 type ToolUpdateCallback = (id: string, toolName: string, params: any, ts: number) => Promise<void>

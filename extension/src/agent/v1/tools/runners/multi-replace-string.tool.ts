@@ -4,7 +4,7 @@ import {
 	MultiReplaceStringToolParams,
 	ReplacementOperation,
 } from '../schema/multi-replace-string';
-import { ToolResponseV2 } from '../types';
+import { ToolResponseV2 } from '../../types';
 
 interface ReplacementResult {
 	filePath: string;
@@ -101,7 +101,7 @@ export class MultiReplaceStringTool extends BaseAgentTool<MultiReplaceStringTool
 			'tool',
 			{
 				tool: {
-					tool: 'multi_replace_string_in_file',
+					tool: 'multi_replace_string',
 					explanation,
 					replacements,
 					approvalState: 'pending',
@@ -124,7 +124,7 @@ export class MultiReplaceStringTool extends BaseAgentTool<MultiReplaceStringTool
 			'tool',
 			{
 				tool: {
-					tool: 'multi_replace_string_in_file',
+					tool: 'multi_replace_string',
 					explanation,
 					replacements,
 					approvalState: 'loading',
@@ -172,7 +172,7 @@ export class MultiReplaceStringTool extends BaseAgentTool<MultiReplaceStringTool
 				'tool',
 				{
 					tool: {
-						tool: 'multi_replace_string_in_file',
+						tool: 'multi_replace_string',
 						explanation,
 						replacements,
 						approvalState: 'error',
@@ -220,7 +220,7 @@ export class MultiReplaceStringTool extends BaseAgentTool<MultiReplaceStringTool
 				'tool',
 				{
 					tool: {
-						tool: 'multi_replace_string_in_file',
+						tool: 'multi_replace_string',
 						explanation,
 						replacements,
 						approvalState: 'error',
@@ -270,7 +270,7 @@ export class MultiReplaceStringTool extends BaseAgentTool<MultiReplaceStringTool
 			'tool',
 			{
 				tool: {
-					tool: 'multi_replace_string_in_file',
+					tool: 'multi_replace_string',
 					explanation,
 					replacements,
 					approvalState: totalFailures > 0 ? 'error' : 'approved',

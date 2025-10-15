@@ -256,33 +256,122 @@ export type RemoveTool = {
 	path: string
 	type?: "file" | "directory" | "auto"
 	recursive?: boolean
+	force?: boolean
 }
 
 export type ReplaceStringTool = {
 	tool: "replace_string"
-	path: string
-	old_string: string
-	new_string: string
+	path?: string
+	old_string?: string
+	new_string?: string
+	oldString?: string
+	newString?: string
+	explanation?: string
+	filePath?: string
+	occurrences?: number
 }
 
 export type MultiReplaceStringTool = {
 	tool: "multi_replace_string"
-	path: string
-	replacements: Array<{ old_string: string; new_string: string }>
+	path?: string
+	replacements: Array<{ 
+		filePath: string
+		oldString: string
+		newString: string
+		caseInsensitive?: boolean
+		useRegex?: boolean
+		order?: number
+	}>
+	explanation?: string
+	successes?: number
+	failures?: number
+	errors?: any[]
+	summary?: string | string[]
 }
 
 export type InsertEditTool = {
 	tool: "insert_edit"
-	path: string
-	insert_line: number
-	content: string
+	path?: string
+	insert_line?: number
+	content?: string
+	explanation?: string
+	filePath?: string
+	startLine?: number
+	endLine?: number
+	code?: string
+	operationType?: string
+	lineRange?: string
 }
 
 export type FastEditorTool = {
 	tool: "fast_editor"
-	path: string
-	mode: "create" | "update" | "delete"
+	path?: string
+	mode?: "create" | "update" | "delete"
 	content?: string
+	edits?: Array<{
+		path: string
+		oldString: string
+		newString: string
+	}>
+	explanation?: string
+	results?: Array<any>
+	successCount?: number
+	failureCount?: number
+}
+
+export type GitBashTool = {
+	tool: "git_bash"
+	command: string
+	output?: string
+}
+
+export type TerminalTool = {
+	tool: "terminal"
+	command?: string
+	action?: string
+	terminalId?: number
+	terminalName?: string
+	output?: string
+	panelType?: string
+	shell?: string
+	expression?: string
+	channelName?: string
+	collectionName?: string
+	portNumber?: number
+	workingDirectory?: string
+	message?: string
+	executionTimeout?: number
+	terminalType?: string
+}
+
+export type KillBashTool = {
+	tool: "kill_bash"
+	terminalId?: number
+	terminalName?: string
+	output?: string
+	lastCommand?: string
+	isBusy?: boolean
+	force?: boolean
+	result?: string
+}
+
+export type ReadImageTool = {
+	tool: "read_image"
+	path: string
+	imageData?: string
+	metadata?: any
+}
+
+export type VscodeApiTool = {
+	tool: "vscode_api"
+	query: string
+	content?: string
+}
+
+export type LocalTimeTool = {
+	tool: "local_time"
+	note?: string
+	localTime?: number
 }
 
 export type ChatTool = (
@@ -316,6 +405,12 @@ export type ChatTool = (
 	| MultiReplaceStringTool
 	| InsertEditTool
 	| FastEditorTool
+	| GitBashTool
+	| TerminalTool
+	| KillBashTool
+	| ReadImageTool
+	| VscodeApiTool
+	| LocalTimeTool
 ) & {
 	ts: number
 	approvalState?: ToolStatus

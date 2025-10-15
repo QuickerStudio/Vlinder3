@@ -14,7 +14,7 @@ export * from "./runners/rename.tool"
 export * from "./runners/think.tool"
 export * from "./runners/git-bash.tool"
 export * from "./runners/terminal.tool"
-// export * from "./runners/read-image/read-image.tool" // Temporarily disabled
+export * from "./runners/read-image.tool"
 export * from "./runners/grep-search.tool"
 export * from "./runners/pattern-search.tool"
 export * from "./runners/fast-editor.tool"

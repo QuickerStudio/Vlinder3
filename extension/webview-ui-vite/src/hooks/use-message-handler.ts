@@ -248,14 +248,91 @@ export const useChatMessageHandling = (
 					primaryButtonText: undefined,
 					secondaryButtonText: undefined,
 				},
-				think: {
-					...baseState,
-					textAreaDisabled: false,
-					enableButtons: false,
-					primaryButtonText: undefined,
-					secondaryButtonText: undefined,
-				},
-			}
+			think: {
+				...baseState,
+				textAreaDisabled: false,
+				enableButtons: false,
+				primaryButtonText: undefined,
+				secondaryButtonText: undefined,
+			},
+			read_image: {
+				...baseState,
+				primaryButtonText: "Read Image",
+				secondaryButtonText: "Cancel",
+			},
+			fast_editor: {
+				...baseState,
+				primaryButtonText: "Apply Edit",
+				secondaryButtonText: "Cancel",
+			},
+			remove: {
+				...baseState,
+				primaryButtonText: "Remove",
+				secondaryButtonText: "Cancel",
+			},
+			rename: {
+				...baseState,
+				primaryButtonText: "Rename",
+				secondaryButtonText: "Cancel",
+			},
+			replace_string: {
+				...baseState,
+				primaryButtonText: "Replace",
+				secondaryButtonText: "Cancel",
+			},
+			multi_replace_string: {
+				...baseState,
+				primaryButtonText: "Replace All",
+				secondaryButtonText: "Cancel",
+			},
+			insert_edit: {
+				...baseState,
+				primaryButtonText: "Insert",
+				secondaryButtonText: "Cancel",
+			},
+			git_bash: {
+				...baseState,
+				primaryButtonText: "Execute",
+				secondaryButtonText: "Cancel",
+			},
+			terminal: {
+				...baseState,
+				primaryButtonText: "Execute",
+				secondaryButtonText: "Cancel",
+			},
+			kill_bash: {
+				...baseState,
+				primaryButtonText: "Kill Terminal",
+				secondaryButtonText: "Cancel",
+			},
+			read_progress: {
+				...baseState,
+				primaryButtonText: "Read Progress",
+				secondaryButtonText: "Cancel",
+			},
+			grep_search: {
+				...baseState,
+				primaryButtonText: "Search",
+				secondaryButtonText: "Cancel",
+			},
+			pattern_search: {
+				...baseState,
+				primaryButtonText: "Search Pattern",
+				secondaryButtonText: "Cancel",
+			},
+			vscode_api: {
+				...baseState,
+				primaryButtonText: "Query API",
+				secondaryButtonText: "Cancel",
+			},
+			local_time: {
+				...baseState,
+				textAreaDisabled: false,
+				enableButtons: false,
+				primaryButtonText: undefined,
+				secondaryButtonText: undefined,
+			},
+		}
 
 			const updates = toolButtonMap[tool.tool] || {
 					...baseState,

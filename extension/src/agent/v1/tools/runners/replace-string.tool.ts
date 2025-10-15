@@ -83,7 +83,7 @@ export class ReplaceStringTool extends BaseAgentTool<ReplaceStringToolParams> {
 				'tool',
 				{
 					tool: {
-						tool: 'replace_string_in_file',
+						tool: 'replace_string',
 						explanation,
 						filePath,
 						oldString,
@@ -102,7 +102,7 @@ export class ReplaceStringTool extends BaseAgentTool<ReplaceStringToolParams> {
 					'tool',
 					{
 						tool: {
-							tool: 'replace_string_in_file',
+							tool: 'replace_string',
 							explanation,
 							filePath,
 							oldString,
@@ -121,7 +121,7 @@ export class ReplaceStringTool extends BaseAgentTool<ReplaceStringToolParams> {
 				'tool',
 				{
 					tool: {
-						tool: 'replace_string_in_file',
+						tool: 'replace_string',
 						explanation,
 						filePath,
 						oldString,
@@ -154,7 +154,7 @@ export class ReplaceStringTool extends BaseAgentTool<ReplaceStringToolParams> {
 					'tool',
 					{
 						tool: {
-							tool: 'replace_string_in_file',
+							tool: 'replace_string',
 							explanation,
 							filePath,
 							oldString,
@@ -178,7 +178,7 @@ export class ReplaceStringTool extends BaseAgentTool<ReplaceStringToolParams> {
 				'tool',
 				{
 					tool: {
-						tool: 'replace_string_in_file',
+						tool: 'replace_string',
 						explanation,
 						filePath,
 						oldString,

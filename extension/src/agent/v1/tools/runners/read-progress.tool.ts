@@ -459,7 +459,7 @@ export class ReadProgressTool extends BaseAgentTool<ReadProgressToolParams> {
 		}
 
 		// Get terminal manager
-		const { terminalManager } = this.MainAgent;
+		const { terminalManager } = this.koduDev;
 		if (!(terminalManager instanceof AdvancedTerminalManager)) {
 			throw new Error('AdvancedTerminalManager is not available');
 		}
@@ -959,15 +959,15 @@ ${extractedData.paths.length > 0 ? `<file_paths count="${extractedData.paths.len
 			// Filter out any remaining URL-like patterns and false positives
 			const filteredPaths = pathMatches.filter(p => {
 				// Exclude URLs
-				if (p.includes('://')) return false;
+				if (p.includes('://')) {return false;}
 				
 				// Exclude simple number patterns like "10/5" (math) or "10/11/2024" (dates)
 				// Path should have at least one letter in the filename part
 				const lastSegment = p.split(/[\/\\]/).pop() || '';
-				if (/^\d+$/.test(lastSegment)) return false; // Only numbers in last segment
+				if (/^\d+$/.test(lastSegment)) {return false;} // Only numbers in last segment
 				
 				// Path should start with valid prefix
-				if (!p.match(/^([A-Za-z]:|\/[a-zA-Z]|\.\/|\.\.\/|~\/)/)) return false;
+				if (!p.match(/^([A-Za-z]:|\/[a-zA-Z]|\.\/|\.\.\/|~\/)/)) {return false;}
 				
 				return true;
 			});

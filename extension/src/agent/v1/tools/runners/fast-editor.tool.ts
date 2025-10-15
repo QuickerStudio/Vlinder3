@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { BaseAgentTool } from '../base-agent.tool';
-import { ToolResponseV2 } from '../types';
+import { ToolResponseV2 } from '../../types';
 import { FastEditorToolParams } from '../schema/fast-editor';
 
 /**

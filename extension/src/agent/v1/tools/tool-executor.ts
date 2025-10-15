@@ -23,7 +23,7 @@ import {
 	ThinkTool,
 	GitBashTool,
 	TerminalTool,
-	// ReadImageTool, // Temporarily disabled due to missing dependencies
+	ReadImageTool,
 	GrepSearchTool,
 	PatternSearchTool,
 	FastEditorTool,
@@ -136,7 +136,7 @@ export class ToolExecutor {
 		const toolMap = {
 			think: ThinkTool,
 			read_file: ReadFileTool,
-			// read_image: ReadImageTool, // Temporarily disabled
+			read_image: ReadImageTool,
 			list_files: ListFilesTool,
 			search_files: SearchFilesTool,
 			explore_repo_folder: ExploreRepoFolderTool,

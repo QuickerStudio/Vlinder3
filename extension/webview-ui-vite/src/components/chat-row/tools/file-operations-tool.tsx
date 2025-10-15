@@ -391,11 +391,11 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringToolProps> 
 										<div className="text-xs text-muted-foreground mb-1">Replacement #{idx + 1}</div>
 										<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs mb-1">
 											<div className="text-destructive font-semibold">- Old:</div>
-											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.old_string}</pre>
+											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.oldString}</pre>
 										</div>
 										<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs">
 											<div className="text-success font-semibold">+ New:</div>
-											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.new_string}</pre>
+											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.newString}</pre>
 										</div>
 									</div>
 								))}
@@ -611,7 +611,7 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
 					variant={mode === 'create' ? 'default' : mode === 'delete' ? 'destructive' : 'secondary'}
 					className="text-xs"
 				>
-					{mode.toUpperCase()}
+					{mode?.toUpperCase() || 'UNKNOWN'}
 				</Badge>
 
 				{content && mode !== 'delete' && (

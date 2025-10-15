@@ -1,6 +1,6 @@
 import { BaseAgentTool } from '../base-agent.tool';
 import { VscodeApiToolParams } from '../schema/vscode-api';
-import { ToolResponseV2 } from '../types';
+import { ToolResponseV2 } from '../../types';
 import TurndownService from 'turndown';
 
 // Simple in-memory cache for API documentation
