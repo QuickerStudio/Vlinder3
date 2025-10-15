@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import UserInfoSection from "./user-info-section"
-import ExperimentalTab from "./experimental-tab"
 import AdvancedTab from "./advanced-tab"
 import AgentsTab from "./agents"
 import ClosePageButton from "./close-page-button"
@@ -35,7 +34,6 @@ const SettingsPage: React.FC = () => {
 		() => (
 			<>
 				{activeTab === "preferences" && <PreferencesTabNew />}
-				{activeTab === "experimental" && <ExperimentalTab />}
 				{activeTab === "advanced" && <AdvancedTab />}
 				{activeTab === "agents" && <AgentsTab />}
 			</>

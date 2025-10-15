@@ -10,6 +10,7 @@ import { useSettingsState } from "../../hooks/use-settings-state"
 import { Slider } from "../ui/slider"
 import { ExperimentalFeatureItem } from "./experimental-feature-item"
 import { vscode } from "@/utils/vscode"
+import { experimentalFeatures } from "./constants"
 
 const AdvancedTab: React.FC = () => {
 	const {
@@ -20,6 +21,8 @@ const AdvancedTab: React.FC = () => {
 		commandTimeout,
 		gitHandlerEnabled,
 		gitCommitterType,
+		experimentalFeatureStates,
+		handleExperimentalFeatureChange,
 		handleSetGitHandlerEnabled,
 		handleSetGitCommitterType,
 		handleCommandTimeout,
@@ -234,6 +237,16 @@ const AdvancedTab: React.FC = () => {
 						These instructions will be included in every task
 					</p>
 				</div>
+			</div>
+			<div className="space-y-4">
+				{experimentalFeatures.map((feature) => (
+					<ExperimentalFeatureItem
+						key={feature.id}
+						feature={feature}
+						checked={experimentalFeatureStates[feature.id as keyof typeof experimentalFeatureStates]}
+						onCheckedChange={(checked) => handleExperimentalFeatureChange(feature.id, checked)}
+					/>
+				))}
 			</div>
 		</div>
 	)
