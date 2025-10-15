@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, startTransition, useCallback, useEffect, useState, useRef } from "react"
+import React, { KeyboardEvent, useCallback, useEffect, useState, useRef } from "react"
 import Thumbnails from "../thumbnails/thumbnails"
 import { Button } from "../ui/button"
 import InputV1 from "./input-v1"
@@ -6,6 +6,7 @@ import { AtSign, ImagePlus, SendHorizonal } from "lucide-react"
 import { AbortButton } from "./abort-button"
 import { vscode } from "@/utils/vscode"
 import { ModelDisplay } from "./model-display"
+import { DragHandle } from "../ui/drag-handle"
 
 interface InputAreaProps {
 	inputRef: React.RefObject<HTMLTextAreaElement>
@@ -62,77 +63,13 @@ const InputArea: React.FC<InputAreaProps> = ({
 }) => {
 	const [_, setIsTextAreaFocused] = useState(false)
 	const [handleAbort, isAborting] = useHandleAbort(isRequestRunning)
-
-	// Drag handle state and logic
-	const dragHandleRef = useRef<HTMLDivElement>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
-	const [isDragging, setIsDragging] = useState(false)
-	const [initialHeight, setInitialHeight] = useState(0)
-	const [initialMouseY, setInitialMouseY] = useState(0)
 	const [textareaHeight, setTextareaHeight] = useState(120) // Control textarea height
-
-	const handleMouseDown = useCallback(
-		(e: React.MouseEvent) => {
-			e.preventDefault()
-			setIsDragging(true)
-			setInitialMouseY(e.clientY)
-			setInitialHeight(textareaHeight)
-		},
-		[textareaHeight]
-	)
-
-	const handleMouseMove = useCallback(
-		(e: MouseEvent) => {
-			if (!isDragging) return
-
-			const deltaY = initialMouseY - e.clientY // Reverse direction: drag up to increase height
-			const newHeight = Math.max(120, initialHeight + deltaY) // Minimum height changed to 120px
-			setTextareaHeight(newHeight)
-		},
-		[isDragging, initialMouseY, initialHeight]
-	)
-
-	const handleMouseUp = useCallback(() => {
-		setIsDragging(false)
-	}, [])
-
-	useEffect(() => {
-		if (isDragging) {
-			document.addEventListener("mousemove", handleMouseMove)
-			document.addEventListener("mouseup", handleMouseUp)
-			return () => {
-				document.removeEventListener("mousemove", handleMouseMove)
-				document.removeEventListener("mouseup", handleMouseUp)
-			}
-		}
-	}, [isDragging, handleMouseMove, handleMouseUp])
 
 	return (
 		<>
 			<div style={{ position: "relative" }}>
-				{/* Drag handle - located on the right, 20px from right window margin */}
-				<div
-					ref={dragHandleRef}
-					onMouseDown={handleMouseDown}
-					className="cursor-ns-resize transition-colors duration-200"
-					style={{
-						position: "absolute",
-						right: "20px",
-						top: "-8px",
-						width: "40px",
-						height: "4px",
-						backgroundColor: "rgba(128, 128, 128, 0.3)",
-						borderRadius: "2px",
-						zIndex: 10,
-					}}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#66FFDA"
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.3)"
-					}}
-					title="Drag to resize input area"
-				/>
+				<DragHandle onHeightChange={setTextareaHeight} initialHeight={textareaHeight} minHeight={120} />
 				<div
 					ref={containerRef}
 					className="flex flex-col justify-end"
