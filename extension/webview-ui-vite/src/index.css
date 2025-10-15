@@ -124,6 +124,64 @@
 		color: #888;
 	}
 
+	/* Animated Switch Styles */
+	button[role="switch"] {
+		position: relative;
+		width: 55.5px;
+		height: 27px;
+		border-radius: 100px;
+		border: none;
+		transition: background-color 0.3s ease;
+
+		&[data-state="unchecked"] {
+			background-color: var(--switch-unchecked-bg, #fcebeb);
+		}
+
+		&[data-state="checked"] {
+			background-color: var(--switch-checked-bg, #e8f5e9);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		/* Thumb styles */
+		& > span[data-state] {
+			position: absolute;
+			top: 3px;
+			width: 21px;
+			height: 21px;
+			border-radius: 50%;
+			transition: all 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 7.5px;
+			font-weight: bold;
+
+			&[data-state="unchecked"] {
+				left: 3px;
+				background-color: var(--switch-unchecked-color, #f44336);
+			}
+
+			&[data-state="checked"] {
+				left: 31.5px;
+				background-color: var(--switch-checked-color, #4caf50);
+			}
+		}
+
+		&:active > span[data-state] {
+			width: 34.5px;
+			border-radius: 100px;
+		}
+
+		&:active[data-state="checked"] > span[data-state] {
+			margin-left: -19.5px;
+		}
+	}
+
 	.task-card {
 		border: 1px solid var(--section-border);
 		padding: 16px;
