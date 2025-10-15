@@ -226,6 +226,46 @@
 			flex-wrap: nowrap;
 		}
 	}
+
+	/* Circular Progress Styles */
+	.circular-progress-container {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.circular-progress-svg {
+		transform: rotate(-90deg);
+	}
+
+	.circular-progress-bg {
+		fill: none;
+		stroke: hsl(var(--primary) / 0.2);
+	}
+
+	.circular-progress-indicator {
+		fill: none;
+		stroke: hsl(var(--primary));
+		stroke-linecap: round;
+		transition: stroke-dashoffset 0.3s ease;
+	}
+
+	.circular-progress-text {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.circular-progress-value {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: hsl(var(--foreground));
+	}
 }
 
 /* Utility Styles */
