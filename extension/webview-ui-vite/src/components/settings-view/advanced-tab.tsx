@@ -5,12 +5,82 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Switch } from "@/components/ui/switch"
 import React from "react"
 import { useSettingsState } from "../../hooks/use-settings-state"
 import { Slider } from "../ui/slider"
-import { ExperimentalFeatureItem } from "./experimental-feature-item"
 import { vscode } from "@/utils/vscode"
 import { experimentalFeatures } from "./constants"
+import { ModelSelector } from "./preferences/model-picker"
+import { ChevronDown } from "lucide-react"
+import { rpcClient } from "@/lib/rpc-client"
+import { useSwitchToProviderManager } from "./preferences/atoms"
+import { cn } from "@/lib/utils"
+import { ExperimentalFeature } from "./types"
+
+// Unified description text size - modify this to adjust all description font sizes
+// Available options: text-[10px], text-[11px], text-xs (12px), text-sm (14px), text-base (16px)
+const DESCRIPTION_TEXT_SIZE = "text-xs" as const
+
+// ExperimentalFeatureItem component (integrated)
+interface ExperimentalFeatureItemProps {
+	feature: ExperimentalFeature
+	checked: boolean
+	onCheckedChange: (checked: boolean) => void
+	className?: string
+	parentClassName?: string
+}
+
+const ExperimentalFeatureItem: React.FC<ExperimentalFeatureItemProps> = React.memo(
+	({ feature, checked, onCheckedChange, className, parentClassName }) => (
+		<div className={cn("flex items-center justify-between", parentClassName)}>
+			<div className={cn("flex-1 pr-2", className)}>
+				<Label htmlFor={feature.id} className="text-xs font-medium flex items-center">
+					{feature.label}
+					{feature.dangerous && (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="ml-1 text-[10px] bg-destructive text-destructive-foreground px-1 py-0.5 rounded cursor-pointer">
+									DANGER
+								</span>
+							</TooltipTrigger>
+							<TooltipContent align="end">
+								<div className="max-w-[80vw] w-full">
+									<pre className="whitespace-pre-line">{feature.dangerous}</pre>
+								</div>
+							</TooltipContent>
+						</Tooltip>
+					)}
+				</Label>
+				<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground`}>{feature.description}</p>
+			</div>
+			{feature.comingSoon ? (
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<span className="ml-1 text-[10px] bg-secondary text-secondary-foreground px-1 py-0.5 rounded cursor-pointer">
+							BETA
+						</span>
+					</TooltipTrigger>
+					<TooltipContent align="end">
+						<div className="max-w-[80vw] w-full">
+							<pre className="whitespace-pre-line">
+								This feature is currently in closed beta, if you would like to participate please
+								contact us via discord.
+							</pre>
+						</div>
+					</TooltipContent>
+				</Tooltip>
+			) : (
+				<Switch
+					id={feature.id}
+					checked={checked}
+					onCheckedChange={onCheckedChange}
+					disabled={feature.disabled}
+				/>
+			)}
+		</div>
+	)
+)
 
 const AdvancedTab: React.FC = () => {
 	const {
@@ -32,6 +102,76 @@ const AdvancedTab: React.FC = () => {
 		handleAutoSkipWriteChange,
 		handleCustomInstructionsChange,
 	} = useSettingsState()
+
+	// Observer Agent hooks
+	const { data: observerData, refetch: observerRefetch } = rpcClient.getObserverSettings.useQuery(
+		{},
+		{
+			refetchInterval: 5000,
+			refetchOnWindowFocus: true,
+			refetchIntervalInBackground: true,
+		}
+	)
+	const switchToProvider = useSwitchToProviderManager()
+
+	const { mutate: customizeObserverPrompt, isPending: customizeObserverPromptPending } =
+		rpcClient.customizeObserverPrompt.useMutation({})
+	const { data: modelListData } = rpcClient.listModels.useQuery(
+		{},
+		{
+			refetchInterval: 5000,
+			refetchOnWindowFocus: true,
+		}
+	)
+
+	const observerEnabled = !!observerData?.observerSettings
+	const observerSettings = observerData?.observerSettings
+	const {
+		data: currentModelInfo,
+		status: modelStatus,
+		refetch: refetchModelData,
+	} = rpcClient.currentObserverModel.useQuery(
+		{},
+		{
+			refetchInterval: 5000,
+			refetchOnMount: true,
+			refetchOnWindowFocus: true,
+		}
+	)
+	const { mutate: setObserverEnabled } = rpcClient.enableObserverAgent.useMutation({
+		onSuccess: () => {
+			observerRefetch()
+		},
+	})
+
+	const { mutate: updateObserverSettings } = rpcClient.updateObserverAgent.useMutation({
+		onSuccess: () => {
+			observerRefetch()
+		},
+	})
+
+	const { mutate: selectObserverModel } = rpcClient.selectObserverModel.useMutation({
+		onSuccess: () => {
+			observerRefetch()
+			refetchModelData()
+		},
+	})
+
+	const handleObserverFrequencyChange = (value: number) => {
+		if (observerSettings) {
+			updateObserverSettings({
+				observeEveryXRequests: value,
+			})
+		}
+	}
+
+	const handleObserverPullMessagesChange = (value: number) => {
+		if (observerSettings) {
+			updateObserverSettings({
+				observePullMessages: value,
+			})
+		}
+	}
 
 	const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		const textarea = e.target
@@ -126,7 +266,7 @@ const AdvancedTab: React.FC = () => {
 									</Label>
 								</div>
 							</RadioGroup>
-							<p className="text-[10px] text-muted-foreground">
+							<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground`}>
 								Choose who should be credited for git commits
 							</p>
 						</div>
@@ -135,6 +275,129 @@ const AdvancedTab: React.FC = () => {
 				
 				{/* Divider */}
 				<div className="border-t border-border my-4"></div>
+				
+				{/* Observer Agent - No Card Border */}
+				<div className="space-y-4">
+					<div className="flex items-center justify-between">
+						<div className="flex-1">
+							<Label className="text-xs font-medium">Observer Agent</Label>
+							<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground`}>
+							The observer analyzes patterns, suggests improvements, and helps maintain alignment with your goals through continuous evaluation and feedback.
+							</p>
+						</div>
+						<Switch
+							checked={observerEnabled}
+							onCheckedChange={(e) => setObserverEnabled({ enabled: e })}
+							aria-label="Toggle observer agent"
+						/>
+					</div>
+					{observerEnabled && observerSettings && (
+						<div className="flex flex-col gap-4 pl-0">
+							<div className="space-y-2">
+								<Label className="text-xs">Observer Frequency (requests)</Label>
+								<div className="text-xs text-muted-foreground mb-2">
+									How often the observer agent should analyze Kodu's actions. Lower values mean more
+									frequent observations but may impact performance.
+								</div>
+								<Slider
+									value={[observerSettings.observeEveryXRequests]}
+									onValueChange={(value) => handleObserverFrequencyChange(value[0])}
+									min={1}
+									max={10}
+									step={1}
+									className="w-full"
+								/>
+								<div className="text-xs text-muted-foreground">
+									Current: Every {observerSettings.observeEveryXRequests} request
+									{observerSettings.observeEveryXRequests > 1 ? "s" : ""}
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label className="text-xs">Messages to Analyze</Label>
+								<div className="text-xs text-muted-foreground mb-2">
+									Number of previous messages the observer will review for context. More messages provide
+									better context but may increase processing time.
+								</div>
+								<Slider
+									value={[observerSettings.observePullMessages]}
+									onValueChange={(value) => handleObserverPullMessagesChange(value[0])}
+									min={1}
+									max={20}
+									step={1}
+									className="w-full"
+								/>
+								<div className="text-xs text-muted-foreground">
+									Current: {observerSettings.observePullMessages} message
+									{observerSettings.observePullMessages > 1 ? "s" : ""}
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label className="text-xs">Select Observer Model</Label>
+								<div className="text-xs text-muted-foreground mb-2">
+									The AI model that will analyze Kodu's actions. Different models may offer varying levels
+									of insight and performance.
+								</div>
+								<ModelSelector
+									models={modelListData?.models ?? []}
+									modelId={observerSettings.modelId ?? null}
+									providerId={observerSettings.providerId ?? null}
+									onChangeModel={selectObserverModel}
+									showDetails={false}>
+									<Button
+										variant="ghost"
+										className="text-xs flex items-center gap-1 h-6 px-2 hover:bg-accent">
+										{modelListData?.models.find((m) => m.id === observerSettings.modelId)?.name ||
+											"Select Model"}
+										<ChevronDown className="w-4 h-4" />
+									</Button>
+								</ModelSelector>
+								{observerData.observerSettings?.providerId &&
+									observerData.observerSettings?.providerId !== "kodu" &&
+									!currentModelInfo?.providerData.currentProvider && (
+										<span
+											onClick={() => {
+												switchToProvider(observerData.observerSettings?.providerId!)
+											}}
+											className="text-destructive text-[11px] hover:underline cursor-pointer">
+											Requires setting up a provider key. Click here to set up a provider.
+										</span>
+									)}
+							</div>
+							<div className="space-y-2 mb-4">
+								<Label className="text-xs">Custom Prompt</Label>
+								<div className="text-xs text-muted-foreground mb-2">
+									Customize the observer's prompt to provide special instructions or context for the
+									model.
+								</div>
+								<div className="flex flex-row gap-2 items-center flex-wrap">
+									<Button
+										disabled={customizeObserverPromptPending}
+										onClick={() => {
+											customizeObserverPrompt({})
+										}}
+										variant="default"
+										size="sm"
+										className="text-xs w-auto">
+										Edit Prompt
+									</Button>
+									{observerSettings.observePrompt && (
+										<Button
+											variant="destructive"
+											className="text-xs w-auto"
+											size="sm"
+											onClick={() => updateObserverSettings({ clearPrompt: true })}>
+											Clear Prompt
+										</Button>
+									)}
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+				
+				{/* Divider after Observer Agent */}
+				<div className="border-t border-border my-4"></div>
+				
 				<ExperimentalFeatureItem
 					feature={{
 						id: "autoCloseTerminal",
@@ -278,7 +541,7 @@ const AdvancedTab: React.FC = () => {
 					<Label htmlFor="cutomizePrompt" className="text-xs font-medium flex items-center">
 						Customize Instructions
 					</Label>
-					<p className="text-[10px] text-muted-foreground">
+					<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground`}>
 						Let's you customize the instructions that Kodu will follow when executing Tasks. You can
 						customize the tools and general instructions that Kodu will follow.
 					</p>
