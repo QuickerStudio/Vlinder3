@@ -399,3 +399,4 @@ When modifying tool components:
 For visual examples of each component, see `TOOL_UI_VISUAL_GUIDE.md` in the project root.
 For implementation details, see `TOOL_UI_IMPLEMENTATION_SUMMARY.md`.
 
+
