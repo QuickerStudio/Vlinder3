@@ -18,6 +18,22 @@ import {
 	FileEditorTool,
 	UrlScreenshotTool,
 	MoveTool,
+	RemoveTool,
+	RenameTool,
+	ThinkTool,
+	GitBashTool,
+	TerminalTool,
+	ReadImageTool,
+	GrepSearchTool,
+	PatternSearchTool,
+	FastEditorTool,
+	ReplaceStringTool,
+	MultiReplaceStringTool,
+	InsertEditTool,
+	KillBashTool,
+	ReadProgressTool,
+	TimerTool,
+	VscodeApiTool,
 } from "."
 import { SearchSymbolsTool } from "./runners/search-symbols.tool"
 import { BaseAgentTool, FullToolParams } from "./base-agent.tool"
@@ -118,7 +134,9 @@ export class ToolExecutor {
 	 */
 	private createTool(params: FullToolParams<any>) {
 		const toolMap = {
+			think: ThinkTool,
 			read_file: ReadFileTool,
+			read_image: ReadImageTool,
 			list_files: ListFilesTool,
 			search_files: SearchFilesTool,
 			explore_repo_folder: ExploreRepoFolderTool,
@@ -129,9 +147,23 @@ export class ToolExecutor {
 			server_runner: DevServerTool,
 			search_symbol: SearchSymbolsTool,
 			file_editor: FileEditorTool,
+			fast_editor: FastEditorTool,
+			replace_string: ReplaceStringTool,
+			multi_replace_string: MultiReplaceStringTool,
+			insert_edit: InsertEditTool,
+			move: MoveTool,
+			remove: RemoveTool,
+			rename: RenameTool,
+			git_bash: GitBashTool,
+			terminal: TerminalTool,
+			kill_bash: KillBashTool,
+			read_progress: ReadProgressTool,
+			grep_search: GrepSearchTool,
+			pattern_search: PatternSearchTool,
+			vscode_api: VscodeApiTool,
+			timer: TimerTool,
 			spawn_agent: SpawnAgentTool,
 			exit_agent: ExitAgentTool,
-			move: MoveTool,
 		} as const
 
 		const ToolClass = toolMap[params.name as keyof typeof toolMap]

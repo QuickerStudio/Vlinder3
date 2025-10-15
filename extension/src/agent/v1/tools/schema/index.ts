@@ -16,13 +16,31 @@ import { fileEditorTool } from "./file_editor_tool"
 import { spawnAgentTool } from "./agents/agent-spawner"
 import { exitAgentTool } from "./agents/agent-exit"
 import { moveTool } from "./move"
+import { removeTool } from "./remove"
+import { renameTool } from "./rename"
+import { thinkTool } from "./think"
+import { gitBashTool } from "./git-bash"
+import { terminalTool } from "./terminal"
+import { readImageTool } from "./read-image"
+import { grepSearchTool } from "./grep-search"
+import { patternSearchTool } from "./pattern-search"
+import { fastEditorTool } from "./fast-editor"
+import { replaceStringTool } from "./replace-string"
+import { multiReplaceStringTool } from "./multi-replace-string"
+import { insertEditTool } from "./insert-edit"
+import { killBashTool } from "./kill-bash"
+import { readProgressTool } from "./read-progress"
+import { timerTool } from "./timer"
+import { vscodeApiTool } from "./vscode-api"
 
 export const tools = [
+	thinkTool,
 	executeCommandTool,
 	listFilesTool,
 	ExploreRepoFolderTool,
 	searchFilesTool,
 	readFileTool,
+	readImageTool,
 	askFollowupQuestionTool,
 	attemptCompletionTool,
 	webSearchTool,
@@ -31,9 +49,23 @@ export const tools = [
 	searchSymbolTool,
 	addInterestedFileTool,
 	fileEditorTool,
+	fastEditorTool,
+	replaceStringTool,
+	multiReplaceStringTool,
+	insertEditTool,
+	moveTool,
+	removeTool,
+	renameTool,
+	gitBashTool,
+	terminalTool,
+	killBashTool,
+	readProgressTool,
+	grepSearchTool,
+	patternSearchTool,
+	vscodeApiTool,
+	timerTool,
 	spawnAgentTool,
 	exitAgentTool,
-	moveTool,
 ] as const
 
 export type Tool = (typeof tools)[number]
@@ -43,6 +75,7 @@ export {
 	ExploreRepoFolderTool,
 	searchFilesTool,
 	readFileTool,
+	readImageTool,
 	writeToFileTool,
 	askFollowupQuestionTool,
 	attemptCompletionTool,
@@ -51,7 +84,22 @@ export {
 	searchSymbolTool as searchSymbolsTool,
 	addInterestedFileTool,
 	fileEditorTool,
+	fastEditorTool,
+	replaceStringTool,
+	multiReplaceStringTool,
+	insertEditTool,
+	moveTool,
+	removeTool,
+	renameTool,
+	gitBashTool,
+	terminalTool,
+	killBashTool,
+	readProgressTool,
+	grepSearchTool,
+	patternSearchTool,
+	vscodeApiTool,
+	timerTool,
+	thinkTool,
 	spawnAgentTool as subAgentTool,
 	exitAgentTool as exitSubAgentTool,
-	moveTool,
 }

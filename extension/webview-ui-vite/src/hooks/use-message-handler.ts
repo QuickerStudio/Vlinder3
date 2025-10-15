@@ -241,6 +241,20 @@ export const useChatMessageHandling = (
 					primaryButtonText: "Move",
 					secondaryButtonText: "Cancel",
 				},
+				timer: {
+					...baseState,
+					textAreaDisabled: false,
+					enableButtons: false,
+					primaryButtonText: undefined,
+					secondaryButtonText: undefined,
+				},
+				think: {
+					...baseState,
+					textAreaDisabled: false,
+					enableButtons: false,
+					primaryButtonText: undefined,
+					secondaryButtonText: undefined,
+				},
 			}
 
 			const updates = toolButtonMap[tool.tool] || {

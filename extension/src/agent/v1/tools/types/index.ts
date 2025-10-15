@@ -23,6 +23,22 @@ import { SpawnAgentOptions, SpawnAgentToolParams } from "../schema/agents/agent-
 import { ExitAgentToolParams } from "../schema/agents/agent-exit"
 import { SubmitReviewToolParams } from "../schema/submit_review"
 import { MoveToolParams } from "../schema/move"
+import { RemoveToolParams } from "../schema/remove"
+import { RenameToolParams } from "../schema/rename"
+import { ThinkToolParams } from "../schema/think"
+import { GitBashToolParams } from "../schema/git-bash"
+import { TerminalToolParams } from "../schema/terminal"
+import { ReadImageToolParams } from "../schema/read-image"
+import { GrepSearchToolParams } from "../schema/grep-search"
+import { PatternSearchToolParams } from "../schema/pattern-search"
+import { FastEditorToolParams } from "../schema/fast-editor"
+import { ReplaceStringToolParams } from "../schema/replace-string"
+import { MultiReplaceStringToolParams } from "../schema/multi-replace-string"
+import { InsertEditToolParams } from "../schema/insert-edit"
+import { KillBashToolParams } from "../schema/kill-bash"
+import { ReadProgressToolParams } from "../schema/read-progress"
+import { TimerToolParams } from "../schema/timer"
+import { VscodeApiToolParams } from "../schema/vscode-api"
 
 export type UpsertMemoryInput = {
 	milestoneName: string
@@ -39,6 +55,7 @@ export type ToolParams =
 	| ExploreRepoFolderToolParams
 	| ListFilesToolParams
 	| ReadFileToolParams
+	| ReadImageToolParams
 	| SearchFilesToolParams
 	| SearchSymbolsToolParams
 	| UrlScreenshotToolParams
@@ -48,10 +65,25 @@ export type ToolParams =
 	| WriteToFileToolParams
 	| EditFileBlocksToolParams
 	| FileEditorToolParams
+	| FastEditorToolParams
+	| ReplaceStringToolParams
+	| MultiReplaceStringToolParams
+	| InsertEditToolParams
 	| SpawnAgentToolParams
 	| ExitAgentToolParams
 	| SubmitReviewToolParams
 	| MoveToolParams
+	| RemoveToolParams
+	| RenameToolParams
+	| ThinkToolParams
+	| GitBashToolParams
+	| TerminalToolParams
+	| KillBashToolParams
+	| ReadProgressToolParams
+	| GrepSearchToolParams
+	| PatternSearchToolParams
+	| VscodeApiToolParams
+	| TimerToolParams
 
 export type ToolName = ToolParams["name"]
 

@@ -171,6 +171,41 @@ export type MoveTool = {
 	merge?: boolean
 }
 
+export type TimerTool = {
+	tool: "timer"
+	duration?: number
+	note?: string
+	startTime?: number
+	endTime?: number
+	/**
+	 * Timer-specific status (independent of approvalState)
+	 * - 'running': Timer is actively counting down
+	 * - 'completed': Timer finished naturally
+	 * - 'stopped': Timer was stopped by user
+	 */
+	timerStatus?: "running" | "completed" | "stopped"
+	/**
+	 * If true, displays local time instead of countdown timer
+	 */
+	showLocalTime?: boolean
+}
+
+export type ThinkTool = {
+	tool: "think"
+	/**
+	 * The thinking process, reasoning, and analysis
+	 */
+	thought: string
+	/**
+	 * Key conclusions or insights from the thinking
+	 */
+	conclusion?: string
+	/**
+	 * What to do next based on the thinking
+	 */
+	next_action?: string
+}
+
 export type ChatTool = (
 	| ExitAgentTool
 	| SpawnAgentTool
@@ -191,6 +226,8 @@ export type ChatTool = (
 	| FileChangePlanTool
 	| SubmitReviewTool
 	| MoveTool
+	| TimerTool
+	| ThinkTool
 ) & {
 	ts: number
 	approvalState?: ToolStatus

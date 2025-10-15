@@ -27,6 +27,8 @@ import {
 	XCircle,
 	ArrowRight,
 	FolderInput,
+	Timer,
+	X,
 } from "lucide-react"
 import React, { useMemo, useState } from "react"
 import {
@@ -45,12 +47,15 @@ import {
 	UrlScreenshotTool,
 	SubmitReviewTool,
 	MoveTool,
+	TimerTool,
+	ThinkTool,
 } from "extension/shared/new-tools"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { EnhancedWebSearchBlock } from "./tools/web-search-tool"
 import { FileEditorTool } from "./tools/file-editor-tool"
+import { ThinkToolBlock } from "./tools/think-tool"
 import { SpawnAgentBlock, ExitAgentBlock } from "./tools/agent-tools"
 import MarkdownRenderer from "./markdown-renderer"
 import { CodeBlock } from "./code-block"
@@ -882,6 +887,261 @@ export const MoveToolBlock: React.FC<MoveTool & ToolAddons> = ({
 	)
 }
 
+type TimerInternalState = 'running' | 'completed' | 'stopped' | 'error'
+
+export const TimerToolBlock: React.FC<TimerTool & ToolAddons> = ({
+	duration,
+	note,
+	startTime,
+	endTime,
+	approvalState,
+	timerStatus,
+	ts,
+	...rest
+}) => {
+	const [currentTime, setCurrentTime] = React.useState(Date.now())
+	const [timerState, setTimerState] = React.useState<TimerInternalState>(timerStatus || 'running')
+	const [isExpanded, setIsExpanded] = React.useState(false)
+
+	// Sync with backend timerStatus
+	React.useEffect(() => {
+		if (timerStatus) {
+			setTimerState(timerStatus)
+		}
+	}, [timerStatus])
+
+	// Update current time every 100ms when timer is running
+	React.useEffect(() => {
+		if (timerState === 'running' && startTime && endTime) {
+			const interval = setInterval(() => {
+				const now = Date.now()
+				setCurrentTime(now)
+
+				// Check if timer naturally completed
+				if (endTime && now >= endTime) {
+					setTimerState('completed')
+				}
+			}, 100)
+			return () => clearInterval(interval)
+		}
+	}, [timerState, startTime, endTime])
+
+	// Sync with system approvalState for error states only
+	React.useEffect(() => {
+		if (approvalState === 'error' && timerState !== 'stopped' && timerState !== 'completed') {
+			setTimerState('error')
+		}
+	}, [approvalState, timerState])
+
+	// Format time in HH:MM:SS:mmm format
+	const formatTime = (totalSeconds: number): string => {
+		const hours = Math.floor(totalSeconds / 3600)
+		const mins = Math.floor((totalSeconds % 3600) / 60)
+		const secs = Math.floor(totalSeconds % 60)
+		const ms = Math.floor(((totalSeconds % 1) * 1000))
+		return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}:${String(ms).padStart(3, '0')}`
+	}
+
+	// Format local date time (YYYY-MM-DD HH:MM:SS)
+	const formatLocalDateTime = (timestamp: number): string => {
+		const date = new Date(timestamp)
+		const year = date.getFullYear()
+		const month = String(date.getMonth() + 1).padStart(2, '0')
+		const day = String(date.getDate()).padStart(2, '0')
+		const hours = String(date.getHours()).padStart(2, '0')
+		const minutes = String(date.getMinutes()).padStart(2, '0')
+		const seconds = String(date.getSeconds()).padStart(2, '0')
+		return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+	}
+
+	// Calculate remaining time based on internal timer state (with milliseconds precision)
+	const getRemainingTime = (): number => {
+		if (!startTime || !endTime) return duration || 0
+
+		if (timerState === 'completed') {
+			return 0
+		}
+
+		const remaining = Math.max(0, endTime - currentTime)
+		return remaining / 1000 // Return with decimal for milliseconds
+	}
+
+	// Calculate progress percentage based on internal timer state
+	const getProgress = (): number => {
+		if (!startTime || !endTime) return 0
+
+		if (timerState === 'completed') {
+			return 100
+		}
+
+		const total = endTime - startTime
+		const elapsed = currentTime - startTime
+		return Math.min(100, Math.max(0, (elapsed / total) * 100))
+	}
+
+	// Calculate display time for countdown timer
+	const remainingSeconds = getRemainingTime()
+	const displayTime = formatTime(remainingSeconds)
+	const progress = getProgress()
+
+	// Get border color based on timer state
+	const getBorderColor = () => {
+		switch (timerState) {
+			case 'completed':
+				return 'border-l-green-500'
+			case 'error':
+				return 'border-l-red-500'
+			case 'stopped':
+				return 'border-l-yellow-500'
+			default:
+				return 'border-l-blue-500'
+		}
+	}
+
+	// Get status icon
+	const getStatusIcon = () => {
+		switch (timerState) {
+			case 'completed':
+				return <CheckCircle className='h-4 w-4 text-green-600' />
+			case 'error':
+				return <AlertCircle className='h-4 w-4 text-red-600' />
+			default:
+				return <Timer className='h-4 w-4 text-blue-600' />
+		}
+	}
+
+	// Get countdown color based on timer state
+	const getCountdownColor = () => {
+		switch (timerState) {
+			case 'completed':
+				return 'text-green-600 dark:text-green-400'
+			case 'error':
+				return 'text-red-600 dark:text-red-400'
+			case 'stopped':
+				return 'text-yellow-600 dark:text-yellow-400'
+			case 'running':
+			default:
+				return 'text-blue-600 dark:text-blue-400'
+		}
+	}
+
+	// Get status message with timestamp
+	const getStatusMessage = () => {
+		const now = Date.now()
+		const currentLocalTime = formatLocalDateTime(now)
+
+		switch (timerState) {
+			case 'completed':
+				return `Timer completed at ${currentLocalTime}`
+			case 'error':
+				return `Timer failed at ${currentLocalTime}`
+			case 'stopped':
+				return `Timer stopped at ${currentLocalTime}`
+			case 'running':
+				return `Timer running - Current time: ${currentLocalTime}`
+			default:
+				return null
+		}
+	}
+
+	return (
+		<div className={cn(
+			'rounded-sm border-l-4 bg-card text-card-foreground',
+			getBorderColor()
+		)}>
+			<div
+				className='flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors'
+				onClick={() => setIsExpanded(!isExpanded)}
+			>
+				<div className='flex items-center flex-1 min-w-0'>
+					{getStatusIcon()}
+					<h3 className='text-sm font-semibold mx-3 flex-shrink-0'>Timer</h3>
+					<span className='text-xs text-muted-foreground truncate'>
+						<span className={cn('font-mono font-semibold', getCountdownColor())}>
+							{displayTime}
+						</span>
+						<> • {Math.round(progress)}%</>
+						{note && <> • {note}</>}
+					</span>
+				</div>
+
+				<div className='flex items-center space-x-2'>
+					{isExpanded ? (
+						<ChevronUp className='w-4 h-4 text-muted-foreground' />
+					) : (
+						<ChevronDown className='w-4 h-4 text-muted-foreground' />
+					)}
+				</div>
+			</div>
+
+			<Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+				<CollapsibleContent className='px-3 pb-3'>
+					<div className='text-sm border-t pt-3 space-y-3'>
+						<div className='flex items-center justify-between'>
+							<span className='text-xs font-semibold text-muted-foreground'>
+								Time Remaining:
+							</span>
+							<span className={cn(
+								'font-mono text-2xl font-bold tabular-nums',
+								timerState === 'completed' ? 'text-green-600' :
+								timerState === 'error' ? 'text-red-600' :
+								timerState === 'stopped' ? 'text-yellow-600' :
+								'text-blue-600'
+							)}>
+								{displayTime}
+							</span>
+						</div>
+
+						{timerState === 'running' && (
+							<div className='flex items-center gap-2'>
+								<div className='flex-1 h-2 bg-muted rounded-full overflow-hidden'>
+									<div
+										className='h-full transition-all duration-300 bg-blue-500'
+										style={{ width: `${progress}%` }}
+									/>
+								</div>
+								<span className='text-xs text-muted-foreground whitespace-nowrap min-w-[35px] font-mono'>
+									{Math.round(progress)}%
+								</span>
+							</div>
+						)}
+
+						{getStatusMessage() && (
+							<p className='text-xs text-muted-foreground'>
+								{getStatusMessage()}
+							</p>
+						)}
+
+						{duration !== undefined && duration > 0 && (
+							<p className='text-xs'>
+								<span className='font-semibold'>Total Duration:</span> {duration}s ({Math.floor(duration / 3600)}h {Math.floor((duration % 3600) / 60)}m {duration % 60}s)
+							</p>
+						)}
+
+						{startTime && (
+							<p className='text-xs'>
+								<span className='font-semibold'>Start Time:</span> {formatLocalDateTime(startTime)}
+							</p>
+						)}
+
+						{endTime && (
+							<p className='text-xs'>
+								<span className='font-semibold'>{timerState === 'running' ? 'Expected End Time:' : 'End Time:'}</span> {formatLocalDateTime(endTime)}
+							</p>
+						)}
+
+						{note && (
+							<p className='text-xs'>
+								<span className='font-semibold'>Note:</span> {note}
+							</p>
+						)}
+					</div>
+				</CollapsibleContent>
+			</Collapsible>
+		</div>
+	)
+}
+
 export const ToolRenderer: React.FC<{
 	tool: ChatTool
 	hasNextMessage?: boolean
@@ -921,6 +1181,10 @@ export const ToolRenderer: React.FC<{
 			return <SubmitReviewBlock {...tool} />
 		case "move":
 			return <MoveToolBlock {...tool} />
+		case "timer":
+			return <TimerToolBlock {...tool} />
+		case "think":
+			return <ThinkToolBlock {...tool} />
 		default:
 			return null
 	}
