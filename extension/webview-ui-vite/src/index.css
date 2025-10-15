@@ -251,6 +251,16 @@
 		transition: stroke-dashoffset 0.3s ease;
 	}
 
+	/* Warning zone styles (70%~100%) - only for circular-progress component */
+	.circular-progress-warning .circular-progress-bg {
+		stroke: rgba(255, 99, 203, 0.2);
+	}
+
+	.circular-progress-warning .circular-progress-indicator {
+		stroke: #FF63CB;
+		animation: breathe-pulse 2s ease-in-out infinite;
+	}
+
 	.circular-progress-text {
 		position: absolute;
 		top: 50%;
@@ -347,6 +357,17 @@ p {
 	}
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@keyframes breathe-pulse {
+	0%, 100% {
+		opacity: 1;
+		stroke-width: 4;
+	}
+	50% {
+		opacity: 0.5;
+		stroke-width: 5;
 	}
 }
 

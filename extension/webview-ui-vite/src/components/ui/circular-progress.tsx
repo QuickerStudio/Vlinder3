@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Progress } from "./progress"
 import { useExtensionState } from "@/context/extension-state-context"
+import { cn } from "@/lib/utils"
 
 interface CircularProgressProps {
 	style?: React.CSSProperties
@@ -11,11 +12,22 @@ interface CircularProgressProps {
 }
 
 /**
- * Circular progress component that displays context memory usage percentage
+ * CircularProgress - Memory Usage Indicator (Domain-Specific Component)
+ * 
+ * 🎯 Specifically designed for displaying memory usage
+ * ⚠️ Includes warning logic (70% threshold)
+ * 🎨 Includes specific visual effects (breathing pulse, color changes)
  * 
  * @description
- * This component shows a circular progress indicator representing the current context window usage.
- * It uses the same data processing logic as token-info.tsx to calculate the percentage.
+ * This component displays context memory usage as a circular progress indicator with built-in
+ * warning states. When memory usage exceeds 70%, it automatically switches to warning mode
+ * with a pink color (#FF63CB) and breathing animation to alert the user.
+ * 
+ * @features
+ * - **0%~70%**: Cyan color (primary theme), normal opacity
+ * - **70%~100%**: Pink color (#FF63CB), breathing pulse animation, 75% opacity
+ * - **Hover State**: Synced with DragHandle hover state for unified UX
+ * - **Auto-hide**: Doesn't render when context window is not available
  * 
  * @usage
  * - Used in input-area.tsx: Floats above the drag handle
@@ -28,6 +40,15 @@ interface CircularProgressProps {
  * 
  * @see extension/webview-ui-vite/src/components/chat-view/input-area.tsx - Displayed above drag handle
  * @see extension/webview-ui-vite/src/components/task-header/token-info.tsx - Same logic reference
+ * 
+ * @example
+ * ```tsx
+ * // Basic usage (auto-fetches data from extension state)
+ * <CircularProgress />
+ * 
+ * // With external hover state (synced with drag handle)
+ * <CircularProgress isHovered={isDragHandleHovered} />
+ * ```
  */
 export const CircularProgress: React.FC<CircularProgressProps> = ({ 
 	style, 
@@ -54,14 +75,17 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 		return null
 	}
 
+	// Check if in warning zone (70%~100%)
+	const isWarningZone = contextPercentage >= 70
+
 	return (
 		<div 
 			style={{
 				...style,
-				opacity: isHovered ? 1 : 0.3,
+				opacity: isWarningZone ? 0.75 : (isHovered ? 1 : 0.3),
 				transition: 'opacity 200ms',
 			}} 
-			className={className}
+			className={cn(className, isWarningZone && "circular-progress-warning")}
 			onMouseEnter={() => {
 				if (externalIsHovered === undefined) {
 					setInternalIsHovered(true)
@@ -77,7 +101,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 				value={contextPercentage}
 				style={{
 					// Apply color based on hover state (same as drag-handle.tsx)
-					filter: isHovered ? 'brightness(1.5) hue-rotate(-20deg)' : 'none',
+					filter: isWarningZone ? 'none' : (isHovered ? 'brightness(1.5) hue-rotate(-20deg)' : 'none'),
 				}}
 			/>
 		</div>

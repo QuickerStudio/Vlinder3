@@ -2,6 +2,29 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Progress - Circular Progress Component (Generic UI Component)
+ * 
+ * 📦 Pure UI component - no business logic
+ * 🔄 Reusable for any circular progress scenarios
+ * 🎨 Does not include business-specific logic
+ * 
+ * @description
+ * A generic circular progress ring component that can be used anywhere in the application.
+ * It only handles visual presentation of progress (0-100%) without any domain-specific logic.
+ * 
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <Progress value={75} />
+ * 
+ * // Custom size and styling
+ * <Progress value={50} size={60} strokeWidth={6} />
+ * 
+ * // Without percentage text
+ * <Progress value={30} showPercentage={false} />
+ * ```
+ */
 interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: number
   size?: number
