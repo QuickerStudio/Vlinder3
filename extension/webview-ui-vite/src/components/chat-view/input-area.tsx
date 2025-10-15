@@ -7,6 +7,7 @@ import { AbortButton } from "./abort-button"
 import { vscode } from "@/utils/vscode"
 import { ModelDisplay } from "./model-display"
 import { DragHandle } from "../ui/drag-handle"
+import { CircularProgress } from "../ui/circular-progress"
 
 interface InputAreaProps {
 	inputRef: React.RefObject<HTMLTextAreaElement>
@@ -69,6 +70,21 @@ const InputArea: React.FC<InputAreaProps> = ({
 	return (
 		<>
 			<div style={{ position: "relative" }}>
+				{/* Circular progress - centered above drag handle */}
+				<div
+					style={{
+						position: "absolute",
+						right: "20px",
+						top: "-42px",
+						width: "40px",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						zIndex: 11,
+					}}
+				>
+					<CircularProgress />
+				</div>
 				<DragHandle onHeightChange={setTextareaHeight} initialHeight={textareaHeight} minHeight={120} />
 				<div
 					ref={containerRef}
