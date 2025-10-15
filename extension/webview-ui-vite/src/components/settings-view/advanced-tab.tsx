@@ -49,26 +49,53 @@ const AdvancedTab: React.FC = () => {
 	return (
 		<div className="space-y-6">
 			<div className="space-y-4">
-				<div className={"flex items-center justify-between"}>
-					<div className={"flex-1 pr-2"}>
-						<Label htmlFor="cutomizePrompt" className="text-xs font-medium flex items-center">
-							Customize Instructions
-						</Label>
-						<p className="text-[10px] text-muted-foreground">
-							Let's you customize the instructions that Kodu will follow when executing Tasks. You can
-							customize the tools and general instructions that Kodu will follow.
-						</p>
-					</div>
-
-					<Button
-						size="sm"
-						variant="secondary"
-						onClick={() => {
-							vscode.postMessage({ type: "openPromptEditor" })
-						}}>
-						Open Editor
-					</Button>
-				</div>
+				{/* Automatic Mode */}
+				<ExperimentalFeatureItem
+					feature={{
+						id: "alwaysAllowWriteOnly",
+						label: "Automatic Mode",
+						description: "Claude will automatically try to solve tasks without asking for permission",
+					}}
+					checked={experimentalFeatureStates.alwaysAllowWriteOnly}
+					onCheckedChange={(checked) => handleExperimentalFeatureChange("alwaysAllowWriteOnly", checked)}
+				/>
+				
+				{/* AutoSummarize Chat */}
+				<ExperimentalFeatureItem
+					feature={{
+						id: "autoSummarize",
+						label: "AutoSummarize Chat",
+						description: "Automatically compress chat messages once context window is overflown while preserving the critical flow of the conversation",
+					}}
+					checked={experimentalFeatureStates.autoSummarize}
+					onCheckedChange={(checked) => handleExperimentalFeatureChange("autoSummarize", checked)}
+				/>
+				
+				{/* One Click Deployment */}
+				<ExperimentalFeatureItem
+					feature={{
+						id: "taskHistory",
+						label: "One Click Deployment",
+						description: "Deploy your projects with a single click",
+						disabled: true,
+						comingSoon: true,
+					}}
+					checked={experimentalFeatureStates["one-click-deployment"]}
+					onCheckedChange={(checked) => handleExperimentalFeatureChange("taskHistory", checked)}
+				/>
+				
+				{/* Always Allow Read-Only Operations */}
+				<ExperimentalFeatureItem
+					feature={{
+						id: "alwaysAllowReadOnly",
+						label: "Always Allow Read-Only Operations",
+						description: "Automatically read files and view directories without requiring permission",
+					}}
+					checked={readOnly}
+					onCheckedChange={handleSetReadOnly}
+				/>
+				
+				{/* Git Handler */}
 				<div className="space-y-4">
 					<ExperimentalFeatureItem
 						feature={{
@@ -105,15 +132,9 @@ const AdvancedTab: React.FC = () => {
 						</div>
 					)}
 				</div>
-				<ExperimentalFeatureItem
-					feature={{
-						id: "alwaysAllowReadOnly",
-						label: "Always Allow Read-Only Operations",
-						description: "Automatically read files and view directories without requiring permission",
-					}}
-					checked={readOnly}
-					onCheckedChange={handleSetReadOnly}
-				/>
+				
+				{/* Divider */}
+				<div className="border-t border-border my-4"></div>
 				<ExperimentalFeatureItem
 					feature={{
 						id: "autoCloseTerminal",
@@ -239,14 +260,38 @@ const AdvancedTab: React.FC = () => {
 				</div>
 			</div>
 			<div className="space-y-4">
-				{experimentalFeatures.map((feature) => (
-					<ExperimentalFeatureItem
-						key={feature.id}
-						feature={feature}
-						checked={experimentalFeatureStates[feature.id as keyof typeof experimentalFeatureStates]}
-						onCheckedChange={(checked) => handleExperimentalFeatureChange(feature.id, checked)}
-					/>
-				))}
+				{experimentalFeatures
+					.filter((feature) => feature.id !== "alwaysAllowWriteOnly" && feature.id !== "autoSummarize" && feature.id !== "taskHistory")
+					.map((feature) => (
+						<ExperimentalFeatureItem
+							key={feature.id}
+							feature={feature}
+							checked={experimentalFeatureStates[feature.id as keyof typeof experimentalFeatureStates]}
+							onCheckedChange={(checked) => handleExperimentalFeatureChange(feature.id, checked)}
+						/>
+					))}
+			</div>
+			
+			{/* Customize Instructions - Moved to bottom */}
+			<div className={"flex items-center justify-between"}>
+				<div className={"flex-1 pr-2"}>
+					<Label htmlFor="cutomizePrompt" className="text-xs font-medium flex items-center">
+						Customize Instructions
+					</Label>
+					<p className="text-[10px] text-muted-foreground">
+						Let's you customize the instructions that Kodu will follow when executing Tasks. You can
+						customize the tools and general instructions that Kodu will follow.
+					</p>
+				</div>
+
+				<Button
+					size="sm"
+					variant="secondary"
+					onClick={() => {
+						vscode.postMessage({ type: "openPromptEditor" })
+					}}>
+					Open Editor
+				</Button>
 			</div>
 		</div>
 	)
