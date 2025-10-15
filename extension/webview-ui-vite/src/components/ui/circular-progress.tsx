@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Progress } from "./progress"
 import { useExtensionState } from "@/context/extension-state-context"
 import { cn } from "@/lib/utils"
+import { ArrowTooltip, ArrowTooltipTrigger, ArrowTooltipContent, ArrowTooltipProvider } from "./arrow-tooltips"
 
 interface CircularProgressProps {
 	style?: React.CSSProperties
@@ -58,7 +59,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 	isHovered: externalIsHovered,
 }) => {
 	// Get context tokens from extension state (same as task-header.tsx)
-	let { currentContextTokens, currentContextWindow } = useExtensionState()
+	let { currentContextTokens, currentContextWindow, currentTask } = useExtensionState()
 
 	// Same logic as token-info.tsx
 	currentContextTokens = currentContextTokens ?? 0
@@ -70,6 +71,13 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 	const [internalIsHovered, setInternalIsHovered] = useState(false)
 	const isHovered = externalIsHovered !== undefined ? externalIsHovered : internalIsHovered
 
+	// Tooltip state - show when mouse is pressed down
+	const [isTooltipOpen, setIsTooltipOpen] = useState(false)
+
+	// Format tooltip content (same as token-info.tsx)
+	const totalCost = currentTask?.totalCost ?? 0
+	const tooltipContent = `Memory: ${currentContextTokens?.toLocaleString() ?? 0}/${currentContextWindow?.toLocaleString() ?? 0} | Cost: $${totalCost.toFixed(4)}`
+
 	// Only show when context window is available
 	if ((currentContextWindow ?? 0) <= 0) {
 		return null
@@ -79,32 +87,55 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 	const isWarningZone = contextPercentage >= 70
 
 	return (
-		<div 
-			style={{
-				...style,
-				opacity: isWarningZone ? 0.75 : (isHovered ? 1 : 0.3),
-				transition: 'opacity 200ms',
-			}} 
-			className={cn(className, isWarningZone && "circular-progress-warning")}
-			onMouseEnter={() => {
-				if (externalIsHovered === undefined) {
-					setInternalIsHovered(true)
-				}
-			}}
-			onMouseLeave={() => {
-				if (externalIsHovered === undefined) {
-					setInternalIsHovered(false)
-				}
-			}}
-		>
-			<Progress 
-				value={contextPercentage}
-				style={{
-					// Apply color based on hover state (same as drag-handle.tsx)
-					filter: isWarningZone ? 'none' : (isHovered ? 'brightness(1.5) hue-rotate(-20deg)' : 'none'),
+		<ArrowTooltipProvider delayDuration={0} disableHoverableContent>
+			<ArrowTooltip 
+				open={isTooltipOpen} 
+				onOpenChange={(open) => {
+					// Only allow manual control via mouse down/up
+					// Prevent auto-open on hover
 				}}
-			/>
-		</div>
+			>
+				<ArrowTooltipTrigger asChild>
+				<div 
+					className={cn(className, isWarningZone && "circular-progress-warning")}
+					style={{
+						...style,
+						opacity: isWarningZone ? 0.75 : (isHovered ? 1 : 0.3),
+						transition: 'opacity 200ms',
+						cursor: 'pointer',
+					}}
+					onMouseEnter={() => {
+						if (externalIsHovered === undefined) {
+							setInternalIsHovered(true)
+						}
+					}}
+					onMouseLeave={() => {
+						if (externalIsHovered === undefined) {
+							setInternalIsHovered(false)
+						}
+					}}
+					onMouseDown={(e) => {
+						e.preventDefault()
+						setIsTooltipOpen(true)
+					}}
+					onMouseUp={() => {
+						setIsTooltipOpen(false)
+					}}
+				>
+					<Progress 
+						value={contextPercentage}
+						style={{
+							// Apply color based on hover state (same as drag-handle.tsx)
+							filter: isWarningZone ? 'none' : (isHovered ? 'brightness(1.5) hue-rotate(-20deg)' : 'none'),
+						}}
+					/>
+				</div>
+				</ArrowTooltipTrigger>
+				<ArrowTooltipContent side="right" sideOffset={10}>
+					{tooltipContent}
+				</ArrowTooltipContent>
+			</ArrowTooltip>
+		</ArrowTooltipProvider>
 	)
 }
 
