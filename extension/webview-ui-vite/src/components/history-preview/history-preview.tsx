@@ -21,7 +21,7 @@ const HistoryPreview: React.FC<HistoryPreviewProps> = ({ showHistoryView }) => {
 	}
 
 	return (
-		<section className="border-b-0 !pb-0 !pt-2">
+		<section className="border-b-0 !pb-2 !pt-2">
 			{/* 横向布局：左侧（标题+按钮） | 右侧（滚动容器） */}
 			<div className="flex items-end gap-3">
 				{/* 左侧：标题和按钮的垂直布局 */}
