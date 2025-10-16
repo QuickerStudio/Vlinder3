@@ -28,7 +28,7 @@ import { z } from 'zod';
  * ```
  */
 const schema = z.object({
-	duration: z
+	duration: z.coerce
 		.number()
 		.nonnegative()
 		.max(86400)

@@ -542,10 +542,10 @@ const schema = z.object({
 		.object({
 			type: DebugType.describe('Debug type'),
 			request: z.enum(['launch', 'attach']).describe('Debug request type'),
-			program: z.string().optional().describe('Program to debug'),
-			args: z.array(z.string()).optional().describe('Program arguments'),
-			port: z.number().optional().describe('Debug port'),
-			stopOnEntry: z.boolean().optional().describe('Stop on entry point'),
+		program: z.string().optional().describe('Program to debug'),
+		args: z.array(z.string()).optional().describe('Program arguments'),
+		port: z.coerce.number().optional().describe('Debug port'),
+		stopOnEntry: z.boolean().optional().describe('Stop on entry point'),
 		})
 		.optional()
 		.describe('Configuration for debug terminals'),
@@ -599,20 +599,20 @@ const schema = z.object({
 		.object({
 			message: z.string().describe('Problem message'),
 			severity: ProblemSeverity.describe('Problem severity level'),
-			startLine: z.number().describe('Starting line number (0-based)'),
-			startCharacter: z.number().describe('Starting character position (0-based)'),
-			endLine: z.number().describe('Ending line number (0-based)'),
-			endCharacter: z.number().describe('Ending character position (0-based)'),
+			startLine: z.coerce.number().describe('Starting line number (0-based)'),
+			startCharacter: z.coerce.number().describe('Starting character position (0-based)'),
+			endLine: z.coerce.number().describe('Ending line number (0-based)'),
+			endCharacter: z.coerce.number().describe('Ending character position (0-based)'),
 			source: ProblemSource.optional().describe('Problem source'),
-			code: z.union([z.string(), z.number()]).optional().describe('Error or warning code'),
+			code: z.union([z.string(), z.coerce.number()]).optional().describe('Error or warning code'),
 			relatedInformation: z
 				.array(
 					z.object({
 						filePath: z.string(),
-						startLine: z.number(),
-						startCharacter: z.number(),
-						endLine: z.number(),
-						endCharacter: z.number(),
+						startLine: z.coerce.number(),
+						startCharacter: z.coerce.number(),
+						endLine: z.coerce.number(),
+						endCharacter: z.coerce.number(),
 						message: z.string(),
 					})
 				)
@@ -628,12 +628,12 @@ const schema = z.object({
 				filePath: z.string(),
 				message: z.string(),
 				severity: ProblemSeverity,
-				startLine: z.number(),
-				startCharacter: z.number(),
-				endLine: z.number(),
-				endCharacter: z.number(),
+				startLine: z.coerce.number(),
+				startCharacter: z.coerce.number(),
+				endLine: z.coerce.number(),
+				endCharacter: z.coerce.number(),
 				source: ProblemSource.optional(),
-				code: z.union([z.string(), z.number()]).optional(),
+				code: z.union([z.string(), z.coerce.number()]).optional(),
 			})
 		)
 		.optional()
