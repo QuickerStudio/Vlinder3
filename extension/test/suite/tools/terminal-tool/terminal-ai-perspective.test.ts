@@ -129,29 +129,34 @@ describe('Terminal Tool - AI Perspective', () => {
 		});
 		
 	 it('AI 应该能判断命令是否成功', async () => {
-			const tool = createTerminalTool();
-			
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						yield { data: 'Command output\n' };
-					})()
-				),
-			};
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
-			
-			const mockTerminal: any = {
-				name: 'test',
-				processId: Promise.resolve(123),
-				shellIntegration: {
-					executeCommand: sandbox.stub().resolves(mockShellExecution),
-					cwd: vscode.Uri.file('/test'),
-				},
-			};
+		const tool = createTerminalTool();
+		
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					yield 'Command output\n';
+				})()
+			),
+		};
+		
+		const mockTerminal: any = {
+			name: 'test',
+			processId: Promise.resolve(123),
+			shellIntegration: {
+				executeCommand: sandbox.stub().resolves(mockShellExecution),
+				cwd: vscode.Uri.file('/test'),
+			},
+		};
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -172,30 +177,35 @@ describe('Terminal Tool - AI Perspective', () => {
 		});
 		
 	 it('AI 应该能判断命令失败原因', async () => {
-			const tool = createTerminalTool();
-			
-			const errorOutput = 'Error: Cannot find module \'express\'\nat require (loader.js:834:19)';
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						yield { data: errorOutput };
-					})()
-				),
-			};
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 1 }), 10);
-				return { dispose: () => {} };
-			});
-			
-			const mockTerminal: any = {
-				name: 'test',
-				processId: Promise.resolve(123),
-				shellIntegration: {
-					executeCommand: sandbox.stub().resolves(mockShellExecution),
-					cwd: vscode.Uri.file('/test'),
-				},
-			};
+		const tool = createTerminalTool();
+		
+		const errorOutput = 'Error: Cannot find module \'express\'\nat require (loader.js:834:19)';
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					yield errorOutput;
+				})()
+			),
+		};
+		
+		const mockTerminal: any = {
+			name: 'test',
+			processId: Promise.resolve(123),
+			shellIntegration: {
+				executeCommand: sandbox.stub().resolves(mockShellExecution),
+				cwd: vscode.Uri.file('/test'),
+			},
+		};
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 1,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -307,21 +317,21 @@ describe('Terminal Tool - AI Perspective', () => {
 		});
 		
 	 it('AI 应该能判断是否需要用户交互', async () => {
-			const askStub = sandbox.stub().resolves({ response: 'messageResponse' });
-			
-			const tool = createTerminalTool({
-				command: 'rm -rf important-data',
-			}, { ask: askStub });
-			
-			const result = await tool.execute();
-			
-			// AI 可以从状态判断用户是否批准
-			assert.strictEqual(result.status, 'rejected', 'Should indicate rejection');
-			
-			// AI 知道不应该继续执行
-			assert.ok(result.text.includes('rejected') || result.text.includes('denied'), 
-				'Should clearly indicate rejection');
-		});
+		const askStub = sandbox.stub().resolves({ response: 'messageResponse' });
+		
+		const tool = createTerminalTool({
+			command: 'rm -rf important-data',
+		}, { ask: askStub });
+		
+		const result = await tool.execute();
+		
+		// AI 可以从状态判断用户是否批准
+		assert.strictEqual(result.status, 'rejected', 'Should indicate rejection');
+		
+		// AI 知道不应该继续执行
+		assert.ok(result.text && (result.text.includes('rejected') || result.text.includes('denied')), 
+			'Should clearly indicate rejection');
+	});
 	});
 	
 	describe('4. 状态转换可预测性', () => {
@@ -446,29 +456,34 @@ describe('Terminal Tool - AI Perspective', () => {
 		});
 		
 	 it('空输出应该被明确标识', async () => {
-			const tool = createTerminalTool();
-			
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						// 没有输出
-					})()
-				),
-			};
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
-			
-			const mockTerminal: any = {
-				name: 'test',
-				processId: Promise.resolve(123),
-				shellIntegration: {
-					executeCommand: sandbox.stub().resolves(mockShellExecution),
-					cwd: vscode.Uri.file('/test'),
-				},
-			};
+		const tool = createTerminalTool();
+		
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					// 没有输出
+				})()
+			),
+		};
+		
+		const mockTerminal: any = {
+			name: 'test',
+			processId: Promise.resolve(123),
+			shellIntegration: {
+				executeCommand: sandbox.stub().resolves(mockShellExecution),
+				cwd: vscode.Uri.file('/test'),
+			},
+		};
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -579,17 +594,17 @@ Port 3000 already in use
 			(tool as any).registerTerminalState('term-1', 'running', 'cmd1', undefined);
 			(tool as any).registerTerminalState('term-2', 'completed', 'cmd2', 0);
 			
-			const result = await (tool as any).listAllTerminals();
-			
-			// 验证 XML 标签平衡
-			const openTags = (result.text.match(/<(\w+)>/g) || []).map(t => t.slice(1, -1));
-			const closeTags = (result.text.match(/<\/(\w+)>/g) || []).map(t => t.slice(2, -1));
-			
-			openTags.forEach(tag => {
-				const openCount = openTags.filter(t => t === tag).length;
-				const closeCount = closeTags.filter(t => t === tag).length;
-				assert.strictEqual(openCount, closeCount, `Tag <${tag}> should be balanced`);
-			});
+		const result = await (tool as any).listAllTerminals();
+		
+		// 验证 XML 标签平衡
+		const openTags = (result.text.match(/<(\w+)>/g) || []).map((t: string) => t.slice(1, -1));
+		const closeTags = (result.text.match(/<\/(\w+)>/g) || []).map((t: string) => t.slice(2, -1));
+		
+		openTags.forEach((tag: string) => {
+			const openCount = openTags.filter((t: string) => t === tag).length;
+			const closeCount = closeTags.filter((t: string) => t === tag).length;
+			assert.strictEqual(openCount, closeCount, `Tag <${tag}> should be balanced`);
+		});
 		});
 		
 	 it('特殊字符不应破坏 XML 结构', () => {

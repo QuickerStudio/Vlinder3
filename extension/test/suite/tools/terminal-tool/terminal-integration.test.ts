@@ -43,13 +43,13 @@ describe('Terminal Tool - Integration Tests', () => {
 			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
 			
 			// Mock 终端创建
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						yield { data: 'Hello World\n' };
-					})()
-				),
-			};
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					yield 'Hello World\n';
+				})()
+			),
+		};
 			
 			const mockTerminal: any = {
 				name: 'echo-1',
@@ -62,20 +62,25 @@ describe('Terminal Tool - Integration Tests', () => {
 			};
 			
 			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			// 执行
 			const result = await tool.execute();
 			
-			// 验证流程
-			assert.ok(askStub.called, '1. Should ask for approval');
-			assert.ok(updateAskStub.called, '2. Should update status');
-			assert.strictEqual(result.status, 'success', '3. Should succeed');
-			assert.ok(result.text.includes('Hello World'), '4. Should capture output');
-			assert.ok(result.text.includes('<exit_code>0</exit_code>'), '5. Should include exit code');
+		// 验证流程
+		assert.ok(askStub.called, '1. Should ask for approval');
+		assert.ok(updateAskStub.called, '2. Should update status');
+		assert.strictEqual(result.status, 'success', '3. Should succeed');
+		assert.ok(result.text && result.text.includes('Hello World'), '4. Should capture output');
+		assert.ok(result.text && result.text.includes('<exit_code>0</exit_code>'), '5. Should include exit code');
 			
 			// 验证状态序列
 			const states = updateAskStub.getCalls().map(call => call.args[1].tool.approvalState);
@@ -97,13 +102,13 @@ describe('Terminal Tool - Integration Tests', () => {
 			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
 			
 			const errorOutput = 'npm ERR! Cannot find module \'package.json\'\nnpm ERR! enoent ENOENT';
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						yield { data: errorOutput };
-					})()
-				),
-			};
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					yield errorOutput;
+				})()
+			),
+		};
 			
 			const mockTerminal: any = {
 				name: 'npm-1',
@@ -116,19 +121,24 @@ describe('Terminal Tool - Integration Tests', () => {
 			};
 			
 			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 1 }), 10);
-				return { dispose: () => {} };
-			});
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 1,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await tool.execute();
 			
-			// 验证错误处理
-			assert.strictEqual(result.status, 'success', 'Should return success status (command executed)');
-			assert.ok(result.text.includes('<exit_code>1</exit_code>'), 'Should show exit code 1');
-			assert.ok(result.text.includes('<error_type>'), 'Should identify error type');
-			assert.ok(result.text.includes('<suggestion>'), 'Should provide suggestion');
-			assert.ok(result.text.includes('<related_commands>'), 'Should provide related commands');
+		// 验证错误处理
+		assert.strictEqual(result.status, 'success', 'Should return success status (command executed)');
+		assert.ok(result.text && result.text.includes('<exit_code>1</exit_code>'), 'Should show exit code 1');
+		assert.ok(result.text && result.text.includes('<error_type>'), 'Should identify error type');
+		assert.ok(result.text && result.text.includes('<suggestion>'), 'Should provide suggestion');
+		assert.ok(result.text && result.text.includes('<related_commands>'), 'Should provide related commands');
 		});
 		
 	 it('拒绝流程：用户拒绝 → 返回rejected状态', async () => {
@@ -160,13 +170,13 @@ describe('Terminal Tool - Integration Tests', () => {
 			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
 			
 			let shellIntegrationEventFired = false;
-			const mockShellExecution: any = {
-				read: sandbox.stub().returns(
-					(async function* () {
-						yield { data: 'test\n' };
-					})()
-				),
-			};
+		const mockShellExecution: any = {
+			read: sandbox.stub().returns(
+				(async function* () {
+					yield 'test\n';
+				})()
+			),
+		};
 			
 			const mockTerminal: any = {
 				name: 'test',
@@ -193,10 +203,15 @@ describe('Terminal Tool - Integration Tests', () => {
 				return { dispose: () => {} };
 			});
 			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 200);
-				return { dispose: () => {} };
-			});
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 200);
+			return { dispose: () => {} };
+		});
 			
 			const result = await tool.execute();
 			
@@ -310,12 +325,12 @@ describe('Terminal Tool - Integration Tests', () => {
 			
 			const result = await (tool as any).listAllTerminals();
 			
-			// 验证所有终端都被列出
-			assert.ok(result.text.includes('<total_count>4</total_count>'), 'Should list all terminals');
-			terminals.forEach(({ name, status }) => {
-				assert.ok(result.text.includes(`<name>${name}</name>`), `Should list ${name}`);
-				assert.ok(result.text.includes(`<status>${status}</status>`), `Should show status ${status}`);
-			});
+		// 验证所有终端都被列出
+		assert.ok(result.text && result.text.includes('<total_count>4</total_count>'), 'Should list all terminals');
+		terminals.forEach(({ name, status }) => {
+			assert.ok(result.text && result.text.includes(`<name>${name}</name>`), `Should list ${name}`);
+			assert.ok(result.text && result.text.includes(`<status>${status}</status>`), `Should show status ${status}`);
+		});
 		});
 		
 	 it('应该能复用现有终端', async () => {
@@ -323,11 +338,13 @@ describe('Terminal Tool - Integration Tests', () => {
 				name: 'reusable-terminal',
 				processId: Promise.resolve(5555),
 				shellIntegration: {
-					executeCommand: sandbox.stub().resolves({
-						read: () => (async function* () {
-							yield { data: 'reused output\n' };
-						})()
-					}),
+				executeCommand: sandbox.stub().resolves({
+					read: () => (async function* () {
+						yield 'reused output\n';
+					})(),
+					commandLine: { value: 'echo test', isTrusted: true, confidence: 2 },
+					cwd: vscode.Uri.file('/test')
+				}),
 					cwd: vscode.Uri.file('/test'),
 				},
 				show: sandbox.stub(),
@@ -347,8 +364,14 @@ describe('Terminal Tool - Integration Tests', () => {
 			
 			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
 				setTimeout(() => callback({ 
-					execution: { read: () => (async function* () {})() }, 
-					exitCode: 0 
+					execution: { 
+						read: () => (async function* () {})(),
+						commandLine: { value: 'echo test', isTrusted: true, confidence: 2 },
+						cwd: vscode.Uri.file('/test')
+					}, 
+					exitCode: 0,
+					terminal: existingTerminal,
+					shellIntegration: existingTerminal.shellIntegration
 				}), 10);
 				return { dispose: () => {} };
 			});
@@ -460,10 +483,10 @@ describe('Terminal Tool - Integration Tests', () => {
 			
 			const result = await tool.execute();
 			
-			// 验证错误处理
-			assert.strictEqual(result.status, 'error', 'Should return error status');
-			assert.ok(result.text.includes('invalid-shell'), 'Should mention invalid shell');
-			assert.ok(result.text.includes('bash'), 'Should list available shells');
+		// 验证错误处理
+		assert.strictEqual(result.status, 'error', 'Should return error status');
+		assert.ok(result.text && result.text.includes('invalid-shell'), 'Should mention invalid shell');
+		assert.ok(result.text && result.text.includes('bash'), 'Should list available shells');
 			
 			// 验证用户收到通知
 			assert.ok(sayStub.called, 'Should notify user');

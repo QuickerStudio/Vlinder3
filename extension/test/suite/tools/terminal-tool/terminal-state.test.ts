@@ -353,11 +353,11 @@ describe('Terminal Tool - State Management', () => {
 			
 			const result = await (tool as any).listAllTerminals();
 			
-			// 验证XML结构
-			assert.ok(result.text.includes('<terminals_list>'), 'Should have XML root');
-			assert.ok(result.text.includes('</terminals_list>'), 'Should close XML root');
-			assert.ok(result.text.includes('<terminal>'), 'Should have terminal element');
-			assert.ok(result.text.includes('<name>'), 'Should have name element');
+		// 验证XML结构
+		assert.ok(result.text && result.text.includes('<terminals_list>'), 'Should have XML root');
+		assert.ok(result.text && result.text.includes('</terminals_list>'), 'Should close XML root');
+		assert.ok(result.text && result.text.includes('<terminal>'), 'Should have terminal element');
+		assert.ok(result.text && result.text.includes('<name>'), 'Should have name element');
 		});
 		
 	 it('应该正确转义特殊字符', async () => {
@@ -381,9 +381,9 @@ describe('Terminal Tool - State Management', () => {
 			
 			const result = await tool.execute();
 			
-			assert.strictEqual(result.status, 'error', 'Should return error status');
-			assert.ok(result.text.includes('error'), 'Should include error tag');
-			assert.ok(result.text.includes('Unknown panel type'), 'Should include error message');
+		assert.strictEqual(result.status, 'error', 'Should return error status');
+		assert.ok(result.text && result.text.includes('error'), 'Should include error tag');
+		assert.ok(result.text && result.text.includes('Unknown panel type'), 'Should include error message');
 		});
 		
 	 it('应该在成功响应中包含完整数据', async () => {
@@ -404,13 +404,13 @@ describe('Terminal Tool - State Management', () => {
 			
 			const result = await (tool as any).listAllTerminals();
 			
-			// 验证包含所有数据
-			assert.ok(result.text.includes('term-1'), 'Should include terminal 1');
-			assert.ok(result.text.includes('term-2'), 'Should include terminal 2');
-			assert.ok(result.text.includes('111'), 'Should include PID 1');
-			assert.ok(result.text.includes('222'), 'Should include PID 2');
-			assert.ok(result.text.includes('running'), 'Should include status');
-			assert.ok(result.text.includes('npm start'), 'Should include command');
+		// 验证包含所有数据
+		assert.ok(result.text && result.text.includes('term-1'), 'Should include terminal 1');
+		assert.ok(result.text && result.text.includes('term-2'), 'Should include terminal 2');
+		assert.ok(result.text && result.text.includes('111'), 'Should include PID 1');
+		assert.ok(result.text && result.text.includes('222'), 'Should include PID 2');
+		assert.ok(result.text && result.text.includes('running'), 'Should include status');
+		assert.ok(result.text && result.text.includes('npm start'), 'Should include command');
 		});
 	});
 	

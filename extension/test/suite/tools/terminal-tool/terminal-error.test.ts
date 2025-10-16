@@ -94,8 +94,8 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'Permission denied';
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'apt-get install package');
 			
-			assert.ok(analysis.suggestion.includes('sudo'), 'Should suggest using sudo');
-			assert.ok(analysis.relatedCommands.some(cmd => cmd.startsWith('sudo')), 'Should provide sudo command');
+		assert.ok(analysis.suggestion.includes('sudo'), 'Should suggest using sudo');
+		assert.ok(analysis.relatedCommands.some((cmd: string) => cmd.startsWith('sudo')), 'Should provide sudo command');
 		});
 		
 	 it('应该建议检查权限（当已使用sudo时）', () => {
@@ -104,8 +104,8 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'Permission denied';
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'sudo apt-get install package');
 			
-			assert.ok(analysis.suggestion.includes('permissions'), 'Should suggest checking permissions');
-			assert.ok(analysis.relatedCommands.some(cmd => cmd === 'chmod' || cmd === 'chown'));
+		assert.ok(analysis.suggestion.includes('permissions'), 'Should suggest checking permissions');
+		assert.ok(analysis.relatedCommands.some((cmd: string) => cmd === 'chmod' || cmd === 'chown'));
 		});
 	});
 	
@@ -137,10 +137,10 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'Port 5000 already in use';
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'python app.py');
 			
-			// 应该包含Windows (netstat) 或 Unix (lsof) 命令
-			const hasWindowsCmd = analysis.relatedCommands.some(cmd => cmd.includes('netstat'));
-			const hasUnixCmd = analysis.relatedCommands.some(cmd => cmd.includes('lsof'));
-			assert.ok(hasWindowsCmd || hasUnixCmd, 'Should provide platform-specific commands');
+		// 应该包含Windows (netstat) 或 Unix (lsof) 命令
+		const hasWindowsCmd = analysis.relatedCommands.some((cmd: string) => cmd.includes('netstat'));
+		const hasUnixCmd = analysis.relatedCommands.some((cmd: string) => cmd.includes('lsof'));
+		assert.ok(hasWindowsCmd || hasUnixCmd, 'Should provide platform-specific commands');
 		});
 	});
 	
@@ -179,10 +179,10 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'No such file or directory';
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'cat file.txt');
 			
-			const hasListCmd = analysis.relatedCommands.some(cmd => 
-				cmd === 'ls -la' || cmd === 'dir' || cmd === 'pwd' || cmd === 'Get-Location'
-			);
-			assert.ok(hasListCmd, 'Should suggest directory listing commands');
+		const hasListCmd = analysis.relatedCommands.some((cmd: string) => 
+			cmd === 'ls -la' || cmd === 'dir' || cmd === 'pwd' || cmd === 'Get-Location'
+		);
+		assert.ok(hasListCmd, 'Should suggest directory listing commands');
 		});
 	});
 	
@@ -216,8 +216,8 @@ describe('Terminal Tool - Error Handling', () => {
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'git push origin main');
 			
 			assert.strictEqual(analysis.errorType, 'GIT_PUSH_REJECTED');
-			assert.ok(analysis.suggestion.includes('pull'), 'Should suggest pulling first');
-			assert.ok(analysis.relatedCommands.some(cmd => cmd.includes('git pull')));
+		assert.ok(analysis.suggestion.includes('pull'), 'Should suggest pulling first');
+		assert.ok(analysis.relatedCommands.some((cmd: string) => cmd.includes('git pull')));
 		});
 	});
 	
@@ -248,8 +248,8 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'npm ERR! Unexpected error';
 			const analysis = (tool as any).analyzeTerminalError(1, output, 'npm install');
 			
-			const hasCacheClean = analysis.relatedCommands.some(cmd => cmd.includes('cache clean'));
-			assert.ok(hasCacheClean, 'Should suggest cache cleaning');
+		const hasCacheClean = analysis.relatedCommands.some((cmd: string) => cmd.includes('cache clean'));
+		assert.ok(hasCacheClean, 'Should suggest cache cleaning');
 		});
 	});
 	
@@ -310,10 +310,10 @@ describe('Terminal Tool - Error Handling', () => {
 			const output = 'command not found: npm';
 			const analysis = (tool as any).analyzeTerminalError(127, output, 'npm install');
 			
-			const hasWhichCmd = analysis.relatedCommands.some(cmd => 
-				cmd.includes('which') || cmd.includes('where')
-			);
-			assert.ok(hasWhichCmd, 'Should suggest which/where command');
+		const hasWhichCmd = analysis.relatedCommands.some((cmd: string) => 
+			cmd.includes('which') || cmd.includes('where')
+		);
+		assert.ok(hasWhichCmd, 'Should suggest which/where command');
 		});
 	});
 	
@@ -513,10 +513,10 @@ describe('Terminal Tool - Error Handling', () => {
 			assert.ok(analysis.suggestion.includes('8080'), 'Should mention specific port');
 			
 			// 应该提供检查端口的命令
-			const hasPortCheckCmd = analysis.relatedCommands.some(cmd => 
-				cmd.includes('8080') && (cmd.includes('netstat') || cmd.includes('lsof'))
-			);
-			assert.ok(hasPortCheckCmd, 'Should provide port checking command');
+		const hasPortCheckCmd = analysis.relatedCommands.some((cmd: string) => 
+			cmd.includes('8080') && (cmd.includes('netstat') || cmd.includes('lsof'))
+		);
+		assert.ok(hasPortCheckCmd, 'Should provide port checking command');
 		});
 	});
 	

@@ -24,14 +24,14 @@ describe('Terminal Tool - Command Execution', () => {
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
 		
-		// 创建正确的异步生成器 mock
-		mockShellExecution = {
-			read: () => {
-				return (async function* () {
-					yield { data: 'test output\n' };
-				})();
-			}
-		};
+	// 创建正确的异步生成器 mock
+	mockShellExecution = {
+		read: () => {
+			return (async function* () {
+				yield 'test output\n';
+			})();
+		}
+	};
 		
 		mockTerminal = {
 			name: 'test-terminal',
@@ -58,14 +58,16 @@ describe('Terminal Tool - Command Execution', () => {
 		it('应该优先使用Shell Integration执行命令', async () => {
 			const tool = createTerminalTool({ command: 'echo hello' });
 			
-			// 创建自定义的 mockShellExecution 用于这个测试
-			const customExecution = {
-				read: () => {
-					return (async function* () {
-						yield { data: 'hello\n' };
-					})();
-				}
-			};
+		// 创建自定义的 mockShellExecution 用于这个测试
+		const customExecution = {
+			read: () => {
+				return (async function* () {
+					yield 'hello\n';
+				})();
+			},
+			commandLine: { value: 'echo hello', isTrusted: true, confidence: 2 },
+			cwd: vscode.Uri.file('/test')
+		};
 			
 			const customTerminal = {
 				...mockTerminal,
@@ -79,11 +81,16 @@ describe('Terminal Tool - Command Execution', () => {
 			sandbox.stub(tool as any, 'detectDefaultShell').resolves('bash');
 			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
 			
-			// 模拟 shell execution 结束事件
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: customExecution, exitCode: 0 }), 100);
-				return { dispose: () => {} };
-			});
+		// 模拟 shell execution 结束事件
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: customExecution, 
+				exitCode: 0,
+				terminal: customTerminal,
+				shellIntegration: customTerminal.shellIntegration
+			}), 100);
+			return { dispose: () => {} };
+		});
 			
 			await tool.execute();
 			
@@ -95,14 +102,16 @@ describe('Terminal Tool - Command Execution', () => {
 			
 			const outputData = 'test output\n';
 			
-			// 创建正确的异步生成器
-			const customExecution = {
-				read: () => {
-					return (async function* () {
-						yield { data: outputData };
-					})();
-				}
-			};
+		// 创建正确的异步生成器
+		const customExecution = {
+			read: () => {
+				return (async function* () {
+					yield outputData;
+				})();
+			},
+			commandLine: { value: 'echo test output', isTrusted: true, confidence: 2 },
+			cwd: vscode.Uri.file('/test')
+		};
 			
 			const customTerminal = {
 				...mockTerminal,
@@ -116,11 +125,16 @@ describe('Terminal Tool - Command Execution', () => {
 			sandbox.stub(tool as any, 'detectDefaultShell').resolves('bash');
 			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
 			
-			// 模拟 shell execution 结束
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: customExecution, exitCode: 0 }), 50);
-				return { dispose: () => {} };
-			});
+		// 模拟 shell execution 结束
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: customExecution, 
+				exitCode: 0,
+				terminal: customTerminal,
+				shellIntegration: customTerminal.shellIntegration
+			}), 50);
+			return { dispose: () => {} };
+		});
 			
 			// 模拟executeWithShellIntegration
 			const result = await (tool as any).executeWithShellIntegration(
@@ -151,7 +165,7 @@ describe('Terminal Tool - Command Execution', () => {
 				read: () => {
 					return (async function* () {
 						await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒延迟
-						yield { data: 'never reached\n' };
+						yield 'never reached\n';
 					})();
 				}
 			};
@@ -188,20 +202,25 @@ describe('Terminal Tool - Command Execution', () => {
 		});
 		
 	 it('应该捕获Exit Code', async () => {
-			const tool = createTerminalTool({ command: 'exit 1' });
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: '' };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 1 }), 10);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ command: 'exit 1' });
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield '';
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 1,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -220,28 +239,33 @@ describe('Terminal Tool - Command Execution', () => {
 		});
 		
 	 it('应该处理命令执行流', async () => {
-			const tool = createTerminalTool({ command: 'npm install' });
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			const outputChunks = [
-				'npm info it worked\n',
-				'npm info using npm@8.0.0\n',
-				'added 10 packages\n',
-			];
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					for (const chunk of outputChunks) {
-						yield { data: chunk };
-					}
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 50);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ command: 'npm install' });
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		const outputChunks = [
+			'npm info it worked\n',
+			'npm info using npm@8.0.0\n',
+			'added 10 packages\n',
+		];
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				for (const chunk of outputChunks) {
+					yield chunk;
+				}
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 50);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -399,22 +423,27 @@ describe('Terminal Tool - Command Execution', () => {
 	
 	describe('4. Command Execution Success Rate', () => {
 	 it('应该成功执行简单命令', async () => {
-			const tool = createTerminalTool({ command: 'echo success' });
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			sandbox.stub(tool as any, 'detectDefaultShell').resolves('bash');
-			sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: 'success\n' };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ command: 'echo success' });
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		sandbox.stub(tool as any, 'detectDefaultShell').resolves('bash');
+		sandbox.stub(tool as any, 'getShellPath').resolves('/bin/bash');
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield 'success\n';
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -434,20 +463,25 @@ describe('Terminal Tool - Command Execution', () => {
 		});
 		
 	 it('应该处理失败的命令', async () => {
-			const tool = createTerminalTool({ command: 'invalid-command' });
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: 'command not found: invalid-command\n' };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 127 }), 10);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ command: 'invalid-command' });
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield 'command not found: invalid-command\n';
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 127,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -467,32 +501,37 @@ describe('Terminal Tool - Command Execution', () => {
 		});
 		
 	 it('应该处理长时间运行的命令', async () => {
-			const tool = createTerminalTool({ 
-				command: 'npm test',
-				executionTimeout: 60000 
-			});
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			const testOutput = [
-				'Test Suites: 5 passed, 5 total\n',
-				'Tests: 23 passed, 23 total\n',
-				'Snapshots: 0 total\n',
-			];
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					for (const line of testOutput) {
-						await new Promise(resolve => setTimeout(resolve, 100));
-						yield { data: line };
-					}
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 500);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ 
+			command: 'npm test',
+			executionTimeout: 60000 
+		});
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		const testOutput = [
+			'Test Suites: 5 passed, 5 total\n',
+			'Tests: 23 passed, 23 total\n',
+			'Snapshots: 0 total\n',
+		];
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				for (const line of testOutput) {
+					await new Promise(resolve => setTimeout(resolve, 100));
+					yield line;
+				}
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 500);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -522,11 +561,11 @@ describe('Terminal Tool - Command Execution', () => {
 			
 			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
 			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: 'test output\n' };
-				})()
-			);
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield 'test output\n';
+			})()
+		);
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -549,17 +588,22 @@ describe('Terminal Tool - Command Execution', () => {
 			
 			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
 			
-			const largeOutput = 'x'.repeat(100000); // 100KB output
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: largeOutput };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
+		const largeOutput = 'x'.repeat(100000); // 100KB output
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield largeOutput;
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			const result = await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -603,23 +647,28 @@ describe('Terminal Tool - Command Execution', () => {
 	
 	describe('6. Auto-Close Terminal', () => {
 	 it('应该在shouldAutoCloseTerminal=true时自动关闭终端', async () => {
-			const tool = createTerminalTool({ 
-				command: 'echo test',
-				shouldAutoCloseTerminal: true 
-			});
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: 'test\n' };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ 
+			command: 'echo test',
+			shouldAutoCloseTerminal: true 
+		});
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield 'test\n';
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			await (tool as any).executeWithShellIntegration(
 				mockTerminal,
@@ -641,23 +690,28 @@ describe('Terminal Tool - Command Execution', () => {
 		});
 		
 	 it('应该在shouldAutoCloseTerminal=false时保持终端打开', async () => {
-			const tool = createTerminalTool({ 
-				command: 'echo test',
-				shouldAutoCloseTerminal: false 
-			});
-			
-			sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
-			
-			mockShellExecution.read = sandbox.stub().returns(
-				(async function* () {
-					yield { data: 'test\n' };
-				})()
-			);
-			
-			sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
-				setTimeout(() => callback({ execution: mockShellExecution, exitCode: 0 }), 10);
-				return { dispose: () => {} };
-			});
+		const tool = createTerminalTool({ 
+			command: 'echo test',
+			shouldAutoCloseTerminal: false 
+		});
+		
+		sandbox.stub(vscode.window, 'createTerminal').returns(mockTerminal);
+		
+		mockShellExecution.read = sandbox.stub().returns(
+			(async function* () {
+				yield 'test\n';
+			})()
+		);
+		
+		sandbox.stub(vscode.window, 'onDidEndTerminalShellExecution').callsFake((callback) => {
+			setTimeout(() => callback({ 
+				execution: mockShellExecution, 
+				exitCode: 0,
+				terminal: mockTerminal,
+				shellIntegration: mockTerminal.shellIntegration
+			}), 10);
+			return { dispose: () => {} };
+		});
 			
 			await (tool as any).executeWithShellIntegration(
 				mockTerminal,
