@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { CheckCircle2, Clock, ChevronDown, ChevronUp } from "lucide-react"
 import { formatDate } from "@/utils/dateFormatter"
+import ArrowTooltips from "@/components/ui/arrow-tooltips"
 
 interface TaskCardProps {
 	id: string
@@ -34,14 +35,24 @@ const TaskCard: React.FC<TaskCardProps> = ({
 		setIsExpanded(!isExpanded)
 	}
 
+	// 构建 tooltip 内容
+	const tooltipContent = () => {
+		const parts = []
+		parts.push(`Tokens: ↑${tokensIn?.toLocaleString() ?? 0} ↓${tokensOut?.toLocaleString() ?? 0}`)
+		if (cacheWrites && cacheReads) {
+			parts.push(`Cache: +${cacheWrites?.toLocaleString()} →${cacheReads?.toLocaleString()}`)
+		}
+		parts.push(`API Cost: $${totalCost?.toFixed(4) ?? 0}`)
+		return parts.join(" | ")
+	}
+
 	return (
 		<div
 			className={`group bg-card hover:bg-accent/50 border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 ${
 				isCompleted ? "hover:border-success/50" : "hover:border-info/50"
-			} ${isExpanded ? "overflow-hidden" : ""}`}
+			}`}
 			style={{
 				scrollSnapAlign: "start",
-				height: isExpanded ? "80px" : "auto", // 展开时固定高度为容器高度
 			}}>
 			{/* 标题行 */}
 			<div className="flex items-center justify-between gap-2 py-2 px-3 cursor-pointer" onClick={() => onSelect(id)}>
@@ -49,17 +60,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
 					{task}
 				</div>
 				<div className="flex items-center gap-2 flex-shrink-0">
-					<div className="opacity-70 group-hover:opacity-100 transition-opacity">
-						{isCompleted ? (
-							<CheckCircle2 className="w-4 h-4 text-success" />
-						) : (
-							<Clock className="w-4 h-4 text-info" />
-						)}
-					</div>
+					<ArrowTooltips title={tooltipContent()} side="top" delayDuration={300}>
+						<div className="opacity-70 group-hover:opacity-100 transition-opacity cursor-help">
+							{isCompleted ? (
+								<CheckCircle2 className="w-4 h-4 text-success" />
+							) : (
+								<Clock className="w-4 h-4 text-info" />
+							)}
+						</div>
+					</ArrowTooltips>
 					<button
 						onClick={handleToggle}
 						className="p-0.5 hover:bg-accent rounded transition-colors"
-						aria-label={isExpanded ? "折叠" : "展开"}>
+						aria-label={isExpanded ? "Collapse" : "Expand"}>
 						{isExpanded ? (
 							<ChevronUp className="w-4 h-4 text-light" />
 						) : (
@@ -72,43 +85,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
 			{/* 分割线 - 只在展开时显示 */}
 			{isExpanded && <div className="border-t border-border/30 mx-3"></div>}
 
-			{/* 可折叠的详细信息 */}
+			{/* 可折叠的时间信息 */}
 			{isExpanded && (
-				<div className="px-3 py-1.5 space-y-1">
-					<div className="text-light flex-line wrap !gap-2 text-xs" style={{ justifyContent: "space-between" }}>
-						<div className="flex-line nowrap">
-							<span className="text-alt">Tokens:</span>
-							<code className="text-light">
-								<span>↑</span>
-								{tokensIn?.toLocaleString() ?? 0}
-							</code>
-							<code className="text-light">
-								<span>↓</span>
-								{tokensOut?.toLocaleString() ?? 0}
-							</code>
-						</div>
-						{!!cacheWrites && !!cacheReads && (
-							<div className="flex-line nowrap">
-								<span className="text-alt">Cache:</span>
-								<code className="text-light">
-									<span>+</span>
-									{cacheWrites?.toLocaleString()}
-								</code>
-								<code className="text-light">
-									<span>→</span>
-									{cacheReads?.toLocaleString()}
-								</code>
-							</div>
-						)}
-						<div className="flex-line nowrap">
-							<span className="text-alt">API Cost:</span>
-							<code className="text-light">
-								<span>$</span>
-								{totalCost?.toFixed(4) ?? 0}
-							</code>
-						</div>
-					</div>
-					<div className="text-light text-xs uppercase tracking-wide">{formatDate(ts)}</div>
+				<div className="px-3 py-2 flex items-center justify-center">
+					<div className="text-light text-sm tracking-wide">{formatDate(ts)}</div>
 				</div>
 			)}
 		</div>
