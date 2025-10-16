@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/utils/dateFormatter"
 import { type HistoryItem } from "extension/shared/history-item"
-import { CheckCircle2, Clock, Loader2, Trash2, Calendar, Coins, Zap, Download } from "lucide-react"
+import { CheckCircle2, Clock, Loader2, Trash2, Calendar, Coins, Zap, Download, Pin } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
+import ConversationPreview from './conversation-preview'
 
 type HistoryItemProps = {
 	item: HistoryItem
 	onSelect: (id: string) => void
 	onDelete: (id: string) => void
 	onExport: (id: string) => void
+	onPin: (id: string) => void
 }
 
-const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) => {
+const HistoryItem = ({ item, onSelect, onDelete, onExport, onPin }: HistoryItemProps) => {
 	const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({})
 	const [isExpanded, setIsExpanded] = useState(false)
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -46,11 +48,15 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 			className="cursor-pointer text-foreground border-b border-border hover:bg-secondary hover:text-secondary-foreground transition-colors"
 			onClick={() => onSelect(item.id)}>
 			<div className="flex flex-col gap-1.5 py-2 px-4 relative group">
-				{/* 第一行：任务标题 + 右侧操作按钮 */}
+				{/* 第一行：任务标题 + 对话预览 + 右侧操作按钮 */}
 				<div className="flex justify-between items-center gap-3 leading-none">
-					<div
-						className="text-sm flex-1 truncate leading-tight"
-						dangerouslySetInnerHTML={{ __html: item.name ?? item.task }}></div>
+					<div className="flex items-center gap-2 flex-1 min-w-0">
+						<div
+							className="text-sm flex-1 truncate leading-tight"
+							dangerouslySetInnerHTML={{ __html: item.name ?? item.task }}></div>
+						{/* 对话预览组件 */}
+						<ConversationPreview taskId={item.id} />
+					</div>
 					
 					<div className="flex items-center gap-2 flex-shrink-0">
 						{/* 状态图标 - 可点击展开详情 */}
@@ -77,6 +83,27 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 							title="Export">
 							<Download size={20} className="text-foreground" />
 							<span className="sr-only">Export</span>
+						</Button>
+
+						{/* Pin 按钮 */}
+						<Button
+							variant="ghost"
+							size="sm"
+							title={item.isPinned ? 'Unpin' : 'Pin'}
+							className={`h-7 w-7 p-0 transition-opacity ${
+								item.isPinned
+									? 'opacity-100 text-primary'
+									: 'opacity-80 group-hover:opacity-100'
+							}`}
+							onClick={(e) => {
+								e.stopPropagation()
+								onPin(item.id)
+							}}>
+							<span className="sr-only">{item.isPinned ? 'Unpin' : 'Pin'}</span>
+							<Pin
+								size={20}
+								className={item.isPinned ? 'fill-current' : ''}
+							/>
 						</Button>
 
 						{/* 删除按钮 */}

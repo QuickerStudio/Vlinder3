@@ -227,6 +227,7 @@ export type WebviewMessage =
 				| "showTaskWithId"
 				| "deleteTaskWithId"
 				| "exportTaskWithId"
+				| "togglePinTask"
 				| "promptEditorLoaded"
 				| "didClickKoduSignOut"
 				| "fetchKoduCredits"

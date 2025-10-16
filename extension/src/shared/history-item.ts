@@ -16,6 +16,7 @@ export type HistoryItem = {
 	currentSubAgentId?: number
 	isCompleted?: boolean
 	manuallyMarkedCompletedAt?: number
+	isPinned?: boolean
 }
 
 export const isSatifiesHistoryItem = (item: any): item is HistoryItem => {

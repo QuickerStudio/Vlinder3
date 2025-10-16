@@ -461,6 +461,9 @@ export class WebviewManager {
 					case "exportTaskWithId":
 						await this.provider.getTaskManager().exportTaskWithId(message.text!)
 						break
+					case "togglePinTask":
+						await this.provider.getTaskManager().togglePinTask(message.text!)
+						break
 					case "didClickKoduSignOut":
 						await this.provider.getApiManager().signOutKodu()
 						await this.postBaseStateToWebview()

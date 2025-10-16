@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { CheckCircle2, Clock, ChevronDown, ChevronUp } from "lucide-react"
 import { formatDate } from "@/utils/dateFormatter"
 import ArrowTooltips from "@/components/ui/arrow-tooltips"
+import ConversationPreview from "@/components/history-view/conversation-preview"
 
 interface TaskCardProps {
 	id: string
@@ -87,8 +88,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
 			{/* 可折叠的时间信息 */}
 			{isExpanded && (
-				<div className="px-3 py-2 flex items-center justify-center">
-					<div className="text-light text-sm tracking-wide">{formatDate(ts)}</div>
+				<div className="px-3 py-2 flex items-center justify-between">
+					<div className="flex items-center justify-start">
+						<ConversationPreview taskId={id} tooltipDirection="up" />
+					</div>
+					<div className="flex items-center justify-end text-light text-sm tracking-wide">
+						{formatDate(ts)}
+					</div>
 				</div>
 			)}
 		</div>

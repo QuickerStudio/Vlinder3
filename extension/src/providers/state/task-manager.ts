@@ -149,6 +149,17 @@ export class TaskManager {
 		await this.deleteTaskFromState(id)
 	}
 
+	async togglePinTask(id: string) {
+		const taskHistory = (await this.provider.getStateManager().getState()).taskHistory || []
+		const updatedTaskHistory = taskHistory.map((task) => {
+			if (task.id === id) {
+				task.isPinned = !task.isPinned
+			}
+			return task
+		})
+		await this.provider.getGlobalStateManager().updateGlobalState("taskHistory", updatedTaskHistory)
+	}
+
 	async restoreTaskFromDisk() {
 		const currenTasks = await GlobalStateManager.getInstance().getGlobalState("taskHistory")
 		const taskDirPath = path.join(this.provider.getContext().globalStorageUri.fsPath, "tasks")

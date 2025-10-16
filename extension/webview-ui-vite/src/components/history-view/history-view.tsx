@@ -193,7 +193,35 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 			})
 		}
 
-		return results
+		// Separate pinned and unpinned items
+		const pinnedItems = results.filter((item) => item.isPinned)
+		const unpinnedItems = results.filter((item) => !item.isPinned)
+
+		// Sort each group by the same criteria
+		const sortByCurrentOption = (items: HistoryItemT[]) => {
+			return items.sort((a, b) => {
+				switch (sortOption) {
+					case "oldest":
+						return a.ts - b.ts
+					case "mostExpensive":
+						return (b.totalCost ?? 0) - (a.totalCost ?? 0)
+					case "mostTokens": {
+						const getTokenCount = (item: HistoryItemT) =>
+							(item.tokensIn ?? 0) +
+							(item.tokensOut ?? 0) +
+							(item.cacheWrites ?? 0) +
+							(item.cacheReads ?? 0)
+						return getTokenCount(b) - getTokenCount(a)
+					}
+					case "newest":
+					default:
+						return b.ts - a.ts
+				}
+			})
+		}
+
+		// Combine: pinned items first, then unpinned items
+		return [...sortByCurrentOption(pinnedItems), ...sortByCurrentOption(unpinnedItems)]
 	}, [presentableTasks, debouncedQuery, fuse, sortOption])
 
 	return (
@@ -290,15 +318,33 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 				<Virtuoso
 					className="h-full"
 					data={taskHistorySearchResults}
-					itemContent={(index, item) => (
-						<HistoryItem
-							key={item.id}
-							item={item}
-							onSelect={() => vscode.postMessage({ type: "showTaskWithId", text: item.id })}
-							onDelete={() => vscode.postMessage({ type: "deleteTaskWithId", text: item.id })}
-							onExport={() => vscode.postMessage({ type: "exportTaskWithId", text: item.id })}
-						/>
-					)}
+					itemContent={(index, item) => {
+						// Check if this is the first unpinned item (to show separator)
+						const prevItem = index > 0 ? taskHistorySearchResults[index - 1] : null
+						const showSeparator = prevItem?.isPinned && !item.isPinned
+
+						return (
+							<div key={item.id}>
+								{index === 0 && item.isPinned && (
+									<div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase bg-secondary/30">
+										Pinned
+									</div>
+								)}
+								{showSeparator && (
+									<div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase bg-secondary/30">
+										History
+									</div>
+								)}
+								<HistoryItem
+									item={item}
+									onSelect={() => vscode.postMessage({ type: "showTaskWithId", text: item.id })}
+									onDelete={() => vscode.postMessage({ type: "deleteTaskWithId", text: item.id })}
+									onExport={() => vscode.postMessage({ type: "exportTaskWithId", text: item.id })}
+									onPin={() => vscode.postMessage({ type: "togglePinTask", text: item.id })}
+								/>
+							</div>
+						)
+					}}
 				/>
 			</div>
 		</div>

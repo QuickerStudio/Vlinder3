@@ -236,6 +236,41 @@ const taskRouter = router({
 			return { success: false } as const
 		}
 	}),
+
+	getTaskPreview: procedure.input(z.object({ taskId: z.string() })).resolve(async (ctx, input) => {
+		try {
+			const taskDirPath = path.join(ctx.provider.context.globalStorageUri.fsPath, "tasks", input.taskId)
+			const claudeMessagesFilePath = path.join(taskDirPath, "claude_messages.json")
+
+			// 检查文件是否存在
+			const fileExists = await fs
+				.access(claudeMessagesFilePath)
+				.then(() => true)
+				.catch(() => false)
+
+			if (!fileExists) {
+				return { messages: ["No conversation history available"] }
+			}
+
+			// 读取对话历史
+			const data = await fs.readFile(claudeMessagesFilePath, "utf-8")
+			const claudeMessages = JSON.parse(data) as ClaudeMessage[]
+
+			// 只提取用户输入消息（type === 'say' && say === 'user_feedback'）
+			const messages: string[] = []
+			for (const msg of claudeMessages) {
+				if (msg.type === "say" && msg.say === "user_feedback" && msg.text) {
+					// 用户消息 - 截取前200个字符
+					messages.push(`User: ${msg.text.substring(0, 200)}${msg.text.length > 200 ? "..." : ""}`)
+				}
+			}
+
+			return { messages: messages.length > 0 ? messages : ["No user messages found"] }
+		} catch (error) {
+			console.error("Failed to load task preview:", error)
+			return { messages: ["Failed to load conversation preview"] }
+		}
+	}),
 })
 
 export default taskRouter
