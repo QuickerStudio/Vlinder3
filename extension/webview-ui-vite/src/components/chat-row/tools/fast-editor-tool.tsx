@@ -40,15 +40,23 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
   failureCount,
   approvalState,
   ts,
+  // Single file mode props (legacy support)
+  path,
+  mode,
+  content,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [expandedEdits, setExpandedEdits] = useState<Set<number>>(new Set());
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [isContentOpen, setIsContentOpen] = useState(false);
+
+  // Detect if this is single-file mode or batch-edit mode
+  const isSingleFileMode = !edits && path;
 
   // ✅ Defensive programming: handle validation errors where edits might not be an array
   const safeEdits = Array.isArray(edits) ? edits : [];
   const safeExplanation = explanation || '';
-  const hasInvalidData = !Array.isArray(edits);
+  const hasInvalidData = !isSingleFileMode && !Array.isArray(edits);
 
   // Toggle individual edit expansion
   const toggleEditExpansion = (index: number) => {
@@ -77,33 +85,25 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
     switch (approvalState) {
       case 'pending':
         return {
-          borderColor: 'border-yellow-500/50',
-          bgColor: 'bg-yellow-50/50 dark:bg-yellow-950/20',
-          iconColor: 'text-yellow-600 dark:text-yellow-400',
-          headerBg: 'bg-yellow-100/50 dark:bg-yellow-900/30',
+          borderColor: 'border-muted',
+          iconColor: 'text-muted-foreground',
         };
       case 'loading':
         return {
-          borderColor: 'border-blue-500/50',
-          bgColor: 'bg-blue-50/50 dark:bg-blue-950/20',
-          iconColor: 'text-blue-600 dark:text-blue-400',
-          headerBg: 'bg-blue-100/50 dark:bg-blue-900/30',
+          borderColor: 'border-info',
+          iconColor: 'text-info',
         };
       case 'error':
       case 'rejected':
         return {
-          borderColor: 'border-red-500/50',
-          bgColor: 'bg-red-50/50 dark:bg-red-950/20',
-          iconColor: 'text-red-600 dark:text-red-400',
-          headerBg: 'bg-red-100/50 dark:bg-red-900/30',
+          borderColor: 'border-destructive',
+          iconColor: 'text-destructive',
         };
       case 'approved':
       default:
         return {
-          borderColor: 'border-green-500/50',
-          bgColor: 'bg-green-50/50 dark:bg-green-950/20',
-          iconColor: 'text-green-600 dark:text-green-400',
-          headerBg: 'bg-green-100/50 dark:bg-green-900/30',
+          borderColor: 'border-success',
+          iconColor: 'text-success',
         };
     }
   };
@@ -112,6 +112,17 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
 
   // Get status message
   const getStatusMessage = () => {
+    if (isSingleFileMode) {
+      // Single file mode status
+      if (approvalState === 'pending') return 'Awaiting approval';
+      if (approvalState === 'loading') return `${getModeLabel()}...`;
+      if (approvalState === 'rejected') return 'Rejected by user';
+      if (approvalState === 'approved') return `File ${mode}d successfully`;
+      if (approvalState === 'error') return `Failed to ${mode} file`;
+      return getModeLabel();
+    }
+    
+    // Batch edit mode status
     if (hasInvalidData) {
       return 'Invalid data received (validation error)';
     } else if (approvalState === 'pending') {
@@ -133,51 +144,63 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
     }
   };
 
+  // Get mode icon for single file mode
+  const getModeIcon = () => {
+    if (!isSingleFileMode) return Files;
+    switch (mode) {
+      case 'create':
+        return Files;
+      case 'update':
+        return Files;
+      case 'delete':
+        return Files;
+      default:
+        return Files;
+    }
+  };
+
+  // Get mode label for single file mode
+  const getModeLabel = () => {
+    if (!isSingleFileMode) return 'Edit Files';
+    switch (mode) {
+      case 'create':
+        return 'Create File';
+      case 'update':
+        return 'Update File';
+      case 'delete':
+        return 'Delete File';
+      default:
+        return 'Fast Editor';
+    }
+  };
+
+  const Icon = getModeIcon();
+
   return (
     <div
       className={cn(
-        'my-3 rounded-lg border-2 overflow-hidden transition-all duration-200',
-        styles.borderColor,
-        styles.bgColor
+        'border-l-4 p-3 bg-card text-card-foreground rounded-sm transition-all duration-200',
+        styles.borderColor
       )}
     >
       {/* Header */}
       <div
         className={cn(
-          'flex items-center justify-between px-4 py-3 cursor-pointer select-none',
-          styles.headerBg
+          'flex items-center justify-between mb-2 cursor-pointer select-none'
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className='flex items-center space-x-3'>
-          <Files className={cn('h-5 w-5', styles.iconColor)} />
-          <div className='flex flex-col'>
-            <span className='font-semibold text-sm'>Edit Files</span>
-            <span className='text-xs text-muted-foreground'>
-              {getStatusMessage()}
-            </span>
-          </div>
+        <div className='flex items-center space-x-2'>
+          <Icon className={cn('h-5 w-5 mr-2', styles.iconColor)} />
+          <h3 className='text-sm font-semibold'>{isSingleFileMode ? getModeLabel() : 'Edit Files'}</h3>
         </div>
         <div className='flex items-center space-x-2'>
-          {results && (
-            <div className='flex items-center space-x-2'>
-              {successCount! > 0 && (
-                <Badge
-                  variant='outline'
-                  className='bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-300 dark:border-green-700'
-                >
-                  {successCount} succeeded
-                </Badge>
-              )}
-              {failureCount! > 0 && (
-                <Badge
-                  variant='outline'
-                  className='bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700'
-                >
-                  {failureCount} failed
-                </Badge>
-              )}
-            </div>
+          {approvalState === 'approved' && <CheckCircle2 className='h-5 w-5 text-success' />}
+          {(approvalState === 'error' || approvalState === 'rejected') && (
+            <XCircle className='h-5 w-5 text-destructive' />
+          )}
+          {approvalState === 'loading' && (
+            <div className='animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info'></div>
           )}
           <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
             {isExpanded ? (
@@ -191,12 +214,12 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
 
       {/* Content */}
       {isExpanded && (
-        <div className='px-4 py-3 space-y-3'>
+        <div className='text-sm space-y-3'>
           {/* Invalid Data Warning */}
           {hasInvalidData && (
-            <div className='flex items-start space-x-2 p-3 rounded-md bg-red-50/50 dark:bg-red-950/20 border border-red-300 dark:border-red-700'>
-              <AlertCircle className='h-4 w-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5' />
-              <div className='text-sm text-red-600 dark:text-red-400'>
+            <div className='flex items-start space-x-2 p-3 rounded-md bg-destructive/10 border border-destructive'>
+              <AlertCircle className='h-4 w-4 text-destructive shrink-0 mt-0.5' />
+              <div className='text-sm text-destructive'>
                 <p className='font-semibold'>Validation Error</p>
                 <p className='text-xs mt-1'>
                   The edits field is not a valid array. This usually happens when
@@ -206,35 +229,103 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
             </div>
           )}
 
-          {/* Explanation */}
-          {safeExplanation && !hasInvalidData && (
-            <div className='rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-3'>
-              <div className='flex items-start space-x-2'>
-                <AlertCircle className='h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5' />
-                <div className='flex-1'>
-                  <p className='text-xs font-semibold text-blue-900 dark:text-blue-100 mb-1'>
-                    Explanation
-                  </p>
-                  <p className='text-sm text-blue-800 dark:text-blue-200 leading-relaxed'>
-                    {safeExplanation}
-                  </p>
-                </div>
+          {/* Single File Mode Content */}
+          {isSingleFileMode && (
+            <>
+              <p className='text-xs text-muted-foreground'>
+                {getStatusMessage()}
+              </p>
+              
+              <div className='bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto'>
+                <span className='text-muted-foreground'>File:</span>{' '}
+                <span className='text-foreground'>{path}</span>
               </div>
-            </div>
+
+              {mode && (
+                <Badge
+                  variant={mode === 'create' ? 'default' : mode === 'delete' ? 'destructive' : 'secondary'}
+                  className='text-xs'
+                >
+                  {mode.toUpperCase()}
+                </Badge>
+              )}
+
+              {content && mode !== 'delete' && (
+                <div className='space-y-2'>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={() => setIsContentOpen(!isContentOpen)}
+                    className='flex items-center w-full justify-between p-2'
+                  >
+                    <span className='text-xs'>View Content</span>
+                    {isContentOpen ? <ChevronUp className='h-4 w-4' /> : <ChevronDown className='h-4 w-4' />}
+                  </Button>
+                  {isContentOpen && (
+                    <div className='bg-muted/50 p-2 rounded-md max-h-[200px] overflow-auto'>
+                      <pre className='whitespace-pre-wrap font-mono text-xs'>{content}</pre>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Batch Edit Mode Content */}
+          {!isSingleFileMode && (
+            <>
+              {/* Status Message */}
+              <p className='text-xs text-muted-foreground'>
+                {getStatusMessage()}
+              </p>
+
+              {/* Success/Failure Badges */}
+              {results && (
+                <div className='flex items-center space-x-2'>
+                  {successCount! > 0 && (
+                    <Badge variant='outline' className='text-success border-success'>
+                      {successCount} succeeded
+                    </Badge>
+                  )}
+                  {failureCount! > 0 && (
+                    <Badge variant='outline' className='text-destructive border-destructive'>
+                      {failureCount} failed
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Explanation */}
+              {safeExplanation && !hasInvalidData && (
+                <div className='rounded-md bg-info/10 border border-info p-3'>
+                  <div className='flex items-start space-x-2'>
+                    <AlertCircle className='h-4 w-4 text-info shrink-0 mt-0.5' />
+                    <div className='flex-1'>
+                      <p className='text-xs font-semibold mb-1'>
+                        Explanation
+                      </p>
+                      <p className='text-sm leading-relaxed'>
+                        {safeExplanation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Loading State */}
           {approvalState === 'loading' && (
             <div className='flex items-center space-x-2'>
-              <div className='animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-600'></div>
+              <div className='animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-info'></div>
               <span className='text-sm text-muted-foreground'>
                 Applying edits...
               </span>
             </div>
           )}
 
-          {/* Edits List */}
-          {!hasInvalidData && (
+          {/* Edits List - only for batch mode */}
+          {!isSingleFileMode && !hasInvalidData && (
             <div className='space-y-3'>
               {safeEdits.map((edit, index) => {
               const result = results?.find((r) => r.path === edit.path);
@@ -248,23 +339,18 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
                 <div
                   key={index}
                   className={cn(
-                    'rounded-lg border-2 overflow-hidden transition-all duration-200',
+                    'rounded-md border overflow-hidden transition-all duration-200',
                     hasResult
                       ? isSuccess
-                        ? 'border-green-400 dark:border-green-600 bg-green-50/30 dark:bg-green-950/10'
-                        : 'border-red-400 dark:border-red-600 bg-red-50/30 dark:bg-red-950/10'
-                      : 'border-border/50 bg-background/30'
+                        ? 'border-success bg-success/10'
+                        : 'border-destructive bg-destructive/10'
+                      : 'border-border bg-muted/30'
                   )}
                 >
                   {/* Edit Item Header */}
                   <div
                     className={cn(
-                      'flex items-center justify-between px-3 py-2 cursor-pointer select-none',
-                      hasResult
-                        ? isSuccess
-                          ? 'bg-green-100/50 dark:bg-green-900/20'
-                          : 'bg-red-100/50 dark:bg-red-900/20'
-                        : 'bg-muted/30'
+                      'flex items-center justify-between px-3 py-2 cursor-pointer select-none bg-muted/50'
                     )}
                     onClick={() => toggleEditExpansion(index)}
                   >
@@ -272,9 +358,9 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
                       {hasResult && (
                         <>
                           {isSuccess ? (
-                            <CheckCircle2 className='h-4 w-4 text-green-600 dark:text-green-400 shrink-0' />
+                            <CheckCircle2 className='h-4 w-4 text-success shrink-0' />
                           ) : (
-                            <XCircle className='h-4 w-4 text-red-600 dark:text-red-400 shrink-0' />
+                            <XCircle className='h-4 w-4 text-destructive shrink-0' />
                           )}
                         </>
                       )}
@@ -327,8 +413,8 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
                             )}
                           </Button>
                         </div>
-                        <pre className='bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-md p-2.5 text-xs overflow-x-auto'>
-                          <code className='text-red-700 dark:text-red-300 whitespace-pre-wrap break-words'>
+                        <pre className='bg-destructive/10 border border-destructive rounded-md p-2.5 text-xs overflow-x-auto'>
+                          <code className='text-destructive whitespace-pre-wrap break-words'>
                             {shouldTruncateOld && !isEditExpanded
                               ? `${edit.oldString.substring(0, 150)}...`
                               : edit.oldString}
@@ -364,8 +450,8 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
                             )}
                           </Button>
                         </div>
-                        <pre className='bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md p-2.5 text-xs overflow-x-auto'>
-                          <code className='text-green-700 dark:text-green-300 whitespace-pre-wrap break-words'>
+                        <pre className='bg-success/10 border border-success rounded-md p-2.5 text-xs overflow-x-auto'>
+                          <code className='text-success whitespace-pre-wrap break-words'>
                             {shouldTruncateNew && !isEditExpanded
                               ? `${edit.newString.substring(0, 150)}...`
                               : edit.newString}
@@ -375,9 +461,9 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
 
                       {/* Error Message */}
                       {result && !result.success && result.error && (
-                        <div className='flex items-start space-x-2 p-2.5 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800'>
-                          <AlertCircle className='h-4 w-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5' />
-                          <div className='text-xs text-red-700 dark:text-red-300'>
+                        <div className='flex items-start space-x-2 p-2.5 rounded-md bg-destructive/10 border border-destructive'>
+                          <AlertCircle className='h-4 w-4 text-destructive shrink-0 mt-0.5' />
+                          <div className='text-xs text-destructive'>
                             <p className='font-semibold mb-1'>Error</p>
                             <p>{result.error}</p>
                           </div>
@@ -393,16 +479,11 @@ export const FastEditorToolBlock: React.FC<FastEditorToolProps> = ({
 
           {/* Rejected State */}
           {approvalState === 'rejected' && (
-            <div className='text-sm text-red-600 dark:text-red-400 flex items-center space-x-2'>
+            <div className='text-sm text-destructive flex items-center space-x-2'>
               <XCircle className='h-4 w-4' />
               <span>User rejected the file edits</span>
             </div>
           )}
-
-          {/* Timestamp */}
-          <div className='text-xs text-muted-foreground pt-2 border-t border-border/30'>
-            {new Date(ts).toLocaleTimeString()}
-          </div>
         </div>
       )}
     </div>

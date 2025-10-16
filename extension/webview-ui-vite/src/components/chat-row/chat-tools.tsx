@@ -29,6 +29,17 @@ import {
 	FolderInput,
 	Timer,
 	X,
+	Filter,
+	FileCode,
+	BarChart3,
+	TrendingUp,
+	Activity,
+	Clock,
+	Trash2,
+	Edit3,
+	FileEdit,
+	Copy,
+	Check,
 } from "lucide-react"
 import React, { useMemo, useState } from "react"
 import {
@@ -62,20 +73,11 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
+import { Badge } from "../ui/badge"
 import { EnhancedWebSearchBlock } from "./tools/web-search-tool"
 import { FileEditorTool } from "./tools/file-editor-tool"
 import { ThinkToolBlock } from "./tools/think-tool"
 import { SpawnAgentBlock, ExitAgentBlock } from "./tools/agent-tools"
-import { PatternSearchToolBlock } from "./tools/pattern-search-tool"
-import { ReadProgressToolBlock } from "./tools/read-progress-tool"
-import { GrepSearchToolBlock } from "./tools/grep-search-tool"
-import {
-	RenameToolBlock,
-	RemoveToolBlock,
-	ReplaceStringToolBlock,
-	MultiReplaceStringToolBlock,
-	InsertEditToolBlock,
-} from "./tools/file-operations-tool"
 import { FastEditorToolBlock } from "./tools/fast-editor-tool"
 import MarkdownRenderer from "./markdown-renderer"
 import { CodeBlock } from "./code-block"
@@ -1158,6 +1160,848 @@ export const TimerToolBlock: React.FC<TimerTool & ToolAddons> = ({
 					</div>
 				</CollapsibleContent>
 			</Collapsible>
+		</div>
+	)
+}
+
+// ============================================================================
+// Grep Search Tool
+// ============================================================================
+export const GrepSearchToolBlock: React.FC<GrepSearchTool & ToolAddons> = ({
+	query,
+	isRegexp,
+	includePattern,
+	maxResults,
+	content,
+	approvalState,
+	ts,
+	userFeedback,
+	isSubMsg,
+}) => {
+	const [isResultsOpen, setIsResultsOpen] = useState(false)
+
+	const parseSearchResults = (text: string) => {
+		const stats: Record<string, string> = {}
+		const matches: Array<{ file: string; line: string; preview: string }> = []
+
+		const totalMatchesMatch = text.match(/<total_matches>(\d+)<\/total_matches>/)
+		const filesMatchedMatch = text.match(/<files_matched>(\d+)<\/files_matched>/)
+		const maxResultsMatch = text.match(/<max_results>(\d+)<\/max_results>/)
+
+		if (totalMatchesMatch) stats.totalMatches = totalMatchesMatch[1]
+		if (filesMatchedMatch) stats.filesMatched = filesMatchedMatch[1]
+		if (maxResultsMatch) stats.maxResults = maxResultsMatch[1]
+
+		const fileMatches = text.match(/<file path="([^"]+)">(.*?)<\/file>/gs)
+		if (fileMatches) {
+			fileMatches.forEach((fileMatch) => {
+				const pathMatch = fileMatch.match(/path="([^"]+)"/)
+				const lineMatch = fileMatch.match(/<line>(\d+)<\/line>/)
+				const previewMatch = fileMatch.match(/<preview>(.*?)<\/preview>/s)
+
+				if (pathMatch && lineMatch && previewMatch) {
+					matches.push({
+						file: pathMatch[1],
+						line: lineMatch[1],
+						preview: previewMatch[1]
+							.replace(/&lt;/g, '<')
+							.replace(/&gt;/g, '>')
+							.replace(/&quot;/g, '"')
+							.replace(/&apos;/g, "'")
+							.replace(/&amp;/g, '&'),
+					})
+				}
+			})
+		}
+
+		return { stats, matches }
+	}
+
+	const { stats, matches } = content ? parseSearchResults(content) : { stats: {}, matches: [] }
+	const hasMatches = stats.totalMatches && parseInt(stats.totalMatches) > 0
+
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <span className="text-destructive">✗</span>
+		}
+		if (approvalState === 'approved') {
+			return <span className="text-success">✓</span>
+		}
+		return null
+	}
+
+	const groupedMatches = matches.reduce((acc, match) => {
+		if (!acc[match.file]) {
+			acc[match.file] = []
+		}
+		acc[match.file].push(match)
+		return acc
+	}, {} as Record<string, typeof matches>)
+
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Search className="w-5 h-5 mr-2 text-info" />
+					<h3 className="text-sm font-semibold">Grep Search</h3>
+				</div>
+				{getStatusIcon()}
+			</div>
+
+			<div className="text-sm space-y-2">
+				<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">Query:</span> <span className="text-foreground">{query}</span>
+				</div>
+
+				<div className="flex gap-2 flex-wrap">
+					{isRegexp !== undefined && (
+						<Badge variant="secondary" className="text-xs">
+							{isRegexp ? 'Regex' : 'Literal'}
+						</Badge>
+					)}
+					{includePattern && (
+						<Badge variant="outline" className="text-xs">
+							<Filter className="w-3 h-3 mr-1" />
+							{includePattern}
+						</Badge>
+					)}
+					{maxResults && (
+						<Badge variant="outline" className="text-xs">
+							Max: {maxResults}
+						</Badge>
+					)}
+				</div>
+
+				{hasMatches && (
+					<div className="flex gap-2 flex-wrap mt-2">
+						<Badge variant="default" className="text-xs">
+							<FileCode className="w-3 h-3 mr-1" />
+							{stats.totalMatches} matches
+						</Badge>
+						<Badge variant="secondary" className="text-xs">
+							{stats.filesMatched} files
+						</Badge>
+					</div>
+				)}
+
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Searching...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+
+				{hasMatches && Object.keys(groupedMatches).length > 0 && (
+					<Collapsible open={isResultsOpen} onOpenChange={setIsResultsOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Search Results ({Object.keys(groupedMatches).length} files)</span>
+								{isResultsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<ScrollArea className="h-[400px] w-full rounded-md border">
+								<div className="p-3 space-y-4">
+									{Object.entries(groupedMatches).map(([file, fileMatches]) => (
+										<div key={file} className="border-b pb-3 last:border-b-0">
+											<div className="bg-muted px-2 py-1 rounded font-mono text-xs mb-2">
+												<span className="text-muted-foreground">📄</span>{' '}
+												<span className="text-foreground font-semibold">{file}</span>
+												<span className="text-muted-foreground ml-2">
+													({fileMatches.length} match{fileMatches.length !== 1 ? 'es' : ''})
+												</span>
+											</div>
+											<div className="space-y-2 ml-2">
+												{fileMatches.map((match, idx) => (
+													<div key={idx} className="bg-secondary/20 p-2 rounded text-xs">
+														<div className="text-muted-foreground mb-1 font-semibold">Line {match.line}:</div>
+														<pre className="whitespace-pre-wrap text-pretty font-mono text-[10px]">{match.preview}</pre>
+													</div>
+												))}
+											</div>
+										</div>
+									))}
+								</div>
+								<ScrollBar orientation="vertical" />
+							</ScrollArea>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+
+				{content && !hasMatches && approvalState === 'approved' && (
+					<div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground">
+						No matches found for the specified query.
+					</div>
+				)}
+
+				{approvalState === 'approved' && hasMatches && (
+					<p className="text-xs mt-2 text-success">
+						Found {stats.totalMatches} matches in {stats.filesMatched} files.
+					</p>
+				)}
+
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">Search failed. Please check the query syntax and try again.</p>
+				)}
+
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+// ============================================================================
+// Pattern Search Tool
+// ============================================================================
+export const PatternSearchToolBlock: React.FC<PatternSearchTool & ToolAddons> = ({
+	searchPattern,
+	files,
+	caseSensitive,
+	contextLinesBefore,
+	contextLinesAfter,
+	content,
+	approvalState,
+	ts,
+	userFeedback,
+	isSubMsg,
+}) => {
+	const [isAnalysisOpen, setIsAnalysisOpen] = useState(false)
+	const [isMatchesOpen, setIsMatchesOpen] = useState(false)
+
+	const parseStatistics = (text: string) => {
+		const stats: Record<string, string> = {}
+		const lines = text.split('\n')
+
+		for (const line of lines) {
+			if (line.includes('Total Matches:')) {
+				stats.totalMatches = line.split(':')[1]?.trim() || '0'
+			} else if (line.includes('Files Containing Pattern:')) {
+				stats.filesMatched = line.split(':')[1]?.trim() || '0'
+			} else if (line.includes('Average Matches per File:')) {
+				stats.avgPerFile = line.split(':')[1]?.trim() || '0'
+			} else if (line.includes('Search Time:')) {
+				stats.searchTime = line.split(':')[1]?.trim() || '0ms'
+			}
+		}
+
+		return stats
+	}
+
+	const stats = content ? parseStatistics(content) : {}
+	const hasMatches = stats.totalMatches && parseInt(stats.totalMatches) > 0
+
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <span className="text-destructive">✗</span>
+		}
+		if (approvalState === 'approved') {
+			return <span className="text-success">✓</span>
+		}
+		return null
+	}
+
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Search className="w-5 h-5 mr-2 text-accent" />
+					<h3 className="text-sm font-semibold">Pattern Search</h3>
+				</div>
+				{getStatusIcon()}
+			</div>
+
+			<div className="text-sm space-y-2">
+				<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">Pattern:</span> <span className="text-foreground">{searchPattern}</span>
+				</div>
+
+				{files && files.length > 0 && (
+					<div className="text-xs">
+						<span className="font-semibold">Files searched:</span> {files.length} file(s)
+					</div>
+				)}
+
+				{caseSensitive !== undefined && (
+					<div className="text-xs">
+						<span className="font-semibold">Case sensitive:</span> {caseSensitive ? 'Yes' : 'No'}
+					</div>
+				)}
+
+				{hasMatches && (
+					<div className="flex gap-2 flex-wrap mt-2">
+						<Badge variant="secondary" className="text-xs">
+							<FileCode className="w-3 h-3 mr-1" />
+							{stats.totalMatches} matches
+						</Badge>
+						<Badge variant="secondary" className="text-xs">
+							<BarChart3 className="w-3 h-3 mr-1" />
+							{stats.filesMatched} files
+						</Badge>
+						{stats.avgPerFile && (
+							<Badge variant="secondary" className="text-xs">
+								<TrendingUp className="w-3 h-3 mr-1" />
+								{stats.avgPerFile} avg/file
+							</Badge>
+						)}
+					</div>
+				)}
+
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Analyzing pattern...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+
+				{content && hasMatches && (
+					<>
+						<Collapsible open={isAnalysisOpen} onOpenChange={setIsAnalysisOpen} className="mt-2">
+							<CollapsibleTrigger asChild>
+								<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+									<span>View Pattern Analysis</span>
+									{isAnalysisOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+								</Button>
+							</CollapsibleTrigger>
+							<CollapsibleContent className="mt-2">
+								<ScrollArea className="h-[300px] w-full rounded-md border">
+									<div className="bg-secondary/20 p-3 rounded-md text-sm">
+										<pre className="whitespace-pre-wrap text-pretty font-mono text-xs">
+											{content.split('DETAILED PATTERN MATCHES')[0]}
+										</pre>
+									</div>
+									<ScrollBar orientation="vertical" />
+									<ScrollBar orientation="horizontal" />
+								</ScrollArea>
+							</CollapsibleContent>
+						</Collapsible>
+
+						<Collapsible open={isMatchesOpen} onOpenChange={setIsMatchesOpen} className="mt-2">
+							<CollapsibleTrigger asChild>
+								<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+									<span>View Detailed Matches</span>
+									{isMatchesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+								</Button>
+							</CollapsibleTrigger>
+							<CollapsibleContent className="mt-2">
+								<ScrollArea className="h-[400px] w-full rounded-md border">
+									<div className="bg-secondary/20 p-3 rounded-md text-sm">
+										<pre className="whitespace-pre-wrap text-pretty font-mono text-xs">
+											{content.includes('DETAILED PATTERN MATCHES')
+												? content.split('DETAILED PATTERN MATCHES')[1]
+												: content}
+										</pre>
+									</div>
+									<ScrollBar orientation="vertical" />
+									<ScrollBar orientation="horizontal" />
+								</ScrollArea>
+							</CollapsibleContent>
+						</Collapsible>
+					</>
+				)}
+
+				{content && !hasMatches && (
+					<div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground">
+						No matches found for the specified pattern.
+					</div>
+				)}
+
+				{approvalState === 'approved' && hasMatches && (
+					<p className="text-xs mt-2 text-success">
+						Pattern search completed successfully. Found {stats.totalMatches} matches in {stats.filesMatched} files.
+					</p>
+				)}
+
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">
+						Pattern search failed. Please check the pattern syntax and try again.
+					</p>
+				)}
+
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+// ============================================================================
+// File Operations Tools
+// ============================================================================
+export const RenameToolBlock: React.FC<RenameTool & ToolAddons> = ({
+	path, new_name, type, overwrite, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const getIcon = () => {
+		if (type === 'directory' || (type === 'auto' && !path.includes('.'))) return FolderInput
+		return FileEdit
+	}
+	const Icon = getIcon()
+	const operationType = type === 'directory' ? 'Directory' : type === 'file' ? 'File' : 'Item'
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Icon className="w-5 h-5 mr-2 text-primary" />
+					<h3 className="text-sm font-semibold">Rename {operationType}</h3>
+				</div>
+				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
+				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+			</div>
+			<div className="space-y-2 text-xs">
+				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">From:</span> <span className="text-foreground">{path}</span>
+				</div>
+				<div className="flex items-center justify-center"><ArrowRight className="h-4 w-4 text-muted-foreground" /></div>
+				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">To:</span> <span className="text-foreground">{new_name}</span>
+				</div>
+				{overwrite && <Badge variant="destructive" className="text-xs">Overwrite enabled</Badge>}
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Renaming {operationType.toLowerCase()}...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">{operationType} renamed successfully to {new_name}</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to rename {operationType.toLowerCase()}. Please check the path and try again.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+export const RemoveToolBlock: React.FC<RemoveTool & ToolAddons> = ({
+	path, type, recursive, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const getIcon = () => {
+		if (type === 'directory' || (type === 'auto' && !path.includes('.'))) return FolderInput
+		return FileText
+	}
+	const Icon = getIcon()
+	const operationType = type === 'directory' ? 'Directory' : type === 'file' ? 'File' : 'Item'
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Trash2 className="w-5 h-5 mr-2 text-destructive" />
+					<h3 className="text-sm font-semibold">Remove {operationType}</h3>
+				</div>
+				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
+				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+			</div>
+			<div className="space-y-2 text-xs">
+				<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-destructive-foreground font-semibold">Removing:</span> <span className="text-foreground">{path}</span>
+				</div>
+				{recursive && <Badge variant="destructive" className="text-xs">Recursive deletion</Badge>}
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Removing {operationType.toLowerCase()}...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-destructive"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">{operationType} removed successfully</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to remove {operationType.toLowerCase()}. Please check the path and permissions.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = ({
+	path, old_string, new_string, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Edit3 className="w-5 h-5 mr-2 text-accent" />
+					<h3 className="text-sm font-semibold">Replace String</h3>
+				</div>
+				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
+				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+			</div>
+			<div className="space-y-2 text-xs">
+				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+				</div>
+				<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+					<CollapsibleTrigger asChild>
+						<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+							<span>View Replacement Details</span>
+							{isDetailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+						</Button>
+					</CollapsibleTrigger>
+					<CollapsibleContent className="mt-2 space-y-2">
+						<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+							<div className="text-destructive font-semibold mb-1">- Old:</div>
+							<pre className="whitespace-pre-wrap break-all">{old_string}</pre>
+						</div>
+						<div className="flex items-center justify-center"><ArrowRight className="h-4 w-4 text-muted-foreground" /></div>
+						<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+							<div className="text-success font-semibold mb-1">+ New:</div>
+							<pre className="whitespace-pre-wrap break-all">{new_string}</pre>
+						</div>
+					</CollapsibleContent>
+				</Collapsible>
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Replacing string...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">String replaced successfully</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to replace string. Please check if the old string exists in the file.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & ToolAddons> = ({
+	path, replacements, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<RefreshCw className="w-5 h-5 mr-2 text-accent" />
+					<h3 className="text-sm font-semibold">Multi-Replace String</h3>
+				</div>
+				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
+				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+			</div>
+			<div className="space-y-2 text-xs">
+				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+				</div>
+				<Badge variant="secondary" className="text-xs">{replacements?.length || 0} replacements</Badge>
+				<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+					<CollapsibleTrigger asChild>
+						<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+							<span>View All Replacements</span>
+							{isDetailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+						</Button>
+					</CollapsibleTrigger>
+					<CollapsibleContent className="mt-2">
+						<ScrollArea className="h-[200px] w-full rounded-md border">
+							<div className="p-2 space-y-3">
+								{replacements?.map((rep, idx) => (
+									<div key={idx} className="border-b pb-2 last:border-b-0">
+										<div className="text-xs text-muted-foreground mb-1">Replacement #{idx + 1}</div>
+										<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs mb-1">
+											<div className="text-destructive font-semibold">- Old:</div>
+											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.oldString}</pre>
+										</div>
+										<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs">
+											<div className="text-success font-semibold">+ New:</div>
+											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.newString}</pre>
+										</div>
+									</div>
+								))}
+							</div>
+							<ScrollBar orientation="vertical" />
+						</ScrollArea>
+					</CollapsibleContent>
+				</Collapsible>
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Performing {replacements?.length || 0} replacements...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">Successfully performed {replacements?.length || 0} replacements</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to perform replacements. Some strings may not have been found.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+export const InsertEditToolBlock: React.FC<InsertEditTool & ToolAddons> = ({
+	path, insert_line, content, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isContentOpen, setIsContentOpen] = useState(false)
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<FileEdit className="w-5 h-5 mr-2 text-primary" />
+					<h3 className="text-sm font-semibold">Insert Edit</h3>
+				</div>
+				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
+				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+			</div>
+			<div className="space-y-2 text-xs">
+				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+				</div>
+				<div className="text-xs"><span className="font-semibold">Insert at line:</span> {insert_line}</div>
+				{content && (
+					<Collapsible open={isContentOpen} onOpenChange={setIsContentOpen}>
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Content to Insert</span>
+								{isContentOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<ScrollArea className="h-[200px] w-full rounded-md border">
+								<div className="bg-success/10 border border-success p-2 rounded-md">
+									<pre className="whitespace-pre-wrap font-mono text-[10px]">{content}</pre>
+								</div>
+								<ScrollBar orientation="vertical" /><ScrollBar orientation="horizontal" />
+							</ScrollArea>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Inserting content...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">Content inserted successfully at line {insert_line}</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to insert content. Please check the line number and file.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+// ============================================================================
+// Read Progress Tool
+// ============================================================================
+export const ReadProgressToolBlock: React.FC<ReadProgressTool & ToolAddons> = ({
+	terminalId, terminalName, includeFullOutput, filterKeywords, smartSummary, waitForCompletion,
+	content, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isOutputOpen, setIsOutputOpen] = useState(false)
+	const [isSummaryOpen, setIsSummaryOpen] = useState(true)
+
+	const parseTerminalInfo = (text: string) => {
+		const info: Record<string, string> = {}
+		const nameMatch = text.match(/<name>(.*?)<\/name>/)
+		const terminalIdMatch = text.match(/<terminal_id>(.*?)<\/terminal_id>/)
+		const processIdMatch = text.match(/<process_id>(.*?)<\/process_id>/)
+		const busyMatch = text.match(/<busy>(.*?)<\/busy>/)
+		const hotMatch = text.match(/<hot>(.*?)<\/hot>/)
+		const completedMatch = text.match(/<completed>(.*?)<\/completed>/)
+		const lastCommandMatch = text.match(/<last_command>(.*?)<\/last_command>/)
+		const stateMatch = text.match(/state="([^"]*?)"/)
+		const progressMatch = text.match(/progress="([^"]*?)"/)
+		const activityMatch = text.match(/<activity>(.*?)<\/activity>/)
+		const findingsMatch = text.match(/<findings>(.*?)<\/findings>/)
+		if (nameMatch) info.name = nameMatch[1]
+		if (terminalIdMatch) info.terminalId = terminalIdMatch[1]
+		if (processIdMatch) info.processId = processIdMatch[1]
+		if (busyMatch) info.busy = busyMatch[1]
+		if (hotMatch) info.hot = hotMatch[1]
+		if (completedMatch) info.completed = completedMatch[1]
+		if (lastCommandMatch) info.lastCommand = lastCommandMatch[1]
+		if (stateMatch) info.state = stateMatch[1]
+		if (progressMatch) info.progress = progressMatch[1]
+		if (activityMatch) info.activity = activityMatch[1]
+		if (findingsMatch) info.findings = findingsMatch[1]
+		return info
+	}
+
+	const extractOutput = (text: string) => {
+		const outputMatch = text.match(/<output[^>]*>(.*?)<\/output>/s)
+		const filteredMatch = text.match(/<filtered[^>]*>(.*?)<\/filtered>/s)
+		if (filteredMatch && filteredMatch[1]) return filteredMatch[1].trim()
+		if (outputMatch && outputMatch[1]) return outputMatch[1].trim()
+		return ''
+	}
+
+	const info = content ? parseTerminalInfo(content) : {}
+	const output = content ? extractOutput(content) : ''
+	const isBusy = info.busy === 'true'
+	const isHot = info.hot === 'true'
+	const isCompleted = info.completed === 'true'
+
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') return <Activity className="w-5 h-5 text-info animate-pulse" />
+		if (isCompleted) return <CheckCircle className="w-5 h-5 text-success" />
+		if (isBusy && isHot) return <Activity className="w-5 h-5 text-info animate-pulse" />
+		if (isBusy && !isHot) return <Clock className="w-5 h-5 text-warning" />
+		if (approvalState === 'error') return <AlertCircle className="w-5 h-5 text-destructive" />
+		return <Terminal className="w-5 h-5 text-muted-foreground" />
+	}
+
+	const getStateDescription = () => {
+		if (isCompleted) return 'Completed'
+		if (isBusy && isHot) return 'Running (Active)'
+		if (isBusy && !isHot) return 'Running (Idle)'
+		return 'Monitoring'
+	}
+
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					{getStatusIcon()}
+					<h3 className="text-sm font-semibold ml-2">Read Progress</h3>
+				</div>
+			</div>
+			<div className="text-sm space-y-2">
+				{info.name && (
+					<div className="flex items-center gap-2">
+						<Badge variant="outline" className="text-xs"><Terminal className="w-3 h-3 mr-1" />{info.name}</Badge>
+						{info.terminalId && <span className="text-xs text-muted-foreground">ID: {info.terminalId}</span>}
+						{info.processId && info.processId !== 'unknown' && <span className="text-xs text-muted-foreground">PID: {info.processId}</span>}
+					</div>
+				)}
+				<div className="flex items-center gap-2">
+					<Badge variant={isCompleted ? 'default' : isBusy ? 'secondary' : 'outline'} className="text-xs">{getStateDescription()}</Badge>
+					{info.progress && parseInt(info.progress) > 0 && <Badge variant="secondary" className="text-xs">{info.progress}%</Badge>}
+				</div>
+				{info.lastCommand && info.lastCommand !== 'unknown' && (
+					<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+						<span className="text-muted-foreground">$</span> <span className="text-foreground">{info.lastCommand}</span>
+					</div>
+				)}
+				{filterKeywords && filterKeywords.length > 0 && (
+					<div className="text-xs">
+						<span className="font-semibold">Filtering for:</span>{' '}
+						{filterKeywords.map((kw, idx) => <Badge key={idx} variant="secondary" className="text-xs ml-1">{kw}</Badge>)}
+					</div>
+				)}
+				{info.activity && (
+					<Collapsible open={isSummaryOpen} onOpenChange={setIsSummaryOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>Activity Summary</span>
+								{isSummaryOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<div className="bg-secondary/20 p-3 rounded-md text-xs space-y-2">
+								{info.activity && <div><span className="font-semibold">Activity:</span> {info.activity}</div>}
+								{info.findings && <div><span className="font-semibold">Findings:</span> {info.findings}</div>}
+								{info.state && <div><span className="font-semibold">State:</span> {info.state}</div>}
+							</div>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				{output && (
+					<Collapsible open={isOutputOpen} onOpenChange={setIsOutputOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Terminal Output</span>
+								{isOutputOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<ScrollArea className="h-[300px] w-full rounded-md border">
+								<div className="bg-secondary/20 p-3 rounded-md text-sm">
+									<pre className="whitespace-pre-wrap text-pretty font-mono text-xs">{output}</pre>
+								</div>
+								<ScrollBar orientation="vertical" /><ScrollBar orientation="horizontal" />
+							</ScrollArea>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">{waitForCompletion ? 'Waiting for completion...' : 'Reading terminal output...'}</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				{approvalState === 'approved' && !isCompleted && <p className="text-xs mt-2 text-info">Terminal monitoring active.</p>}
+				{approvalState === 'approved' && isCompleted && <p className="text-xs mt-2 text-success">Process completed successfully.</p>}
+				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to read terminal progress. Please check terminal status.</p>}
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }
