@@ -25,7 +25,7 @@ import dedent from 'dedent';
  */
 export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 	async execute(): Promise<ToolResponseV2> {
-		const { input } = this.params;
+		const { input, ask, updateAsk } = this.params;
 		const { thought, conclusion, next_action } = input;
 
 		// Validate required field
@@ -43,6 +43,26 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 			);
 		}
 
+		// Show thinking process to user (auto-approve since this is a read-only tool)
+		const { response } = await ask(
+			'tool',
+			{
+				tool: {
+					tool: 'think',
+					thought,
+					conclusion,
+					next_action,
+					approvalState: 'loading',
+					ts: this.ts,
+					isSubMsg: this.params.isSubMsg,
+				},
+			},
+			this.ts
+		);
+
+		// Store the thinking for context (this could be used for debugging or analysis)
+		this.logThinkingProcess(thought, conclusion, next_action);
+
 		// Build the thinking record
 		const thinkingRecord = this.buildThinkingRecord(
 			thought,
@@ -50,8 +70,22 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 			next_action
 		);
 
-		// Store the thinking for context (this could be used for debugging or analysis)
-		this.logThinkingProcess(thought, conclusion, next_action);
+		// Update to approved state after thinking is complete
+		await updateAsk(
+			'tool',
+			{
+				tool: {
+					tool: 'think',
+					thought,
+					conclusion,
+					next_action,
+					approvalState: 'approved',
+					ts: this.ts,
+					isSubMsg: this.params.isSubMsg,
+				},
+			},
+			this.ts
+		);
 
 		// Return a success response
 		// The key insight: the detailed thinking stays in the tool execution,

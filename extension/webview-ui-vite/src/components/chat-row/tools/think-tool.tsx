@@ -215,4 +215,3 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
   );
 };
 
-

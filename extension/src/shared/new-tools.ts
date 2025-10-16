@@ -430,6 +430,7 @@ export const readOnlyTools: ChatTool["tool"][] = [
 	"web_search",
 	"url_screenshot",
 	"add_interested_file",
+	"think",
 ] as const
 
 export const mustRequestApprovalTypes: (ChatTool["tool"] | string)[] = [
