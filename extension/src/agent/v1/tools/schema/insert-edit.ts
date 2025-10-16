@@ -11,14 +11,14 @@ const schema = z.object({
 	filePath: z
 		.string()
 		.describe('Path to the file to edit (relative to workspace root)'),
-	startLine: z
+	startLine: z.coerce
 		.number()
 		.int()
 		.positive()
 		.describe(
 			'Starting line number (1-based) where the edit should be applied'
 		),
-	endLine: z
+	endLine: z.coerce
 		.number()
 		.int()
 		.positive()
