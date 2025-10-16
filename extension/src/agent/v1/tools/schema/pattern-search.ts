@@ -59,19 +59,25 @@ const patternSearchSchema = z.object({
 		.optional()
 		.default(false)
 		.describe('Whether the search should be case-sensitive. Default is false (case-insensitive)'),
-	contextLinesBefore: z
+	contextLinesBefore: z.preprocess((v) => {
+		const n = typeof v === 'string' && v.trim() === '' ? undefined : Number(v as any)
+		return Number.isFinite(n as number) ? n : undefined
+	}, z
 		.number()
 		.int()
 		.min(0)
-		.max(20)
+		.max(20))
 		.optional()
 		.default(5)
 		.describe('Number of lines to show before each match for context. Default is 5, max is 20'),
-	contextLinesAfter: z
+	contextLinesAfter: z.preprocess((v) => {
+		const n = typeof v === 'string' && v.trim() === '' ? undefined : Number(v as any)
+		return Number.isFinite(n as number) ? n : undefined
+	}, z
 		.number()
 		.int()
 		.min(0)
-		.max(20)
+		.max(20))
 		.optional()
 		.default(5)
 		.describe('Number of lines to show after each match for context. Default is 5, max is 20'),
