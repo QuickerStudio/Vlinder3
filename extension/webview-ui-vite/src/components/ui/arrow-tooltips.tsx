@@ -37,12 +37,12 @@ const ArrowTooltipContent = React.forwardRef<
 			"bg-cyan-500/60",
 			"px-3 py-1.5",
 			"text-xs text-white",
-			"animate-in fade-in-0 zoom-in-95",
-			"data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-			"data-[side=bottom]:slide-in-from-top-2",
-			"data-[side=left]:slide-in-from-right-2",
-			"data-[side=right]:slide-in-from-left-2",
-			"data-[side=top]:slide-in-from-bottom-2",
+			"animate-in fade-in-0 zoom-in-95 duration-75",
+			"data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-75",
+			"data-[side=bottom]:slide-in-from-top-1",
+			"data-[side=left]:slide-in-from-right-1",
+			"data-[side=right]:slide-in-from-left-1",
+			"data-[side=top]:slide-in-from-bottom-1",
 			className
 		)}
 		{...props}

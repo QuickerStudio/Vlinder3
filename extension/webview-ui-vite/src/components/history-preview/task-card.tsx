@@ -90,7 +90,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 			{isExpanded && (
 				<div className="px-3 py-2 flex items-center justify-between">
 					<div className="flex items-center justify-start">
-						<ConversationPreview taskId={id} tooltipDirection="up" />
+						<ConversationPreview taskId={id} />
 					</div>
 					<div className="flex items-center justify-end text-light text-sm tracking-wide">
 						{formatDate(ts)}
