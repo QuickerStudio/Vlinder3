@@ -300,6 +300,22 @@
 		color: var(--vscode-terminal-ansiBlue) !important;
 	}
 
+	.border-success {
+		border-color: var(--vscode-terminal-ansiGreen) !important;
+	}
+
+	.border-info {
+		border-color: var(--vscode-terminal-ansiBlue) !important;
+	}
+
+	.bg-success\/10 {
+		background-color: color-mix(in srgb, var(--vscode-terminal-ansiGreen) 10%, transparent) !important;
+	}
+
+	.bg-info\/10 {
+		background-color: color-mix(in srgb, var(--vscode-terminal-ansiBlue) 10%, transparent) !important;
+	}
+
 	.uppercase {
 		text-transform: uppercase;
 	}

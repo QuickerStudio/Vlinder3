@@ -75,8 +75,8 @@ import {
 	ReplaceStringToolBlock,
 	MultiReplaceStringToolBlock,
 	InsertEditToolBlock,
-	FastEditorToolBlock,
 } from "./tools/file-operations-tool"
+import { FastEditorToolBlock } from "./tools/fast-editor-tool"
 import MarkdownRenderer from "./markdown-renderer"
 import { CodeBlock } from "./code-block"
 import { getLanguageFromPath } from "@/utils/get-language-from-path"
