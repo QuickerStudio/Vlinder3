@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import type { ThinkTool } from 'extension/shared/new-tools';
 import { MarkdownRenderer } from '../markdown-renderer';
 import type { ToolStatus } from 'extension/shared/new-tools';
+import { useStableTimer } from '@/hooks/use-stable-timer';
 
 interface ThinkToolProps extends ThinkTool {
   approvalState?: ToolStatus;
@@ -25,68 +26,20 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
   conclusion,
   next_action,
   approvalState,
+  completedAt,
+  durationMs,
   ts,
 }) => {
   const [isProcessExpanded, setIsProcessExpanded] = useState(false);
   const [isResultExpanded, setIsResultExpanded] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const completionTimeRef = useRef<number | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Persist final duration per message to avoid "reviving" the timer on refresh
-  const storageKey = useMemo(() => `think_final_ms_${ts}`, [ts]);
-
-  // On mount, if we have a persisted final duration, restore it
-  useEffect(() => {
-    try {
-      const persisted = sessionStorage.getItem(storageKey);
-      if (persisted) {
-        const persistedMs = parseInt(persisted, 10);
-        if (!Number.isNaN(persistedMs) && persistedMs >= 0) {
-          completionTimeRef.current = persistedMs;
-          setElapsedTime(persistedMs);
-        }
-      }
-    } catch {}
-  }, [storageKey]);
-
-  // Update elapsed time dynamically
-  useEffect(() => {
-    const stopTimer = () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-
-    // Run ticking timer only during thinking process
-    if (approvalState === 'loading' && completionTimeRef.current == null) {
-      if (!intervalRef.current) {
-        intervalRef.current = setInterval(() => {
-          setElapsedTime(Date.now() - ts);
-        }, 1000);
-      }
-    } else {
-      // Any state other than loading: ensure timer is stopped
-      stopTimer();
-
-      // Persist final duration once on terminal states
-      if (
-        (approvalState === 'approved' || approvalState === 'error' || approvalState === 'rejected') &&
-        completionTimeRef.current == null
-      ) {
-        const finalTime = Math.max(0, Date.now() - ts);
-        completionTimeRef.current = finalTime;
-        setElapsedTime(finalTime);
-        try {
-          sessionStorage.setItem(storageKey, String(finalTime));
-        } catch {}
-      }
-    }
-
-    // Always clean up on unmount
-    return stopTimer;
-  }, [approvalState, ts, storageKey]);
+  const { elapsedMs } = useStableTimer({
+    messageTs: ts,
+    isRunning: approvalState === 'loading',
+    backendDurationMs: durationMs,
+    backendCompletedAt: completedAt,
+    storageArea: typeof window !== 'undefined' ? window.sessionStorage : undefined,
+    tickMs: 1000,
+  });
 
   // Determine if this is complex/multi-step thinking
   const isComplexThinking =
@@ -105,14 +58,7 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
   };
 
   // Get display time - use completion time if available, otherwise current elapsed time
-  const getDisplayTime = (): number => {
-    if (completionTimeRef.current !== null) {
-      console.log(`[ThinkTool ${ts}] Using completion time: ${Math.floor(completionTimeRef.current / 1000)}s`);
-      return completionTimeRef.current;
-    }
-    console.log(`[ThinkTool ${ts}] Using current elapsed time: ${Math.floor(elapsedTime / 1000)}s`);
-    return elapsedTime;
-  };
+  const getDisplayTime = (): number => elapsedMs;
 
   // Loading state display
   if (approvalState === 'loading') {
@@ -121,7 +67,7 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
       <div className='my-2'>
         <div className='flex items-center gap-1 text-xs text-muted-foreground px-2 py-1'>
           <span>{loadingText}</span>
-          <span>{formatElapsedTime(elapsedTime)}</span>
+          <span>{formatElapsedTime(elapsedMs)}</span>
         </div>
       </div>
     );

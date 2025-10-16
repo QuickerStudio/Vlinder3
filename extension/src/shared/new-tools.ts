@@ -206,7 +206,15 @@ export type ThinkTool = {
 	/**
 	 * What to do next based on the thinking
 	 */
-	next_action?: string
+    next_action?: string
+    /**
+     * When the thinking finished on the backend (ms since epoch)
+     */
+    completedAt?: number
+    /**
+     * Total thinking duration in milliseconds
+     */
+    durationMs?: number
 }
 
 export type PatternSearchTool = {

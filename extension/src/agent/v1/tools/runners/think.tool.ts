@@ -23,6 +23,18 @@ import dedent from 'dedent';
  * - Use to check if all necessary information is available
  * - Use to reason about edge cases and potential issues
  */
+/**
+ * Think Tool — Maintenance Notes (2025-10-16)
+ *
+ * - Timer lifecycle: Start the timer only while approvalState is 'loading' (Thinking Process).
+ *   Stop and clean up the timer in any other state (approved/error/rejected) and on unmount.
+ * - Stable duration: Backend now provides completedAt and durationMs. The UI prefers these values
+ *   and persists them in sessionStorage to prevent timers from "reviving" after reloads.
+ * - Context isolation: Only ✓ Conclusion and → Next Action are injected into the next model prompt;
+ *   the raw Thinking Process (thought) is not injected.
+ * - Read-only classification: 'think' has been added to readOnlyTools to avoid unnecessary approval flows.
+ * - Why: Fixes issues such as large/growing elapsed times (e.g., "Think 1437s") and timer restarts on reopen.
+ */
 export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 	async execute(): Promise<ToolResponseV2> {
 		const { input, ask, updateAsk } = this.params;
@@ -44,6 +56,7 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 		}
 
 		// Show thinking process to user (auto-approve since this is a read-only tool)
+		const startedAt = Date.now();
 		const { response } = await ask(
 			'tool',
 			{
@@ -71,6 +84,8 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 		);
 
 		// Update to approved state after thinking is complete
+		const completedAt = Date.now();
+		const durationMs = Math.max(0, completedAt - startedAt);
 		await updateAsk(
 			'tool',
 			{
@@ -80,6 +95,8 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 					conclusion,
 					next_action,
 					approvalState: 'approved',
+					completedAt,
+					durationMs,
 					ts: this.ts,
 					isSubMsg: this.params.isSubMsg,
 				},
