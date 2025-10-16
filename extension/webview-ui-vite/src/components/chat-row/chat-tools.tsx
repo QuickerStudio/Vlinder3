@@ -69,6 +69,9 @@ import {
 	MultiReplaceStringTool,
 	InsertEditTool,
 	FastEditorTool,
+	GitBashTool,
+	TerminalTool as TerminalToolType,
+	KillBashTool,
 } from "extension/shared/new-tools"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
@@ -2152,6 +2155,401 @@ export const ReadProgressToolBlock: React.FC<ReadProgressTool & ToolAddons> = ({
 	)
 }
 
+// ============================================================================
+// Git Bash Tool
+// ============================================================================
+export const GitBashToolBlock: React.FC<GitBashTool & ToolAddons> = ({
+	command, output, approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isOutputOpen, setIsOutputOpen] = useState(false)
+	
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<Terminal className="w-5 h-5 mr-2 text-accent" />
+					<h3 className="text-sm font-semibold">Git Bash</h3>
+				</div>
+				{getStatusIcon()}
+			</div>
+			<div className="text-sm space-y-2">
+				<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+					<span className="text-success">$</span> <span className="text-foreground">{command}</span>
+				</div>
+				
+				{output && (
+					<Collapsible open={isOutputOpen} onOpenChange={setIsOutputOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Output</span>
+								{isOutputOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<ScrollArea className="h-[300px] w-full rounded-md border">
+								<div className="bg-secondary/20 p-3 rounded-md text-sm">
+									<pre className="whitespace-pre-wrap text-pretty font-mono text-xs">{output}</pre>
+								</div>
+								<ScrollBar orientation="vertical" />
+								<ScrollBar orientation="horizontal" />
+							</ScrollArea>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Executing Git Bash command...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				
+				{approvalState === 'approved' && (
+					<p className="text-xs mt-2 text-success">Command executed successfully.</p>
+				)}
+				
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">Command execution failed. Check the output for details.</p>
+				)}
+				
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+// ============================================================================
+// Terminal Tool (Multi-functional)
+// ============================================================================
+export const TerminalToolBlockComponent: React.FC<TerminalToolType & ToolAddons> = ({
+	command, action, terminalName, output, approvalState, ts, userFeedback, isSubMsg,
+	panelType, shell, workingDirectory, executionTimeout, terminalType, expression,
+	channelName, collectionName, portNumber, message,
+}) => {
+	const [isOutputOpen, setIsOutputOpen] = useState(false)
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+	
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
+	const getPanelIcon = () => {
+		switch (panelType) {
+			case 'debug-console':
+				return <Bot className="w-5 h-5 mr-2 text-primary" />
+			case 'output':
+				return <FileText className="w-5 h-5 mr-2 text-info" />
+			case 'problems':
+				return <AlertCircle className="w-5 h-5 mr-2 text-destructive" />
+			case 'ports':
+				return <Server className="w-5 h-5 mr-2 text-accent" />
+			case 'output-analyzer':
+				return <Search className="w-5 h-5 mr-2 text-info" />
+			default:
+				return <Terminal className="w-5 h-5 mr-2 text-primary" />
+		}
+	}
+	
+	const getTitle = () => {
+		if (panelType && panelType !== 'terminal') {
+			return `Terminal - ${panelType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`
+		}
+		return 'Terminal'
+	}
+	
+	const hasDetails = shell || workingDirectory || executionTimeout || terminalType || expression || channelName || collectionName || portNumber
+	
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					{getPanelIcon()}
+					<h3 className="text-sm font-semibold">{getTitle()}</h3>
+				</div>
+				{getStatusIcon()}
+			</div>
+			<div className="text-sm space-y-2">
+				{command && (
+					<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+						<span className="text-success">$</span> <span className="text-foreground">{command}</span>
+					</div>
+				)}
+				
+				{action && !command && (
+					<div className="text-xs">
+						<span className="font-semibold">Action:</span> {action}
+					</div>
+				)}
+				
+				{message && (
+					<div className="bg-info/10 border border-info p-2 rounded-md text-xs">
+						<span className="text-info-foreground">{message}</span>
+					</div>
+				)}
+				
+				<div className="flex gap-2 flex-wrap">
+					{terminalName && (
+						<Badge variant="outline" className="text-xs">
+							<Terminal className="w-3 h-3 mr-1" />
+							{terminalName}
+						</Badge>
+					)}
+					{panelType && panelType !== 'terminal' && (
+						<Badge variant="secondary" className="text-xs">
+							{panelType}
+						</Badge>
+					)}
+					{shell && (
+						<Badge variant="secondary" className="text-xs">
+							Shell: {shell}
+						</Badge>
+					)}
+					{terminalType && terminalType !== 'integrated-terminal' && (
+						<Badge variant="secondary" className="text-xs">
+							{terminalType}
+						</Badge>
+					)}
+				</div>
+				
+				{hasDetails && (
+					<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Details</span>
+								{isDetailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2 space-y-1 text-xs">
+							{workingDirectory && (
+								<div><span className="font-semibold">Working Directory:</span> {workingDirectory}</div>
+							)}
+							{executionTimeout && (
+								<div><span className="font-semibold">Timeout:</span> {executionTimeout}ms</div>
+							)}
+							{expression && (
+								<div className="bg-muted p-2 rounded font-mono text-xs">
+									<span className="font-semibold">Expression:</span> {expression}
+								</div>
+							)}
+							{channelName && (
+								<div><span className="font-semibold">Channel:</span> {channelName}</div>
+							)}
+							{collectionName && (
+								<div><span className="font-semibold">Collection:</span> {collectionName}</div>
+							)}
+							{portNumber && (
+								<div><span className="font-semibold">Port:</span> {portNumber}</div>
+							)}
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				
+				{output && (
+					<Collapsible open={isOutputOpen} onOpenChange={setIsOutputOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Output</span>
+								{isOutputOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<ScrollArea className="h-[300px] w-full rounded-md border">
+								<div className="bg-secondary/20 p-3 rounded-md text-sm">
+									<pre className="whitespace-pre-wrap text-pretty font-mono text-xs">{output}</pre>
+								</div>
+								<ScrollBar orientation="vertical" />
+								<ScrollBar orientation="horizontal" />
+							</ScrollArea>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Executing...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+					</div>
+				)}
+				
+				{approvalState === 'approved' && (
+					<p className="text-xs mt-2 text-success">Operation completed successfully.</p>
+				)}
+				
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">Operation failed. Check the output for details.</p>
+				)}
+				
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
+// ============================================================================
+// Kill Bash Tool
+// ============================================================================
+export const KillBashToolBlock: React.FC<KillBashTool & ToolAddons> = ({
+	terminalId, terminalName, force, output, lastCommand, isBusy, result,
+	approvalState, ts, userFeedback, isSubMsg,
+}) => {
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+	
+	const getVariant = () => {
+		if (approvalState === 'loading') return 'border-info'
+		if (approvalState === 'error' || approvalState === 'rejected') return 'border-destructive'
+		if (approvalState === 'approved') return 'border-success'
+		return 'border-muted'
+	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
+	return (
+		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center">
+					<XCircle className="w-5 h-5 mr-2 text-destructive" />
+					<h3 className="text-sm font-semibold">Kill Terminal</h3>
+				</div>
+				{getStatusIcon()}
+			</div>
+			<div className="text-sm space-y-2">
+				<div className="flex gap-2 flex-wrap">
+					{terminalName && (
+						<Badge variant="outline" className="text-xs">
+							<Terminal className="w-3 h-3 mr-1" />
+							{terminalName}
+						</Badge>
+					)}
+					{terminalId !== undefined && (
+						<Badge variant="secondary" className="text-xs">
+							ID: {terminalId}
+						</Badge>
+					)}
+					{force && (
+						<Badge variant="destructive" className="text-xs">
+							Force Kill
+						</Badge>
+					)}
+					{isBusy !== undefined && (
+						<Badge variant={isBusy ? "default" : "outline"} className="text-xs">
+							{isBusy ? "Busy" : "Idle"}
+						</Badge>
+					)}
+				</div>
+				
+				{lastCommand && (
+					<div className="bg-muted p-2 rounded font-mono text-xs overflow-x-auto">
+						<span className="text-muted-foreground">Last command:</span>{" "}
+						<span className="text-foreground">{lastCommand}</span>
+					</div>
+				)}
+				
+				{result && (
+					<div className="bg-info/10 border border-info p-2 rounded-md text-xs">
+						<span className="text-info-foreground">{result}</span>
+					</div>
+				)}
+				
+				{output && (
+					<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen} className="mt-2">
+						<CollapsibleTrigger asChild>
+							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
+								<span>View Details</span>
+								{isDetailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="mt-2">
+							<div className="bg-secondary/20 p-3 rounded-md text-xs">
+								<pre className="whitespace-pre-wrap text-pretty font-mono">{output}</pre>
+							</div>
+						</CollapsibleContent>
+					</Collapsible>
+				)}
+				
+				{approvalState === 'loading' && (
+					<div className="mt-2 flex items-center">
+						<span className="text-xs mr-2">Terminating terminal...</span>
+						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-destructive"></div>
+					</div>
+				)}
+				
+				{approvalState === 'approved' && (
+					<p className="text-xs mt-2 text-success">
+						Terminal {terminalName || `#${terminalId}`} terminated successfully.
+					</p>
+				)}
+				
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">
+						Failed to terminate terminal. The terminal may already be closed or inaccessible.
+					</p>
+				)}
+				
+				{userFeedback && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<span className="font-semibold">User Feedback:</span> {userFeedback}
+					</div>
+				)}
+			</div>
+		</div>
+	)
+}
+
 export const ToolRenderer: React.FC<{
 	tool: ChatTool
 	hasNextMessage?: boolean
@@ -2213,6 +2611,12 @@ export const ToolRenderer: React.FC<{
 			return <InsertEditToolBlock {...tool} />
 		case "fast_editor":
 			return <FastEditorToolBlock {...tool} />
+		case "git_bash":
+			return <GitBashToolBlock {...tool} />
+		case "terminal":
+			return <TerminalToolBlockComponent {...tool} />
+		case "kill_bash":
+			return <KillBashToolBlock {...tool} />
 		default:
 			return null
 	}
