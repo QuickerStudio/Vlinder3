@@ -52,28 +52,29 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
 
   // Update elapsed time dynamically
   useEffect(() => {
-    // Only run a ticking timer while loading and if we don't already have a persisted final
-    if (approvalState === 'loading' && completionTimeRef.current == null) {
-      intervalRef.current = setInterval(() => {
-        setElapsedTime(Date.now() - ts);
-      }, 1000);
-
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-      };
-    }
-
-    // If completed or errored, ensure timer is cleared and persist final duration once
-    if (approvalState === 'approved' || approvalState === 'error') {
+    const stopTimer = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+    };
 
-      if (completionTimeRef.current == null) {
+    // Run ticking timer only during thinking process
+    if (approvalState === 'loading' && completionTimeRef.current == null) {
+      if (!intervalRef.current) {
+        intervalRef.current = setInterval(() => {
+          setElapsedTime(Date.now() - ts);
+        }, 1000);
+      }
+    } else {
+      // Any state other than loading: ensure timer is stopped
+      stopTimer();
+
+      // Persist final duration once on terminal states
+      if (
+        (approvalState === 'approved' || approvalState === 'error' || approvalState === 'rejected') &&
+        completionTimeRef.current == null
+      ) {
         const finalTime = Math.max(0, Date.now() - ts);
         completionTimeRef.current = finalTime;
         setElapsedTime(finalTime);
@@ -82,6 +83,9 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
         } catch {}
       }
     }
+
+    // Always clean up on unmount
+    return stopTimer;
   }, [approvalState, ts, storageKey]);
 
   // Determine if this is complex/multi-step thinking
