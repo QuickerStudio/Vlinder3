@@ -26,24 +26,99 @@ export class PatternSearchTool extends BaseAgentTool<PatternSearchToolParams> {
 
 		// ========== STEP 1: VALIDATE PATTERN ==========
 		if (!searchPattern || searchPattern.trim().length === 0) {
-			return this.toolResponse('error', 'Search pattern cannot be empty');
+			const errorMessage = 'Search pattern cannot be empty';
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: errorMessage,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+			return this.toolResponse('error', errorMessage);
 		}
 
 		// Validate pattern complexity and provide warnings
 		const patternValidation = this.validatePattern(searchPattern);
 		if (patternValidation.error) {
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: patternValidation.error,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse('error', patternValidation.error);
 		}
 
 		if (!files || files.length === 0) {
-			return this.toolResponse('error', 'No files specified for search');
+			const errorMessage = 'No files specified for search';
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: errorMessage,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+			return this.toolResponse('error', errorMessage);
 		}
 
 		// Performance: Limit number of files
 		if (files.length > 100) {
+			const errorMessage = 'Too many files specified (max 100). Please narrow down your search.';
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: errorMessage,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse(
 				'error',
-				'Too many files specified (max 100). Please narrow down your search.'
+				errorMessage
 			);
 		}
 
@@ -64,9 +139,28 @@ export class PatternSearchTool extends BaseAgentTool<PatternSearchToolParams> {
 			const resolvedFiles = await this.resolveFiles(files);
 
 			if (resolvedFiles.length === 0) {
+				const output = `No files found matching the specified patterns:\n${files.join('\n')}`;
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'pattern_search',
+							searchPattern,
+							files,
+							caseSensitive,
+							contextLinesBefore,
+							contextLinesAfter,
+							content: output,
+							approvalState: 'approved',
+							ts: this.ts,
+							isSubMsg: this.params.isSubMsg,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse(
 					'success',
-					`No files found matching the specified patterns:\n${files.join('\n')}`
+					output
 				);
 			}
 
@@ -95,12 +189,54 @@ export class PatternSearchTool extends BaseAgentTool<PatternSearchToolParams> {
 				searchTime
 			);
 
+			// Update UI with approved state and results
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: output,
+						approvalState: 'approved',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+
 			return this.toolResponse('success', output);
 		} catch (error) {
 			this.logger(`Error during pattern search: ${error}`, 'error');
+			const errorMessage = `Failed to search for pattern: ${error instanceof Error ? error.message : String(error)}`;
+			
+			// Update UI with error state
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'pattern_search',
+						searchPattern,
+						files,
+						caseSensitive,
+						contextLinesBefore,
+						contextLinesAfter,
+						content: errorMessage,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+			
 			return this.toolResponse(
 				'error',
-				`Failed to search for pattern: ${error instanceof Error ? error.message : String(error)}`
+				errorMessage
 			);
 		}
 	}

@@ -26,6 +26,23 @@ export class GrepSearchTool extends BaseAgentTool<GrepSearchToolParams> {
 		try {
 			// Security: Validate query length
 			if (query.length > 5000) {
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'grep_search',
+							query,
+							isRegexp,
+							includePattern,
+							maxResults,
+							content: 'Query too long (max 5000 characters). Please use a shorter search pattern.',
+							approvalState: 'error',
+							ts: this.ts,
+							isSubMsg: this.params.isSubMsg,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse(
 					'error',
 					'Query too long (max 5000 characters). Please use a shorter search pattern.'
@@ -63,9 +80,27 @@ export class GrepSearchTool extends BaseAgentTool<GrepSearchToolParams> {
 
 			// Validate regex if using regex mode
 			if (useRegex && !this.isValidRegex(query)) {
+				const errorMessage = `Invalid regular expression: "${query}". Please provide a valid regex pattern or set isRegexp to false.`;
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'grep_search',
+							query,
+							isRegexp,
+							includePattern,
+							maxResults,
+							content: errorMessage,
+							approvalState: 'error',
+							ts: this.ts,
+							isSubMsg: this.params.isSubMsg,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse(
 					'error',
-					`Invalid regular expression: "${query}". Please provide a valid regex pattern or set isRegexp to false.`
+					errorMessage
 				);
 			}
 
@@ -97,12 +132,52 @@ export class GrepSearchTool extends BaseAgentTool<GrepSearchToolParams> {
 				includePattern
 			);
 
+			// Update UI with approved state and results
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'grep_search',
+						query,
+						isRegexp,
+						includePattern,
+						maxResults: cappedMaxResults,
+						content: xmlOutput,
+						approvalState: 'approved',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+
 			return this.toolResponse('success', xmlOutput);
 		} catch (error) {
 			this.logger(`Error searching files: ${error}`, 'error');
+			const errorMessage = `Failed to search files: ${error instanceof Error ? error.message : String(error)}`;
+			
+			// Update UI with error state
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'grep_search',
+						query,
+						isRegexp,
+						includePattern,
+						maxResults,
+						content: errorMessage,
+						approvalState: 'error',
+						ts: this.ts,
+						isSubMsg: this.params.isSubMsg,
+					},
+				},
+				this.ts
+			);
+			
 			return this.toolResponse(
 				'error',
-				`Failed to search files: ${error instanceof Error ? error.message : String(error)}`
+				errorMessage
 			);
 		}
 	}
