@@ -1,7 +1,7 @@
 import { ToolPromptSchema } from '../utils/utils';
 
 export const insertEditPrompt: ToolPromptSchema = {
-	name: 'insert_edit_into_file',
+	name: 'insert_edit',
 	description:
 		'Insert or replace code at specific line numbers in a file. Useful for precise line-based editing when you know the exact line numbers.',
 	parameters: {
@@ -44,16 +44,16 @@ export const insertEditPrompt: ToolPromptSchema = {
 	examples: [
 		{
 			description: 'Insert a new import statement',
-			output: `<insert_edit_into_file>
+			output: `<insert_edit>
   <explanation>Add missing import for useEffect hook</explanation>
   <filePath>src/components/Dashboard.tsx</filePath>
   <startLine>2</startLine>
   <code>import { useEffect } from 'react'</code>
-</insert_edit_into_file>`,
+</insert_edit>`,
 		},
 		{
 			description: 'Replace a function with improved version',
-			output: `<insert_edit_into_file>
+			output: `<insert_edit>
   <explanation>Add error handling to calculateTotal function</explanation>
   <filePath>src/utils/calculations.ts</filePath>
   <startLine>15</startLine>
@@ -62,11 +62,11 @@ export const insertEditPrompt: ToolPromptSchema = {
   if (!items || items.length === 0) return 0
   return items.reduce((sum, item) => sum + item.price, 0)
 }</code>
-</insert_edit_into_file>`,
+</insert_edit>`,
 		},
 		{
 			description: 'Insert a new method in a class',
-			output: `<insert_edit_into_file>
+			output: `<insert_edit>
   <explanation>Add updateProfile method to User class</explanation>
   <filePath>src/models/User.ts</filePath>
   <startLine>45</startLine>
@@ -75,7 +75,7 @@ export const insertEditPrompt: ToolPromptSchema = {
     this.profile = { ...this.profile, ...data }
     await this.save()
   }</code>
-</insert_edit_into_file>`,
+</insert_edit>`,
 		},
 	],
 	extraDescriptions: `## When to Use
@@ -100,8 +100,8 @@ export const insertEditPrompt: ToolPromptSchema = {
 5. **Test after editing**: Verify the edit didn't break syntax or logic
 
 ## When NOT to Use
-- For simple string replacements (use replace_string_in_file instead)
-- For multiple unrelated edits (use multi_replace_string_in_file or file_editor instead)
+- For simple string replacements (use replace_string instead)
+- For multiple unrelated edits (use multi_replace_string or file_editor instead)
 - When you don't know the exact line numbers (use file_editor instead)
 - For whole file rewrites (use file_editor with whole_write mode instead)`,
 };

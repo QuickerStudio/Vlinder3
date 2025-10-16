@@ -1655,7 +1655,7 @@ export const RemoveToolBlock: React.FC<RemoveTool & ToolAddons> = ({
 }
 
 export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = ({
-	path, old_string, new_string, approvalState, ts, userFeedback, isSubMsg,
+	filePath, oldString, newString, explanation, occurrences, approvalState, ts, userFeedback, isSubMsg,
 }) => {
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 	const getVariant = () => {
@@ -1664,6 +1664,20 @@ export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = 
 		if (approvalState === 'approved') return 'border-success'
 		return 'border-muted'
 	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
 	return (
 		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
 			<div className="flex items-center justify-between mb-2">
@@ -1671,13 +1685,20 @@ export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = 
 					<Edit3 className="w-5 h-5 mr-2 text-accent" />
 					<h3 className="text-sm font-semibold">Replace String</h3>
 				</div>
-				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
-				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+				{getStatusIcon()}
 			</div>
 			<div className="space-y-2 text-xs">
 				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
-					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{filePath}</span>
 				</div>
+				{explanation && (
+					<div className="bg-info/10 border border-info p-2 rounded-md">
+						<span className="text-info-foreground">{explanation}</span>
+					</div>
+				)}
+				{occurrences !== undefined && (
+					<Badge variant="secondary" className="text-xs">{occurrences} occurrence{occurrences !== 1 ? 's' : ''}</Badge>
+				)}
 				<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
 					<CollapsibleTrigger asChild>
 						<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
@@ -1688,12 +1709,12 @@ export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = 
 					<CollapsibleContent className="mt-2 space-y-2">
 						<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs overflow-x-auto">
 							<div className="text-destructive font-semibold mb-1">- Old:</div>
-							<pre className="whitespace-pre-wrap break-all">{old_string}</pre>
+							<pre className="whitespace-pre-wrap break-all">{oldString}</pre>
 						</div>
 						<div className="flex items-center justify-center"><ArrowRight className="h-4 w-4 text-muted-foreground" /></div>
 						<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs overflow-x-auto">
 							<div className="text-success font-semibold mb-1">+ New:</div>
-							<pre className="whitespace-pre-wrap break-all">{new_string}</pre>
+							<pre className="whitespace-pre-wrap break-all">{newString}</pre>
 						</div>
 					</CollapsibleContent>
 				</Collapsible>
@@ -1716,7 +1737,7 @@ export const ReplaceStringToolBlock: React.FC<ReplaceStringTool & ToolAddons> = 
 }
 
 export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & ToolAddons> = ({
-	path, replacements, approvalState, ts, userFeedback, isSubMsg,
+	replacements, explanation, successes, failures, errors, summary, approvalState, ts, userFeedback, isSubMsg,
 }) => {
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 	const getVariant = () => {
@@ -1725,6 +1746,42 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & Tool
 		if (approvalState === 'approved') return 'border-success'
 		return 'border-muted'
 	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
+	// Group replacements by file
+	const fileGroups = React.useMemo(() => {
+		if (!replacements || !Array.isArray(replacements)) {
+			return new Map()
+		}
+		const groups = new Map<string, Array<{
+			filePath: string
+			oldString: string
+			newString: string
+			caseInsensitive?: boolean
+			useRegex?: boolean
+			order?: number
+		}>>()
+		replacements.forEach(rep => {
+			if (!rep || !rep.filePath) return
+			const existing = groups.get(rep.filePath) || []
+			existing.push(rep)
+			groups.set(rep.filePath, existing)
+		})
+		return groups
+	}, [replacements])
+	
 	return (
 		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
 			<div className="flex items-center justify-between mb-2">
@@ -1732,14 +1789,32 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & Tool
 					<RefreshCw className="w-5 h-5 mr-2 text-accent" />
 					<h3 className="text-sm font-semibold">Multi-Replace String</h3>
 				</div>
-				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
-				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+				{getStatusIcon()}
 			</div>
 			<div className="space-y-2 text-xs">
-				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
-					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+				{explanation && (
+					<div className="bg-info/10 border border-info p-2 rounded-md">
+						<span className="text-info-foreground">{explanation}</span>
+					</div>
+				)}
+				<div className="flex gap-2 flex-wrap">
+					<Badge variant="secondary" className="text-xs">
+						{replacements?.length || 0} replacement{(replacements?.length || 0) !== 1 ? 's' : ''}
+					</Badge>
+					<Badge variant="outline" className="text-xs">
+						{fileGroups.size} file{fileGroups.size !== 1 ? 's' : ''}
+					</Badge>
+					{successes !== undefined && successes > 0 && (
+						<Badge variant="outline" className="text-success border-success text-xs">
+							{successes} succeeded
+						</Badge>
+					)}
+					{failures !== undefined && failures > 0 && (
+						<Badge variant="outline" className="text-destructive border-destructive text-xs">
+							{failures} failed
+						</Badge>
+					)}
 				</div>
-				<Badge variant="secondary" className="text-xs">{replacements?.length || 0} replacements</Badge>
 				<Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
 					<CollapsibleTrigger asChild>
 						<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
@@ -1750,17 +1825,24 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & Tool
 					<CollapsibleContent className="mt-2">
 						<ScrollArea className="h-[200px] w-full rounded-md border">
 							<div className="p-2 space-y-3">
-								{replacements?.map((rep, idx) => (
-									<div key={idx} className="border-b pb-2 last:border-b-0">
-										<div className="text-xs text-muted-foreground mb-1">Replacement #{idx + 1}</div>
-										<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs mb-1">
-											<div className="text-destructive font-semibold">- Old:</div>
-											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.oldString}</pre>
+								{Array.from(fileGroups.entries()).map(([filePath, fileReplacements], fileIdx) => (
+									<div key={fileIdx} className="border-b pb-2 last:border-b-0">
+										<div className="bg-muted px-2 py-1 rounded font-mono text-xs mb-2">
+											<span className="text-muted-foreground">File:</span> <span className="text-foreground">{filePath}</span>
 										</div>
-										<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs">
-											<div className="text-success font-semibold">+ New:</div>
-											<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.newString}</pre>
-										</div>
+										{fileReplacements.map((rep: { filePath: string; oldString: string; newString: string }, idx: number) => (
+											<div key={idx} className="ml-2 mb-2 last:mb-0">
+												<div className="text-xs text-muted-foreground mb-1">Replacement #{idx + 1}</div>
+												<div className="bg-destructive/10 border border-destructive px-2 py-1 rounded font-mono text-xs mb-1">
+													<div className="text-destructive font-semibold">- Old:</div>
+													<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.oldString}</pre>
+												</div>
+												<div className="bg-success/10 border border-success px-2 py-1 rounded font-mono text-xs">
+													<div className="text-success font-semibold">+ New:</div>
+													<pre className="whitespace-pre-wrap break-all text-[10px]">{rep.newString}</pre>
+												</div>
+											</div>
+										))}
 									</div>
 								))}
 							</div>
@@ -1770,12 +1852,30 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & Tool
 				</Collapsible>
 				{approvalState === 'loading' && (
 					<div className="mt-2 flex items-center">
-						<span className="text-xs mr-2">Performing {replacements?.length || 0} replacements...</span>
+						<span className="text-xs mr-2">Performing {replacements?.length || 0} replacement{(replacements?.length || 0) !== 1 ? 's' : ''}...</span>
 						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
 					</div>
 				)}
-				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">Successfully performed {replacements?.length || 0} replacements</p>}
-				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to perform replacements. Some strings may not have been found.</p>}
+				{approvalState === 'approved' && successes !== undefined && (
+					<p className="text-xs mt-2 text-success">Successfully performed {successes} replacement{successes !== 1 ? 's' : ''}</p>
+				)}
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">
+						{failures && failures > 0 
+							? `Failed to perform ${failures} replacement${failures !== 1 ? 's' : ''}. Some strings may not have been found.`
+							: 'Failed to perform replacements. Some strings may not have been found.'}
+					</p>
+				)}
+				{errors && errors.length > 0 && (
+					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
+						<div className="font-semibold mb-1">Errors:</div>
+						<ul className="space-y-1 list-disc list-inside">
+							{errors.map((error, idx) => (
+								<li key={idx} className="text-destructive-foreground">{error}</li>
+							))}
+						</ul>
+					</div>
+				)}
 				{userFeedback && (
 					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
 						<span className="font-semibold">User Feedback:</span> {userFeedback}
@@ -1787,7 +1887,7 @@ export const MultiReplaceStringToolBlock: React.FC<MultiReplaceStringTool & Tool
 }
 
 export const InsertEditToolBlock: React.FC<InsertEditTool & ToolAddons> = ({
-	path, insert_line, content, approvalState, ts, userFeedback, isSubMsg,
+	filePath, startLine, endLine, code, explanation, operationType, lineRange, approvalState, ts, userFeedback, isSubMsg,
 }) => {
 	const [isContentOpen, setIsContentOpen] = useState(false)
 	const getVariant = () => {
@@ -1796,33 +1896,71 @@ export const InsertEditToolBlock: React.FC<InsertEditTool & ToolAddons> = ({
 		if (approvalState === 'approved') return 'border-success'
 		return 'border-muted'
 	}
+	
+	const getStatusIcon = () => {
+		if (approvalState === 'loading') {
+			return <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-info"></div>
+		}
+		if (approvalState === 'error' || approvalState === 'rejected') {
+			return <XCircle className="w-5 h-5 text-destructive" />
+		}
+		if (approvalState === 'approved') {
+			return <CheckCircle className="w-5 h-5 text-success" />
+		}
+		return null
+	}
+	
+	const isReplacement = endLine !== undefined
+	const title = operationType === 'insert' ? 'Insert Edit' : operationType === 'replace' ? 'Replace Edit' : 'Insert/Replace Edit'
+	
 	return (
 		<div className={cn('border-l-4 p-3 bg-card text-card-foreground rounded-sm', getVariant(), isSubMsg && '!-mt-5')}>
 			<div className="flex items-center justify-between mb-2">
 				<div className="flex items-center">
 					<FileEdit className="w-5 h-5 mr-2 text-primary" />
-					<h3 className="text-sm font-semibold">Insert Edit</h3>
+					<h3 className="text-sm font-semibold">{title}</h3>
 				</div>
-				{approvalState === 'approved' && <CheckCircle className="w-5 h-5 text-success" />}
-				{(approvalState === 'error' || approvalState === 'rejected') && <AlertCircle className="w-5 h-5 text-destructive" />}
+				{getStatusIcon()}
 			</div>
 			<div className="space-y-2 text-xs">
 				<div className="bg-muted px-2 py-1 rounded font-mono text-xs overflow-x-auto">
-					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{path}</span>
+					<span className="text-muted-foreground">File:</span> <span className="text-foreground">{filePath}</span>
 				</div>
-				<div className="text-xs"><span className="font-semibold">Insert at line:</span> {insert_line}</div>
-				{content && (
+				{explanation && (
+					<div className="bg-info/10 border border-info p-2 rounded-md">
+						<span className="text-info-foreground">{explanation}</span>
+					</div>
+				)}
+				<div className="flex gap-2 flex-wrap">
+					{lineRange && (
+						<Badge variant="secondary" className="text-xs">{lineRange}</Badge>
+					)}
+					{operationType && (
+						<Badge variant={operationType === 'insert' ? 'default' : 'outline'} className="text-xs">
+							{operationType.toUpperCase()}
+						</Badge>
+					)}
+				</div>
+				{!lineRange && (
+					<div className="text-xs">
+						<span className="font-semibold">
+							{isReplacement ? 'Replace lines:' : 'Insert at line:'}
+						</span>{' '}
+						{isReplacement ? `${startLine}-${endLine}` : startLine}
+					</div>
+				)}
+				{code && (
 					<Collapsible open={isContentOpen} onOpenChange={setIsContentOpen}>
 						<CollapsibleTrigger asChild>
 							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between">
-								<span>View Content to Insert</span>
+								<span>View Content to {isReplacement ? 'Replace' : 'Insert'}</span>
 								{isContentOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
 							</Button>
 						</CollapsibleTrigger>
 						<CollapsibleContent className="mt-2">
 							<ScrollArea className="h-[200px] w-full rounded-md border">
 								<div className="bg-success/10 border border-success p-2 rounded-md">
-									<pre className="whitespace-pre-wrap font-mono text-[10px]">{content}</pre>
+									<pre className="whitespace-pre-wrap font-mono text-[10px]">{code}</pre>
 								</div>
 								<ScrollBar orientation="vertical" /><ScrollBar orientation="horizontal" />
 							</ScrollArea>
@@ -1831,12 +1969,20 @@ export const InsertEditToolBlock: React.FC<InsertEditTool & ToolAddons> = ({
 				)}
 				{approvalState === 'loading' && (
 					<div className="mt-2 flex items-center">
-						<span className="text-xs mr-2">Inserting content...</span>
+						<span className="text-xs mr-2">{isReplacement ? 'Replacing' : 'Inserting'} content...</span>
 						<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
 					</div>
 				)}
-				{approvalState === 'approved' && <p className="text-xs mt-2 text-success">Content inserted successfully at line {insert_line}</p>}
-				{approvalState === 'error' && <p className="text-xs mt-2 text-destructive">Failed to insert content. Please check the line number and file.</p>}
+				{approvalState === 'approved' && (
+					<p className="text-xs mt-2 text-success">
+						Content {isReplacement ? 'replaced' : 'inserted'} successfully {lineRange ? `at ${lineRange}` : isReplacement ? `at lines ${startLine}-${endLine}` : `at line ${startLine}`}
+					</p>
+				)}
+				{approvalState === 'error' && (
+					<p className="text-xs mt-2 text-destructive">
+						Failed to {isReplacement ? 'replace' : 'insert'} content. Please check the line number and file.
+					</p>
+				)}
 				{userFeedback && (
 					<div className="mt-2 p-2 bg-destructive/10 border border-destructive rounded text-xs">
 						<span className="font-semibold">User Feedback:</span> {userFeedback}

@@ -1,7 +1,7 @@
 import { ToolPromptSchema } from '../utils/utils';
 
 export const multiReplaceStringPrompt: ToolPromptSchema = {
-	name: 'multi_replace_string_in_file',
+	name: 'multi_replace_string',
 	description:
 		'Perform multiple string replacements across one or more files in a single atomic operation. Useful for batch refactoring and updating multiple related strings.',
 	parameters: {
@@ -27,7 +27,7 @@ export const multiReplaceStringPrompt: ToolPromptSchema = {
 	examples: [
 		{
 			description: 'Rename a function across multiple files',
-			output: `<multi_replace_string_in_file>
+			output: `<multi_replace_string>
   <explanation>Rename getUserData to fetchUserData across the codebase</explanation>
   <replacements>
     <replacement>
@@ -41,11 +41,11 @@ export const multiReplaceStringPrompt: ToolPromptSchema = {
       <newString>fetchUserData</newString>
     </replacement>
   </replacements>
-</multi_replace_string_in_file>`,
+</multi_replace_string>`,
 		},
 		{
 			description: 'Update API endpoints in multiple config files',
-			output: `<multi_replace_string_in_file>
+			output: `<multi_replace_string>
   <explanation>Update API base URL from staging to production</explanation>
   <replacements>
     <replacement>
@@ -59,7 +59,7 @@ export const multiReplaceStringPrompt: ToolPromptSchema = {
       <newString>wss://api.example.com</newString>
     </replacement>
   </replacements>
-</multi_replace_string_in_file>`,
+</multi_replace_string>`,
 		},
 	],
 	extraDescriptions: `## When to Use
@@ -78,6 +78,6 @@ export const multiReplaceStringPrompt: ToolPromptSchema = {
 ## When NOT to Use
 - For complex code transformations (use file_editor instead)
 - For regex-based replacements (use file_editor instead)
-- For single file, single replacement (use replace_string_in_file instead)
+- For single file, single replacement (use replace_string instead)
 - For inserting new code (use file_editor instead)`,
 };

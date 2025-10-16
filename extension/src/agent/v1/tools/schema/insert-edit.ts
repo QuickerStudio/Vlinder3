@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Schema for insert_edit_into_file tool
+ * Schema for insert_edit tool
  * Insert or replace code at specific line numbers in a file
  */
 const schema = z.object({
@@ -30,7 +30,7 @@ const schema = z.object({
 });
 
 const examples = [
-	`<tool name="insert_edit_into_file">
+	`<insert_edit>
   <explanation>Add error handling to the fetchData function</explanation>
   <filePath>src/api/users.ts</filePath>
   <startLine>15</startLine>
@@ -47,16 +47,16 @@ const examples = [
     throw error
   }
 }</code>
-</tool>`,
+</insert_edit>`,
 
-	`<tool name="insert_edit_into_file">
+	`<insert_edit>
   <explanation>Insert new import statement at the top of the file</explanation>
   <filePath>src/components/UserProfile.tsx</filePath>
   <startLine>3</startLine>
   <code>import { useAuth } from '../hooks/useAuth'</code>
-</tool>`,
+</insert_edit>`,
 
-	`<tool name="insert_edit_into_file">
+	`<insert_edit>
   <explanation>Add new method to the User class</explanation>
   <filePath>src/models/User.ts</filePath>
   <startLine>45</startLine>
@@ -64,18 +64,18 @@ const examples = [
     await this.validate(data)
     await this.save(data)
   }</code>
-</tool>`,
+</insert_edit>`,
 ];
 
 export const insertEditTool = {
 	schema: {
-		name: 'insert_edit_into_file',
+		name: 'insert_edit',
 		schema,
 	},
 	examples,
 };
 
 export type InsertEditToolParams = {
-	name: 'insert_edit_into_file';
+	name: 'insert_edit';
 	input: z.infer<typeof schema>;
 };

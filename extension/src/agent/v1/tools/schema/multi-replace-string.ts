@@ -180,8 +180,8 @@ function parseReplacementsXml(xmlString: string): any[] {
 }
 
 /**
- * @tool multi_replace_string_in_file
- * @description Replace the same text across multiple files in one operation. Use when renaming functions, updating constants, or refactoring code that appears in multiple files. For single-file edits, use replace_string_in_file instead.
+ * @tool multi_replace_string
+ * @description Replace the same text across multiple files in one operation. Use when renaming functions, updating constants, or refactoring code that appears in multiple files. For single-file edits, use replace_string instead.
  *
  * Special characters:
  * - Newlines: &#10; or &#xA;
@@ -273,7 +273,7 @@ const schema = z.object({
 });
 
 const examples = [
-	`<tool name="multi_replace_string_in_file">
+	`<multi_replace_string>
   <explanation>Rename getUserData to fetchUserData across the codebase</explanation>
   <replacements>
     <replacement>
@@ -287,9 +287,9 @@ const examples = [
       <newString>fetchUserData</newString>
     </replacement>
   </replacements>
-</tool>`,
+</multi_replace_string>`,
 
-	`<tool name="multi_replace_string_in_file">
+	`<multi_replace_string>
   <explanation>Update API endpoints across multiple files</explanation>
   <replacements>
     <replacement>
@@ -303,9 +303,9 @@ const examples = [
       <newString>const API_URL = 'https://api.production.com'</newString>
     </replacement>
   </replacements>
-</tool>`,
+</multi_replace_string>`,
 
-	`<tool name="multi_replace_string_in_file">
+	`<multi_replace_string>
   <explanation>Fix typo in variable name across codebase</explanation>
   <replacements>
     <replacement>
@@ -319,19 +319,19 @@ const examples = [
       <newString>calculateTotal()</newString>
     </replacement>
   </replacements>
-</tool>`,
+</multi_replace_string>`,
 ];
 
 export const multiReplaceStringTool = {
 	schema: {
-		name: 'multi_replace_string_in_file',
+		name: 'multi_replace_string',
 		schema,
 	},
 	examples,
 };
 
 export type MultiReplaceStringToolParams = {
-	name: 'multi_replace_string_in_file';
+	name: 'multi_replace_string';
 	input: z.infer<typeof schema>;
 };
 

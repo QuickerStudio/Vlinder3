@@ -1,7 +1,7 @@
 import { ToolPromptSchema } from '../utils/utils';
 
 export const replaceStringPrompt: ToolPromptSchema = {
-	name: 'replace_string_in_file',
+	name: 'replace_string',
 	description:
 		'Find and replace an exact string in a file. Use this for precise, targeted edits when you know the exact text to replace. All occurrences of the old string will be replaced with the new string.',
 	parameters: {
@@ -39,25 +39,25 @@ export const replaceStringPrompt: ToolPromptSchema = {
 	examples: [
 		{
 			description: 'Fix a typo in a function name',
-			output: `<tool name="replace_string_in_file">
+			output: `<replace_string>
   <explanation>Fix typo in function name</explanation>
   <filePath>src/utils.ts</filePath>
   <oldString>function calcualteTotal() {</oldString>
   <newString>function calculateTotal() {</newString>
-</tool>`,
+</replace_string>`,
 		},
 		{
 			description: 'Update a configuration value',
-			output: `<tool name="replace_string_in_file">
+			output: `<replace_string>
   <explanation>Update API endpoint URL to production</explanation>
   <filePath>src/config.ts</filePath>
   <oldString>const API_URL = "http://localhost:3000"</oldString>
   <newString>const API_URL = "https://api.production.com"</newString>
-</tool>`,
+</replace_string>`,
 		},
 		{
 			description: 'Add error handling to a function',
-			output: `<tool name="replace_string_in_file">
+			output: `<replace_string>
   <explanation>Add try-catch error handling to fetchData function</explanation>
   <filePath>src/api.ts</filePath>
   <oldString>async function fetchData() {
@@ -76,20 +76,20 @@ export const replaceStringPrompt: ToolPromptSchema = {
     throw error
   }
 }</newString>
-</tool>`,
+</replace_string>`,
 		},
 		{
 			description: 'Replace a single line',
-			output: `<tool name="replace_string_in_file">
+			output: `<replace_string>
   <explanation>Update import statement to use named import</explanation>
   <filePath>src/index.ts</filePath>
   <oldString>import React from 'react'</oldString>
   <newString>import * as React from 'react'</newString>
-</tool>`,
+</replace_string>`,
 		},
 		{
 			description: 'Replace multi-line code block',
-			output: `<tool name="replace_string_in_file">
+			output: `<replace_string>
   <explanation>Refactor if-else to switch statement</explanation>
   <filePath>src/handler.ts</filePath>
   <oldString>if (type === 'create') {
@@ -110,7 +110,7 @@ export const replaceStringPrompt: ToolPromptSchema = {
     handleDelete()
     break
 }</newString>
-</tool>`,
+</replace_string>`,
 		},
 	],
 };
