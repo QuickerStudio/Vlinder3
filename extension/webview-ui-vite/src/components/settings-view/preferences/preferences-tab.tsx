@@ -9,6 +9,8 @@ import { rpcClient } from "@/lib/rpc-client"
 import ProviderManager from "./provider-manager"
 import { useAtom, useAtomValue } from "jotai"
 import { preferencesViewAtom } from "./atoms"
+import { MenuToggle } from "@/components/ui/menu-toggle"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 /**
  * PreferencesTab
@@ -88,8 +90,32 @@ const PreferencesTabNew: React.FC = () => {
 	return (
 		<Card ref={cardRef} className="max-w-md w-full mx-auto gradient-border-card">
 			<CardHeader>
-				<CardTitle className="text-base sm:text-lg">Main Architecture Model</CardTitle>
-				<CardDescription className="text-sm">Choose your default code-completion model</CardDescription>
+				<div className="flex items-start justify-between gap-4">
+					<div className="flex-1">
+						<CardTitle className="text-base sm:text-lg">Main Architecture Model</CardTitle>
+						<CardDescription className="text-sm">Choose your default code-completion model</CardDescription>
+					</div>
+					<TooltipProvider>
+						<Tooltip delayDuration={200}>
+							<TooltipTrigger asChild>
+								<div>
+									<MenuToggle
+										checked={viewMode === "provider-manager"}
+										onCheckedChange={(checked) => setViewMode(checked ? "provider-manager" : "select-model")}
+										className="scale-75"
+									/>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent side="left">
+								<p>
+									{viewMode === "select-model"
+										? "Want to use a custom provider?"
+										: "Want to select models from the list?"}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
 			</CardHeader>
 
 			<CardContent className="space-y-4">
@@ -110,19 +136,8 @@ const PreferencesTabNew: React.FC = () => {
 				)}
 			</CardContent>
 
-			<CardFooter className="text-xs text-muted-foreground flex flex-col items-start gap-0">
+			<CardFooter className="text-xs text-muted-foreground">
 				<span>Agent-specific models can be configured in the Agents tab.</span>
-				<br />
-				<span>
-					{viewMode === "select-model"
-						? "Want to use a custom provider? "
-						: "Want to select models from the list? "}
-					<button
-						onClick={() => setViewMode(viewMode === "select-model" ? "provider-manager" : "select-model")}
-						className="hover:underline text-primary transition-all">
-						click here
-					</button>
-				</span>
 			</CardFooter>
 		</Card>
 	)

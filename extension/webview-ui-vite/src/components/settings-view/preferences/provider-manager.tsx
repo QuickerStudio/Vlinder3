@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -398,70 +397,68 @@ const ProviderManager: React.FC = () => {
 
 	return (
 		<>
-			<Card className="bg-background border-border">
-				<CardContent className="p-6">
-					<div className="space-y-4">
-						<h2 className="text-xl font-semibold">Provider Settings</h2>
-						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="providerId">Provider</Label>
-								<Select
-									value={providerSettings?.providerId || ""}
-									onValueChange={(value: ProviderType) => handleProviderChange(value)}>
-									<SelectTrigger className="h-8">
-										<SelectValue placeholder="Select provider" />
-									</SelectTrigger>
-									<SelectContent>
-										{Object.entries(providers).map(([id, config]) => {
-											const isConfigured = providersData?.providers?.some(
-												(p) => p.providerId === id
-											)
-											return (
-												<SelectItem key={id} value={id}>
-													<div className="flex items-center gap-2">
-														{config.name}
-														{isConfigured && (
-															<span className="text-green-500 text-sm">✓</span>
-														)}
-													</div>
-												</SelectItem>
-											)
-										})}
-									</SelectContent>
-								</Select>
-							</div>
-
-							{renderProviderSpecificFields()}
-
-							{error && (
-								<Alert variant="destructive">
-									<AlertDescription>{error}</AlertDescription>
-								</Alert>
-							)}
-
-							<Button
-								onClick={() => providerSettings && saveSettings(providerSettings)}
-								className="w-full h-9">
-								Save Settings
-							</Button>
-							{currentProvider && (
-								<Button
-									variant="destructive"
-									onClick={() => {
-										if (currentProvider.providerId) {
-											setProviderSettings(null)
-											setError("")
-											deleteProvider({ id: currentProvider.providerId })
-										}
-									}}
-									className="w-full h-9">
-									Delete Provider
-								</Button>
-							)}
-						</div>
+			<div className="space-y-4">
+				<div className="flex items-center justify-between">
+					<span className="text-sm font-medium">Provider Settings</span>
+				</div>
+				<div className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="providerId">Provider</Label>
+						<Select
+							value={providerSettings?.providerId || ""}
+							onValueChange={(value: ProviderType) => handleProviderChange(value)}>
+							<SelectTrigger className="h-8">
+								<SelectValue placeholder="Select provider" />
+							</SelectTrigger>
+							<SelectContent>
+								{Object.entries(providers).map(([id, config]) => {
+									const isConfigured = providersData?.providers?.some(
+										(p) => p.providerId === id
+									)
+									return (
+										<SelectItem key={id} value={id}>
+											<div className="flex items-center gap-2">
+												{config.name}
+												{isConfigured && (
+													<span className="text-green-500 text-sm">✓</span>
+												)}
+											</div>
+										</SelectItem>
+									)
+								})}
+							</SelectContent>
+						</Select>
 					</div>
-				</CardContent>
-			</Card>
+
+					{renderProviderSpecificFields()}
+
+					{error && (
+						<Alert variant="destructive">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
+
+					<Button
+						onClick={() => providerSettings && saveSettings(providerSettings)}
+						className="w-full h-9">
+						Save Settings
+					</Button>
+					{currentProvider && (
+						<Button
+							variant="destructive"
+							onClick={() => {
+								if (currentProvider.providerId) {
+									setProviderSettings(null)
+									setError("")
+									deleteProvider({ id: currentProvider.providerId })
+								}
+							}}
+							className="w-full h-9">
+							Delete Provider
+						</Button>
+					)}
+				</div>
+			</div>
 
 			<Dialog open={showApplyModel} onOpenChange={setShowApplyModel}>
 				<DialogContent>
