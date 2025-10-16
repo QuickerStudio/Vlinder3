@@ -47,79 +47,98 @@ import { z } from 'zod';
  * </tool>
  * ```
  */
+// Helpers to robustly coerce XML string values
+const toOptionalNumber = (v: unknown) => {
+  if (typeof v === 'string') {
+    const s = v.trim()
+    if (s.length === 0) { return undefined }
+    const n = Number(s)
+    return Number.isFinite(n) ? n : undefined
+  }
+  return (typeof v === 'number' && Number.isFinite(v)) ? v : undefined
+}
+
+const toOptionalBoolean = (v: unknown) => {
+  if (typeof v === 'string') {
+    const s = v.trim().toLowerCase()
+    if (s.length === 0) { return undefined }
+    if (s === 'true' || s === '1') { return true }
+    if (s === 'false' || s === '0') { return false }
+    return undefined
+  }
+  if (typeof v === 'boolean') { return v }
+  if (typeof v === 'number') { return v !== 0 }
+  return undefined
+}
+
 const schema = z
 	.object({
-		terminalId: z
-			.number()
-			.int()
-			.positive()
+		terminalId: z.preprocess(
+			toOptionalNumber,
+			z.number().int().positive()
+		)
 			.optional()
-			.describe(
-				'The unique ID of the terminal to check. Must be a positive integer.'
-			),
+			.describe('The unique ID of the terminal to check. Must be a positive integer.'),
 		terminalName: z
 			.string()
 			.min(1, 'Terminal name cannot be empty.')
 			.optional()
 			.describe('The name of the terminal to check.'),
-		includeFullOutput: z
-			.boolean()
+		includeFullOutput: z.preprocess(
+			toOptionalBoolean,
+			z.boolean()
+		)
 			.optional()
 			.default(false)
-			.describe(
-				'Whether to include full output history. Default is false (only recent output).'
-			),
+			.describe('Whether to include full output history. Default is false (only recent output).'),
 	filterKeywords: z
 		.array(z.string())
 		.optional()
 		.describe(
 			'Keywords to filter important output lines. Lines containing these keywords will be highlighted.'
 		),
-	contextLines: z
-		.number()
-		.int()
-		.min(0)
-		.max(10)
-		.optional()
-		.default(2)
-		.describe(
-			'Number of context lines to include before and after filtered lines (default: 2). Helps understand error context.'
-		),
-	extractData: z
-		.boolean()
-		.optional()
-		.default(false)
-		.describe(
-			'Extract structured data from output (JSON, URLs, file paths). Useful for AI processing. Default is false.'
-		),
-	smartSummary: z
-		.boolean()
-		.optional()
-		.default(true)
-		.describe(
-			'Generate intelligent summary of key information from terminal output. Default is true.'
-		),
-		waitForCompletion: z
-			.boolean()
+		contextLines: z.preprocess(
+			toOptionalNumber,
+			z.number().int().min(0).max(10)
+		)
+			.optional()
+			.default(2)
+			.describe('Number of context lines to include before and after filtered lines (default: 2). Helps understand error context.'),
+		extractData: z.preprocess(
+			toOptionalBoolean,
+			z.boolean()
+		)
 			.optional()
 			.default(false)
-			.describe(
-				'Wait and continuously monitor until process completes. Default is false.'
-			),
-		maxWaitTime: z
-			.number()
+			.describe('Extract structured data from output (JSON, URLs, file paths). Useful for AI processing. Default is false.'),
+		smartSummary: z.preprocess(
+			toOptionalBoolean,
+			z.boolean()
+		)
+			.optional()
+			.default(true)
+			.describe('Generate intelligent summary of key information from terminal output. Default is true.'),
+			waitForCompletion: z.preprocess(
+			toOptionalBoolean,
+			z.boolean()
+		)
+			.optional()
+			.default(false)
+			.describe('Wait and continuously monitor until process completes. Default is false.'),
+		maxWaitTime: z.preprocess(
+			toOptionalNumber,
+			z.number()
+		)
 			.optional()
 			.default(60000)
-			.describe(
-				'Maximum time to wait for completion in milliseconds. Default is 60000 (1 minute). Only applies when waitForCompletion is true.'
-			),
-		maxChars: z
-			.number()
+			.describe('Maximum time to wait for completion in milliseconds. Default is 60000 (1 minute). Only applies when waitForCompletion is true.'),
+		maxChars: z.preprocess(
+			toOptionalNumber,
+			z.number()
+		)
 			.optional()
 			.default(16000)
-			.describe(
-				'Maximum number of characters to return from terminal output (default: 16000, max: 50000). Helps limit output size for long-running processes.'
-			),
+			.describe('Maximum number of characters to return from terminal output (default: 16000, max: 50000). Helps limit output size for long-running processes.'),
 	})
 	.refine(
 		(data: { terminalId?: number; terminalName?: string }) => 
