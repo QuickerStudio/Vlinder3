@@ -55,9 +55,9 @@ const PreferencesTabNew: React.FC = () => {
 					overflow: 'visible'
 				}}
 			>
-				{/* Gradient border layer */}
+				{/* Gradient border layer - 保持旋转前样式，调整旋转后的scale */}
 				<div 
-					className="absolute pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] group-hover:rotate-[-90deg] group-hover:scale-x-[1.34] group-hover:scale-y-[0.77]"
+					className="absolute pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] group-hover:rotate-[-90deg] group-hover:scale-x-[1.452] group-hover:scale-y-[0.661]"
 					style={{
 						content: '',
 						position: 'absolute',
