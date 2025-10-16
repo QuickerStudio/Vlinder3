@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/utils/dateFormatter"
 import { type HistoryItem } from "extension/shared/history-item"
-import { CheckCircle2, Clock, Loader2, Trash2 } from "lucide-react"
+import { CheckCircle2, Clock, Loader2, Trash2, Calendar, Coins, Zap, Download } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 
 type HistoryItemProps = {
@@ -45,11 +45,11 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 		<div
 			className="cursor-pointer text-foreground border-b border-border hover:bg-secondary hover:text-secondary-foreground transition-colors"
 			onClick={() => onSelect(item.id)}>
-			<div className="flex flex-col gap-2 p-4 relative group">
+			<div className="flex flex-col gap-1.5 py-2 px-4 relative group">
 				{/* 第一行：任务标题 + 右侧操作按钮 */}
-				<div className="flex justify-between items-start gap-3">
+				<div className="flex justify-between items-center gap-3 leading-none">
 					<div
-						className="text-sm flex-1 line-clamp-2 whitespace-pre-wrap break-words overflow-wrap-anywhere"
+						className="text-sm flex-1 truncate leading-tight"
 						dangerouslySetInnerHTML={{ __html: item.name ?? item.task }}></div>
 					
 					<div className="flex items-center gap-2 flex-shrink-0">
@@ -59,9 +59,9 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 							className="hover:opacity-70 transition-opacity"
 							title="Click to show details">
 							{item.isCompleted ? (
-								<CheckCircle2 className="w-4 h-4 text-success" />
+								<CheckCircle2 className="w-5 h-5 text-success" />
 							) : (
-								<Clock className="w-4 h-4 text-info" />
+								<Clock className="w-5 h-5 text-info" />
 							)}
 						</button>
 
@@ -69,12 +69,14 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 						<Button
 							variant="ghost"
 							size="sm"
-							className="h-7 px-2 text-xs opacity-80 group-hover:opacity-100 transition-opacity"
+							className="h-7 w-7 p-0 opacity-80 group-hover:opacity-100 transition-opacity"
 							onClick={(e) => {
 								e.stopPropagation()
 								onExport(item.id)
-							}}>
-							EXPORT
+							}}
+							title="Export">
+							<Download size={20} className="text-foreground" />
+							<span className="sr-only">Export</span>
 						</Button>
 
 						{/* 删除按钮 */}
@@ -91,9 +93,9 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 							}}>
 							<span className="sr-only">Delete</span>
 							{isLoading[item.id] ? (
-								<Loader2 className="animate-spin" size={16} />
+								<Loader2 className="animate-spin" size={20} />
 							) : (
-								<Trash2 aria-label="Delete" size={16} className="text-foreground" />
+								<Trash2 aria-label="Delete" size={20} className="text-foreground" />
 							)}
 						</Button>
 					</div>
@@ -107,11 +109,17 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 					<div className="flex justify-between items-center gap-4">
 						{/* 左侧：日期、Tokens、Cache */}
 						<div className="flex items-center gap-3 flex-wrap">
-							<span className="font-medium uppercase text-muted-foreground">
-								{formatDate(item.ts)}
-							</span>
+							{/* 日期图标 */}
+							<div className="flex items-center gap-1.5">
+								<Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+								<span className="font-medium uppercase text-muted-foreground">
+									{formatDate(item.ts)}
+								</span>
+							</div>
 							
-							<div className="flex items-center gap-2">
+							{/* Tokens 图标 */}
+							<div className="flex items-center gap-1.5">
+								<Zap className="w-3.5 h-3.5 text-amber-500" />
 								<span className="font-medium">Tokens:</span>
 								<span className="flex items-center gap-1">
 									<svg
@@ -147,8 +155,9 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 								</span>
 							</div>
 
+							{/* Cache 图标 */}
 							{!!item.cacheWrites && (
-								<div className="flex items-center gap-2">
+								<div className="flex items-center gap-1.5">
 									<span className="font-medium">Cache:</span>
 									<span className="flex items-center gap-1">
 										<svg
@@ -161,7 +170,7 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 											strokeWidth="2"
 											strokeLinecap="round"
 											strokeLinejoin="round"
-											className="w-3 h-3">
+											className="w-3 h-3 text-blue-500">
 											<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
 											<path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
 											<path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -189,9 +198,10 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport }: HistoryItemProps) =
 							)}
 						</div>
 
-						{/* 右侧：Cost */}
+						{/* 右侧：Cost 图标 */}
 						{!!item.totalCost && (
-							<div className="flex items-center gap-2 flex-shrink-0">
+							<div className="flex items-center gap-1.5 flex-shrink-0">
+								<Coins className="w-3.5 h-3.5 text-green-500" />
 								<span className="font-medium">Cost:</span>
 								<span className="font-semibold">${item.totalCost?.toFixed(4)}</span>
 							</div>
