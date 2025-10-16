@@ -38,7 +38,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
 		<div
 			className={`group bg-card hover:bg-accent/50 border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 ${
 				isCompleted ? "hover:border-success/50" : "hover:border-info/50"
-			}`}>
+			} ${isExpanded ? "overflow-hidden" : ""}`}
+			style={{
+				scrollSnapAlign: "start",
+				height: isExpanded ? "80px" : "auto", // 展开时固定高度为容器高度
+			}}>
 			{/* 标题行 */}
 			<div className="flex items-center justify-between gap-2 py-2 px-3 cursor-pointer" onClick={() => onSelect(id)}>
 				<div className="flex-1 text-card-foreground truncate text-sm pr-2">
@@ -70,7 +74,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
 			{/* 可折叠的详细信息 */}
 			{isExpanded && (
-				<div className="px-3 py-2 space-y-2">
+				<div className="px-3 py-1.5 space-y-1">
 					<div className="text-light flex-line wrap !gap-2 text-xs" style={{ justifyContent: "space-between" }}>
 						<div className="flex-line nowrap">
 							<span className="text-alt">Tokens:</span>

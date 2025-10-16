@@ -272,8 +272,20 @@ const ChatScreen: React.FC<{
 
 	return (
 		<>
-			<div className="flex flex-col items-center justify-start pb-0 mb-0 p-2 sm:p-4 relative h-full overflow-hidden">
-				<Card className="w-full max-w-screen-lg border-0 border-unset bg-transparent flex-grow overflow-auto">
+			{projectType && (
+				<ProjectDialog
+					isOpen={showProjectDialog}
+					onClose={() => setShowProjectDialog(false)}
+					projectType={projectType}
+					sendMessage={handleClick}
+					onPreFill={(text: string) => {
+						setShowProjectDialog(false)
+						// Handle pre-fill logic if needed
+					}}
+				/>
+			)}
+			<div className="flex flex-col items-center justify-between pb-0 mb-0 p-2 sm:p-4 relative h-full overflow-hidden">
+				<Card className="w-full max-w-screen-lg border-0 border-unset bg-transparent overflow-auto">
 					<CardHeader>
 						<CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
 							<motion.div
@@ -296,39 +308,53 @@ const ChatScreen: React.FC<{
 							</AnimatePresence>
 						</CardTitle>
 					</CardHeader>
-					<CardContent className="p-2 sm:p-4">
+					{!showHistory && (
+						<CardContent className="p-2 sm:p-4">
+							<AnimatePresence mode="wait">
+								<motion.div
+									key="quickstart"
+									variants={containerVariants}
+									initial="hidden"
+									animate="visible"
+									exit="exit"
+									className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+									{quickStartOptions.map((option, index) => (
+										<motion.div key={index} variants={itemVariants} whileHover="hover">
+											<Button
+												onClick={option.onClick}
+												className="w-full flex flex-col sm:flex-row items-center justify-start h-auto p-3 sm:p-4 text-left"
+												variant="outline">
+												<option.icon className="w-6 h-6 mb-2 sm:mb-0 sm:mr-3 flex-shrink-0" />
+												<div className="space-y-1 w-full text-center sm:text-left">
+													<div className="font-semibold text-sm sm:text-base">{option.title}</div>
+													<div className="text-xs sm:text-sm text-muted-foreground">
+														{option.description}
+													</div>
+												</div>
+											</Button>
+										</motion.div>
+									))}
+								</motion.div>
+							</AnimatePresence>
+						</CardContent>
+					)}
+				</Card>
+
+				{/* History section at bottom */}
+				{showHistory && (
+					<div className="w-full max-w-screen-lg mt-auto">
 						<AnimatePresence mode="wait">
 							<motion.div
-								key={showHistory ? "history" : "quickstart"}
+								key="history"
 								variants={containerVariants}
 								initial="hidden"
 								animate="visible"
-								exit="exit"
-								className={showHistory ? "" : "grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 "}>
-								{showHistory
-									? taskHistory
-									: quickStartOptions.map((option, index) => (
-											<motion.div key={index} variants={itemVariants} whileHover="hover">
-												<Button
-													onClick={option.onClick}
-													className="w-full flex flex-col sm:flex-row items-center justify-start h-auto p-3 sm:p-4 text-left"
-													variant="outline">
-													<option.icon className="w-6 h-6 mb-2 sm:mb-0 sm:mr-3 flex-shrink-0" />
-													<div className="space-y-1 w-full text-center sm:text-left">
-														<div className="font-semibold text-sm sm:text-base">
-															{option.title}
-														</div>
-														<div className="text-xs sm:text-sm text-muted-foreground">
-															{option.description}
-														</div>
-													</div>
-												</Button>
-											</motion.div>
-									  ))}
+								exit="exit">
+								{taskHistory}
 							</motion.div>
 						</AnimatePresence>
-					</CardContent>
-				</Card>
+					</div>
+				)}
 			</div>
 		</>
 	)
