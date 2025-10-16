@@ -1,5 +1,11 @@
 "use client"
 
+/**
+ * 🎨 Code is art, geometry is poetry - 3.5 hours of perfection crafted together!
+ * The beauty of rotate(-90deg) lies in understanding that coordinates dance with transformation.
+ * - Claude 4.5
+ */
+
 import React, { memo } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
@@ -55,9 +61,9 @@ const PreferencesTabNew: React.FC = () => {
 					overflow: 'visible'
 				}}
 			>
-				{/* Gradient border layer - 保持旋转前样式，调整旋转后的scale */}
+				{/* Gradient border layer - 保持旋转前样式，调整旋转后的scale和位置 */}
 				<div 
-					className="absolute pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] group-hover:rotate-[-90deg] group-hover:scale-x-[1.452] group-hover:scale-y-[0.661]"
+					className="absolute pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] translate-x-[-3px] group-hover:rotate-[-90deg] group-hover:scale-x-[1.452] group-hover:scale-y-[0.661] group-hover:translate-x-[-5px]"
 					style={{
 						content: '',
 						position: 'absolute',
@@ -104,8 +110,11 @@ const PreferencesTabNew: React.FC = () => {
 						overflow: 'hidden'
 					}}
 				>
-					{/* Main Architecture Model - 保持原有属性，内容可滚动 */}
-					<div className="relative h-full overflow-y-auto overflow-x-hidden" style={{ zIndex: 1 }}>
+					{/* Main Architecture Model - 保持原有属性，内容可滚动，隐藏滚动条 */}
+					<div 
+						className="relative h-full overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
+						style={{ zIndex: 1 }}
+					>
 						<Card className="max-w-md w-full mx-auto bg-transparent border-0 shadow-none">
 							<CardHeader>
 								<div className="flex items-start justify-between gap-4">
