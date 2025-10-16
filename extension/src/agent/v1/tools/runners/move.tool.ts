@@ -21,6 +21,20 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 				'error',
 				"Vlinder tried to use move without value for required parameter 'source_path'. Retrying..."
 			);
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'move',
+						source_path: getReadablePath(source_path ?? '', this.cwd),
+						destination_path: getReadablePath(destination_path ?? '', this.cwd),
+						type,
+						approvalState: 'error',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			const errorMsg = `
 			<move_response>
 				<status>
@@ -51,6 +65,20 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 			await say(
 				'error',
 				"Vlinder tried to use move without value for required parameter 'destination_path'. Retrying..."
+			);
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'move',
+						source_path: getReadablePath(source_path ?? '', this.cwd),
+						destination_path: getReadablePath(destination_path ?? '', this.cwd),
+						type,
+						approvalState: 'error',
+						ts: this.ts,
+					},
+				},
+				this.ts
 			);
 			const errorMsg = `
 			<move_response>
@@ -91,6 +119,19 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 					'error',
 					`Source path does not exist: ${getReadablePath(source_path, this.cwd)}`
 				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'move',
+							source_path: getReadablePath(source_path, this.cwd),
+							destination_path: getReadablePath(destination_path, this.cwd),
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
+				);
 				const errorMsg = `
 				<move_response>
 					<status>
@@ -115,6 +156,19 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 				await say(
 					'error',
 					`Source path is neither a file nor a directory: ${getReadablePath(source_path, this.cwd)}`
+				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'move',
+							source_path: getReadablePath(source_path, this.cwd),
+							destination_path: getReadablePath(destination_path, this.cwd),
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
 				);
 				const errorMsg = `
 				<move_response>
@@ -141,6 +195,20 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 				await say(
 					'error',
 					`Type mismatch: specified '${type}' but source is a '${actualType}'`
+				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'move',
+							source_path: getReadablePath(source_path, this.cwd),
+							destination_path: getReadablePath(destination_path, this.cwd),
+							type,
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
 				);
 				const errorMsg = `
 				<move_response>
@@ -176,6 +244,19 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 						'error',
 						`Destination file already exists and overwrite is not enabled`
 					);
+					await this.params.updateAsk(
+						'tool',
+						{
+							tool: {
+								tool: 'move',
+								source_path: getReadablePath(source_path, this.cwd),
+								destination_path: getReadablePath(destination_path, this.cwd),
+								approvalState: 'error',
+								ts: this.ts,
+							},
+						},
+						this.ts
+					);
 					const errorMsg = `
 					<move_response>
 						<status>
@@ -197,6 +278,19 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 					await say(
 						'error',
 						`Destination directory already exists and merge is not enabled`
+					);
+					await this.params.updateAsk(
+						'tool',
+						{
+							tool: {
+								tool: 'move',
+								source_path: getReadablePath(source_path, this.cwd),
+								destination_path: getReadablePath(destination_path, this.cwd),
+								approvalState: 'error',
+								ts: this.ts,
+							},
+						},
+						this.ts
 					);
 					const errorMsg = `
 					<move_response>
@@ -322,8 +416,38 @@ export class MoveTool extends BaseAgentTool<MoveToolParams> {
 				</details>
 			</move_response>`;
 
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'move',
+						source_path: getReadablePath(source_path, this.cwd),
+						destination_path: getReadablePath(destination_path, this.cwd),
+						type: actualType,
+						overwrite: isFile ? overwrite : undefined,
+						merge: isDirectory ? merge : undefined,
+						approvalState: 'approved',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse('success', successMsg);
 		} catch (error) {
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'move',
+						source_path: getReadablePath(input?.source_path ?? '', this.cwd),
+						destination_path: getReadablePath(input?.destination_path ?? '', this.cwd),
+						approvalState: 'error',
+						error: error instanceof Error ? error.message : String(error),
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			const errorMsg = `
 			<move_response>
 				<status>

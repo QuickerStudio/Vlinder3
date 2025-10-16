@@ -38,6 +38,19 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 					</help>
 				</error_details>
 			</remove_response>`;
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'remove',
+						path: getReadablePath(targetPath ?? '', this.cwd),
+						recursive,
+						approvalState: 'error',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse('error', errorMsg);
 		}
 
@@ -62,6 +75,18 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 						<target_path>${getReadablePath(targetPath, this.cwd)}</target_path>
 					</error_details>
 				</remove_response>`;
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'remove',
+							path: getReadablePath(targetPath, this.cwd),
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse('error', errorMsg);
 			}
 
@@ -83,6 +108,18 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 						<target_path>${getReadablePath(targetPath, this.cwd)}</target_path>
 					</error_details>
 				</remove_response>`;
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'remove',
+							path: getReadablePath(targetPath, this.cwd),
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse('error', errorMsg);
 			}
 
@@ -139,6 +176,18 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 						<actual_type>${actualType}</actual_type>
 					</error_details>
 				</remove_response>`;
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'remove',
+							path: getReadablePath(targetPath, this.cwd),
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
+				);
 				return this.toolResponse('error', errorMsg);
 			}
 
@@ -161,6 +210,18 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 								<suggestion>Set recursive=true to remove directory with contents</suggestion>
 							</error_details>
 						</remove_response>`;
+						await this.params.updateAsk(
+							'tool',
+							{
+								tool: {
+									tool: 'remove',
+									path: getReadablePath(targetPath, this.cwd),
+									approvalState: 'error',
+									ts: this.ts,
+								},
+							},
+							this.ts
+						);
 						return this.toolResponse('error', errorMsg);
 					}
 				} catch (error) {
@@ -265,8 +326,36 @@ export class RemoveTool extends BaseAgentTool<RemoveToolParams> {
 				</details>
 			</remove_response>`;
 
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'remove',
+						path: getReadablePath(targetPath, this.cwd),
+						type: actualType,
+						recursive: isDirectory ? recursive : undefined,
+						force: force ? true : undefined,
+						approvalState: 'approved',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse('success', successMsg);
 		} catch (error) {
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'remove',
+						path: getReadablePath(input?.path ?? '', this.cwd),
+						approvalState: 'error',
+						error: error instanceof Error ? error.message : String(error),
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			const errorMsg = `
 			<remove_response>
 				<status>

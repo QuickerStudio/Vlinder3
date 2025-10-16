@@ -20,6 +20,20 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 				'error',
 				"Vlinder tried to use rename without value for required parameter 'path'. Retrying..."
 			);
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'rename',
+						path: getReadablePath(targetPath ?? '', this.cwd),
+						new_name,
+						type,
+						approvalState: 'error',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			const errorMsg = `
 			<rename_response>
 				<status>
@@ -50,6 +64,20 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 			await say(
 				'error',
 				"Vlinder tried to use rename without value for required parameter 'new_name'. Retrying..."
+			);
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'rename',
+						path: getReadablePath(targetPath ?? '', this.cwd),
+						new_name: new_name ?? '',
+						type,
+						approvalState: 'error',
+						ts: this.ts,
+					},
+				},
+				this.ts
 			);
 			const errorMsg = `
 			<rename_response>
@@ -91,6 +119,19 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 					'error',
 					`Target path does not exist: ${getReadablePath(targetPath, this.cwd)}`
 				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'rename',
+							path: getReadablePath(targetPath, this.cwd),
+							new_name,
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
+				);
 				const errorMsg = `
 				<rename_response>
 					<status>
@@ -115,6 +156,19 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 				await say(
 					'error',
 					`Target path is neither a file nor a directory: ${getReadablePath(targetPath, this.cwd)}`
+				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'rename',
+							path: getReadablePath(targetPath, this.cwd),
+							new_name,
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
 				);
 				const errorMsg = `
 				<rename_response>
@@ -141,6 +195,19 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 				await say(
 					'error',
 					`Type mismatch: specified '${type}' but target is a '${actualType}'`
+				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'rename',
+							path: getReadablePath(targetPath, this.cwd),
+							new_name,
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
 				);
 				const errorMsg = `
 				<rename_response>
@@ -173,6 +240,19 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 				await say(
 					'error',
 					`A ${actualType} with the name '${new_name}' already exists and overwrite is not enabled`
+				);
+				await this.params.updateAsk(
+					'tool',
+					{
+						tool: {
+							tool: 'rename',
+							path: getReadablePath(targetPath, this.cwd),
+							new_name,
+							approvalState: 'error',
+							ts: this.ts,
+						},
+					},
+					this.ts
 				);
 				const errorMsg = `
 				<rename_response>
@@ -281,8 +361,37 @@ export class RenameTool extends BaseAgentTool<RenameToolParams> {
 				</details>
 			</rename_response>`;
 
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'rename',
+						path: getReadablePath(targetPath, this.cwd),
+						new_name,
+						type: actualType,
+						overwrite: destinationExists ? overwrite : undefined,
+						approvalState: 'approved',
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			return this.toolResponse('success', successMsg);
 		} catch (error) {
+			await this.params.updateAsk(
+				'tool',
+				{
+					tool: {
+						tool: 'rename',
+						path: getReadablePath(input?.path ?? '', this.cwd),
+						new_name: input?.new_name ?? '',
+						approvalState: 'error',
+						error: error instanceof Error ? error.message : String(error),
+						ts: this.ts,
+					},
+				},
+				this.ts
+			);
 			const errorMsg = `
 			<rename_response>
 				<status>
