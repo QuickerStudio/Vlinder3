@@ -15,6 +15,8 @@ interface TaskCardProps {
 	totalCost: number
 	onSelect: (id: string) => void
 	isCompleted?: boolean
+	isExpanded?: boolean
+	onToggleExpand?: (id: string, expanded: boolean) => void
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -28,12 +30,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
 	totalCost,
 	onSelect,
 	isCompleted,
+	isExpanded: controlledIsExpanded,
+	onToggleExpand,
 }) => {
-	const [isExpanded, setIsExpanded] = useState(false)
+	const [internalIsExpanded, setInternalIsExpanded] = useState(false)
+	const isExpanded = controlledIsExpanded !== undefined ? controlledIsExpanded : internalIsExpanded
 
 	const handleToggle = (e: React.MouseEvent) => {
 		e.stopPropagation()
-		setIsExpanded(!isExpanded)
+		if (onToggleExpand) {
+			onToggleExpand(id, !isExpanded)
+		} else {
+			setInternalIsExpanded(!isExpanded)
+		}
 	}
 
 	// 构建 tooltip 内容
