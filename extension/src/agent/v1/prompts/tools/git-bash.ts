@@ -50,6 +50,7 @@ export const gitBashToolPrompt: ToolPromptSchema = {
 		'Terminal Naming: Automatically generates semantic names (npm-install-1, git-status-2) for easy identification',
 		'Terminal Reuse: Set terminalName + reuseTerminal=true to run multiple commands in same session',
 		'Terminal Tracking: Each terminal is tracked with name, last command, and creation time',
+		'Environment variables are automatically passed to the terminal from the current process',
 		'Only available on Windows systems with Git Bash installed',
 		'Shell integration may not be immediately available for new terminals (waits up to 3 seconds)',
 		'Without shell integration, exit codes and output capture are not available',
@@ -69,6 +70,11 @@ export const gitBashToolPrompt: ToolPromptSchema = {
 		'Best Practice: Use jq for JSON processing in Git Bash (included with Git for Windows)',
 		'Best Practice: Use terminalName + reuseTerminal to run multiple commands in same session (e.g., cd then npm)',
 		'Best Practice: Terminal names are shown in output - use them with read_progress to monitor long-running commands',
+		'Output Tips: Use ls -1 for single-column file listing instead of ls alone',
+		'Output Tips: Use printenv or env for environment variables instead of echo $VAR',
+		'Output Tips: Merge stderr with stdout using 2>&1 to capture error messages',
+		'Output Tips: For sed newlines, use $\'\\n\' syntax: sed "s/pattern/replacement$\'\\n\'/g"',
+		'Output Tips: Some commands may produce no output - append && echo "Done" to confirm execution',
 	],
 	examples: [
 		{
@@ -150,6 +156,29 @@ export const gitBashToolPrompt: ToolPromptSchema = {
   <command>npm run build</command>
   <terminalName>backend-setup</terminalName>
   <reuseTerminal>true</reuseTerminal>
+</git_bash>`,
+		},
+		{
+			description: 'Check environment variables',
+			output: `<git_bash>
+  <command>printenv HOME</command>
+</git_bash>
+
+<!-- Or list all environment variables -->
+<git_bash>
+  <command>printenv | sort</command>
+</git_bash>`,
+		},
+		{
+			description: 'Capture error output with stderr redirect',
+			output: `<git_bash>
+  <command>npm test 2>&1</command>
+</git_bash>`,
+		},
+		{
+			description: 'Use sed with newlines properly',
+			output: `<git_bash>
+  <command>echo "line1line2" | sed "s/line2/$'\\n'line2/"</command>
 </git_bash>`,
 		},
 	],

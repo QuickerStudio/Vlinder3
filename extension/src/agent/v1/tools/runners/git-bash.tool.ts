@@ -280,10 +280,14 @@ Common installation paths checked:
 		
 		// Create new terminal if not reusing or terminal not found
 		if (!terminal) {
+			// Get current environment variables
+			const env = { ...process.env };
+			
 			terminal = vscode.window.createTerminal({
 				name: semanticName,
 				shellPath: gitBashPath,
 				cwd: effectiveWorkingDir,
+				env: env, // Pass environment variables to terminal
 			});
 			
 			// Register the terminal
@@ -802,10 +806,12 @@ Common installation paths checked:
 				const outputStream = execution.read();
 				try {
 					for await (const data of outputStream) {
+						// Capture all output including stdout and stderr
 						output += data;
 					}
 				} catch (error) {
 					// Stream ended or error occurred
+					// Note: This is expected when the stream completes
 				}
 			}
 		})();
@@ -819,20 +825,25 @@ Common installation paths checked:
 						executionCompleted = true;
 						this.monitoringActive = false;
 
-						// Wait for output to finish reading
+						// Wait for output to finish reading (with a small additional delay)
 						await outputPromise;
+						// Give a small buffer time for any remaining output
+						await new Promise(r => setTimeout(r, 100));
 
 						const elapsed = Date.now() - startTime;
 
 						// Clean output (remove ANSI escape sequences)
 						const cleanOutput = this.cleanAnsiEscapes(output);
+						
+						// Check if output is truly empty
+						const hasOutput = cleanOutput && cleanOutput.length > 0;
 
 						const finalOutput = `<git_bash_output>
 <terminal_name>${this.escapeXml(terminal.name)}</terminal_name>
 <command>${this.escapeXml(command)}</command>
 <exitCode>${exitCode ?? 'unknown'}</exitCode>
 <elapsed>${elapsed}ms</elapsed>
-<output>${this.escapeXml(cleanOutput || '(no output)')}</output>
+<output>${hasOutput ? this.escapeXml(cleanOutput) : '(no output)'}</output>
 </git_bash_output>`;
 
 						await updateAsk(
@@ -1012,14 +1023,23 @@ The command has been executed in the terminal. Please verify the results manuall
 	 * Optimized for consistency and maintainability
 	 */
 	private cleanAnsiEscapes(text: string): string {
+		if (!text) {
+			return '';
+		}
+		
 		// Use strip-ansi for standardized ANSI escape sequence removal
 		let cleaned = stripAnsi(text);
 		
-		// Normalize line endings
+		// Normalize line endings while preserving actual line breaks
 		cleaned = cleaned
 			.replace(/\r\n/g, '\n')
-			.replace(/\r/g, '\n')
-			.trim();
+			.replace(/\r/g, '\n');
+		
+		// Remove excessive blank lines (more than 2 consecutive)
+		cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+		
+		// Trim only leading/trailing whitespace, not internal spacing
+		cleaned = cleaned.trim();
 		
 		return cleaned;
 	}

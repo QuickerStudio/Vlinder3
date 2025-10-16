@@ -50,6 +50,46 @@ export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 	}>();
 	
 	/**
+	 * Clear static caches - intended for testing purposes
+	 * @internal
+	 */
+	public static clearCacheForTesting(): void {
+		this.shellIntegrationCache.clear();
+		this.terminalStateRegistry.clear();
+		this.terminalCounter = 0;
+	}
+	
+	/**
+	 * Setup terminal close listener to clean up state registry
+	 * Prevents memory leaks from accumulating terminal states
+	 */
+	private static setupTerminalCloseListener(): void {
+		// Listen for terminal close events
+		vscode.window.onDidCloseTerminal((terminal) => {
+			TerminalTool.terminalStateRegistry.delete(terminal.name);
+		});
+	}
+	
+	/**
+	 * Clean up stale terminal states (older than 24 hours and terminal no longer exists)
+	 * @internal
+	 */
+	private static cleanupStaleTerminals(): void {
+		const now = Date.now();
+		const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+		
+		for (const [name, state] of this.terminalStateRegistry) {
+			if (now - state.lastActiveAt.getTime() > maxAge) {
+				// Check if terminal still exists
+				const exists = vscode.window.terminals.some(t => t.name === name);
+				if (!exists) {
+					this.terminalStateRegistry.delete(name);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Analyze error output and provide intelligent suggestions
 	 */
 	private analyzeTerminalError(exitCode: number, output: string, command: string): {
