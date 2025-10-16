@@ -15,6 +15,10 @@ const HistoryPreview: React.FC<HistoryPreviewProps> = ({ showHistoryView }) => {
 	const scrollContainerRef = useRef<HTMLDivElement>(null)
 	const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
+	// 过滤有效的任务历史
+	const validTaskHistory = taskHistory.filter((item) => item.ts && item.task).slice(0, 8)
+	const hasHistory = validTaskHistory.length > 0
+
 	const handleHistorySelect = (id: string) => {
 		vscode.postMessage({ type: "showTaskWithId", text: id })
 	}
@@ -112,6 +116,11 @@ const HistoryPreview: React.FC<HistoryPreviewProps> = ({ showHistoryView }) => {
 		}
 	}, [expandedCards])
 
+	// 如果没有历史记录，不渲染任何内容
+	if (!hasHistory) {
+		return null
+	}
+
 	return (
 		<section className="border-b-0 !pb-2 !pt-2">
 			{/* 横向布局：左侧（标题+按钮） | 右侧（滚动容器） */}
@@ -141,35 +150,32 @@ const HistoryPreview: React.FC<HistoryPreviewProps> = ({ showHistoryView }) => {
 						scrollSnapType: isExpandedAll ? "none" : "y mandatory", // 全部展开时禁用捕捉
 					}}>
 					<div className="space-y-1">
-						{taskHistory
-							.filter((item) => item.ts && item.task)
-							.slice(0, 8)
-							.map((item) => (
-								<div
-									key={item.id}
-									ref={(el) => {
-										if (el) {
-											cardRefs.current.set(item.id, el)
-										} else {
-											cardRefs.current.delete(item.id)
-										}
-									}}>
-									<TaskCard
-										id={item.id}
-										task={item.name ?? item.task}
-										ts={item.ts}
-										tokensIn={item.tokensIn}
-										tokensOut={item.tokensOut}
-										cacheWrites={item.cacheWrites}
-										cacheReads={item.cacheReads}
-										totalCost={item.totalCost}
-										isCompleted={item.isCompleted}
-										onSelect={handleHistorySelect}
-										isExpanded={isExpandedAll || expandedCards[item.id] || false}
-										onToggleExpand={handleToggleCard}
-									/>
-								</div>
-							))}
+						{validTaskHistory.map((item) => (
+							<div
+								key={item.id}
+								ref={(el) => {
+									if (el) {
+										cardRefs.current.set(item.id, el)
+									} else {
+										cardRefs.current.delete(item.id)
+									}
+								}}>
+								<TaskCard
+									id={item.id}
+									task={item.name ?? item.task}
+									ts={item.ts}
+									tokensIn={item.tokensIn}
+									tokensOut={item.tokensOut}
+									cacheWrites={item.cacheWrites}
+									cacheReads={item.cacheReads}
+									totalCost={item.totalCost}
+									isCompleted={item.isCompleted}
+									onSelect={handleHistorySelect}
+									isExpanded={isExpandedAll || expandedCards[item.id] || false}
+									onToggleExpand={handleToggleCard}
+								/>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>
