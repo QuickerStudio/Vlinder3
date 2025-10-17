@@ -354,7 +354,7 @@ const ChatScreen: React.FC<{
 								transition={{ duration: 0.5 }}
 								className="flex justify-center mb-4"
 								style={getBannerGlowColors() as React.CSSProperties}>
-								<Banner className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 banner-glow" />
+								<Banner className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 butterfly-glow-flutter" />
 							</motion.div>
 
 							{/* Greeting */}
