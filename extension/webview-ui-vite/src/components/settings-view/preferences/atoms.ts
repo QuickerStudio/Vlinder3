@@ -1,5 +1,5 @@
 import { chatStateAtom } from "@/components/chat-view/atoms"
-import { showSettingsAtom, useExtensionState } from "@/context/extension-state-context"
+import { showSettingsAtom, showHistoryAtom, useExtensionState } from "@/context/extension-state-context"
 import { ProviderId } from "extension/api/providers/constants"
 import {
 	AmazonBedrockSettings,
@@ -35,11 +35,13 @@ export const useSwitchToProviderManager = () => {
 	const setProviderSettings = useSetAtom(providerSettingsAtom)
 	const setPreferencesView = useSetAtom(preferencesViewAtom)
 	const setShowSettings = useSetAtom(showSettingsAtom)
+	const setShowHistory = useSetAtom(showHistoryAtom)
 	const setPreferencesTab = useSetAtom(preferencesTabAtom)
 	const setForceView = useSetAtom(forceViewAtom)
 	return (providerId: ProviderId) => {
 		console.log("switching to provider manager for", providerId)
 		setShowSettings(true)
+		setShowHistory(false)
 		setPreferencesTab("preferences")
 		setProviderSettings(createDefaultSettings(providerId))
 		setForceView("provider-manager")
@@ -100,6 +102,7 @@ export const useRequiredProviderHandler = () => {
 	const setPreferencesView = useSetAtom(preferencesViewAtom)
 	const setProviderSettings = useSetAtom(providerSettingsAtom)
 	const setShowSettings = useSetAtom(showSettingsAtom)
+	const setShowHistory = useSetAtom(showHistoryAtom)
 	const setChatState = useSetAtom(chatStateAtom)
 
 	// type === configureApiRequired
@@ -116,6 +119,7 @@ export const useRequiredProviderHandler = () => {
 			setPreferencesView("provider-manager")
 			setProviderSettings(message.providerId ? createDefaultSettings(message.providerId) : null)
 			setShowSettings(true)
+			setShowHistory(false)
 		}
 	})
 }
