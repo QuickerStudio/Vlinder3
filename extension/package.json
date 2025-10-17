@@ -2,7 +2,7 @@
 	"name": "vlinder",
 	"displayName": "Vlinder",
 	"description": "Vlinder: Your AI pair programmer in VSCode. Powered by Anthropic's Claude, it assists both beginners and pros in coding, debugging, and more. Create/edit files and execute commands with AI guidance. Perfect for no-coders to senior devs. Enjoy free credits to supercharge your coding experience. Let Vlinder transform your IDE into a collaborative AI workspace.",
-	"version": "2.3.13",
+	"version": "3.8.26",
 	"icon": "assets/icon.png",
 	"engines": {
 		"vscode": "^1.96.0"

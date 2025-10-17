@@ -14,9 +14,10 @@ type HistoryItemProps = {
 }
 
 const HistoryItem = ({ item, onSelect, onDelete, onExport, onPin }: HistoryItemProps) => {
-	const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({})
-	const [isExpanded, setIsExpanded] = useState(false)
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({})
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [isPinned, setIsPinned] = useState(!!item.isPinned)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
 	// 点击状态图标展开，5秒后自动折叠
 	const handleStatusClick = (e: React.MouseEvent) => {
@@ -34,14 +35,19 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport, onPin }: HistoryItemP
 		}, 5000)
 	}
 
-	// 组件卸载时清除定时器
-	useEffect(() => {
-		return () => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current)
-			}
-		}
-	}, [])
+    // 组件卸载时清除定时器
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
+
+    // 同步本地 isPinned 与外部 props
+    useEffect(() => {
+        setIsPinned(!!item.isPinned)
+    }, [item.isPinned])
 
 	return (
 		<div
@@ -85,26 +91,28 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport, onPin }: HistoryItemP
 							<span className="sr-only">Export</span>
 						</Button>
 
-						{/* Pin 按钮 */}
-						<Button
-							variant="ghost"
-							size="sm"
-							title={item.isPinned ? 'Unpin' : 'Pin'}
-							className={`h-7 w-7 p-0 transition-opacity ${
-								item.isPinned
-									? 'opacity-100 text-primary'
-									: 'opacity-80 group-hover:opacity-100'
-							}`}
-							onClick={(e) => {
-								e.stopPropagation()
-								onPin(item.id)
-							}}>
-							<span className="sr-only">{item.isPinned ? 'Unpin' : 'Pin'}</span>
-							<Pin
-								size={20}
-								className={item.isPinned ? 'fill-current' : ''}
-							/>
-						</Button>
+                        {/* Pin 按钮 */}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            title={isPinned ? 'Unpin' : 'Pin'}
+                            className={`h-7 w-7 p-0 transition-opacity ${
+                                isPinned
+                                    ? 'opacity-100 text-primary'
+                                    : 'opacity-80 group-hover:opacity-100'
+                            }`}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                // 乐观更新 UI
+                                setIsPinned((prev) => !prev)
+                                onPin(item.id)
+                            }}>
+                            <span className="sr-only">{isPinned ? 'Unpin' : 'Pin'}</span>
+                            <Pin
+                                size={20}
+                                className={isPinned ? 'fill-current' : ''}
+                            />
+                        </Button>
 
 						{/* 删除按钮 */}
 						<Button

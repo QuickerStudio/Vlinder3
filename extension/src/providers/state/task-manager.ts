@@ -158,6 +158,8 @@ export class TaskManager {
 			return task
 		})
 		await this.provider.getGlobalStateManager().updateGlobalState("taskHistory", updatedTaskHistory)
+		// Broadcast updated state to webview so UI updates immediately
+		await this.provider.getWebviewManager().postBaseStateToWebview()
 	}
 
 	async restoreTaskFromDisk() {
