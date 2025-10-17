@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ThinkTool } from 'extension/shared/new-tools';
 import { MarkdownRenderer } from '../markdown-renderer';
 import type { ToolStatus } from 'extension/shared/new-tools';
-import { useStableTimer } from '@/hooks/use-stable-timer';
 
 interface ThinkToolProps extends ThinkTool {
   approvalState?: ToolStatus;
@@ -20,6 +19,8 @@ interface ThinkToolProps extends ThinkTool {
  * making it clear to users when the AI is reasoning through a problem.
  * 
  * Based on Anthropic's thinking scratchpad pattern for context isolation.
+ * 
+ * Timing: Uses "Timing" block pattern (no interval, calculates elapsed on each render)
  */
 export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
   thought,
@@ -32,14 +33,9 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
 }) => {
   const [isProcessExpanded, setIsProcessExpanded] = useState(false);
   const [isResultExpanded, setIsResultExpanded] = useState(false);
-  const { elapsedMs } = useStableTimer({
-    messageTs: ts,
-    isRunning: approvalState === 'loading',
-    backendDurationMs: durationMs,
-    backendCompletedAt: completedAt,
-    storageArea: typeof window !== 'undefined' ? window.sessionStorage : undefined,
-    tickMs: 1000,
-  });
+  
+  // Only calculate elapsed time during loading (no timer after completion)
+  const elapsedMs = Math.max(0, Date.now() - ts);
 
   // Determine if this is complex/multi-step thinking
   const isComplexThinking =
@@ -51,14 +47,16 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
       thought.toLowerCase().includes('step') ||
       thought.toLowerCase().includes('plan'));
 
-  // Format elapsed time
+  // Format elapsed time (match Timing block style: mm:ss or ss)
   const formatElapsedTime = (ms: number): string => {
     const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes}m ${remainingSeconds}s`;
+    }
     return `${seconds}s`;
   };
-
-  // Get display time - use completion time if available, otherwise current elapsed time
-  const getDisplayTime = (): number => elapsedMs;
 
   // Loading state display
   if (approvalState === 'loading') {
@@ -84,43 +82,60 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
     );
   }
 
-  // Completed state: Think > 8s (two buttons + time display)
+  // Completed state: thought > : (conclusion summary)
   return (
     <div className='my-2'>
-      {/* Header - Two separate buttons + time */}
+      {/* Header: thought > : (conclusion) */}
       <div className='flex items-center gap-1 px-2 py-1'>
-        {/* Think button - shows final result/conclusion */}
+        {/* Thought label - click to show Thinking Process */}
         <Button
           variant='ghost'
           size='sm'
           className='h-auto py-0.5 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground'
-          onClick={() => setIsResultExpanded(!isResultExpanded)}
+          onClick={() => setIsProcessExpanded(!isProcessExpanded)}
         >
-          Think
+          thought
         </Button>
 
-        {/* > button - shows thinking process */}
+        {/* > button - click to show Conclusion & Next Action */}
         <Button
           variant='ghost'
           size='sm'
           className='h-auto py-0.5 px-1 text-xs font-normal text-muted-foreground hover:text-foreground'
-          onClick={() => setIsProcessExpanded(!isProcessExpanded)}
+          onClick={() => setIsResultExpanded(!isResultExpanded)}
         >
           <ChevronRight
             className={cn(
               'h-3 w-3 transition-transform duration-200',
-              isProcessExpanded && 'rotate-90'
+              isResultExpanded && 'rotate-90'
             )}
           />
         </Button>
 
-        {/* Time display */}
-        <span className='text-xs text-muted-foreground'>
-          {formatElapsedTime(getDisplayTime())}
+        {/* Colon separator */}
+        <span className='text-xs text-muted-foreground'>:</span>
+
+        {/* Conclusion preview */}
+        <span className='text-xs text-muted-foreground truncate'>
+          {conclusion || next_action || 'thinking complete'}
         </span>
       </div>
 
-      {/* Result content - shown when "Think" button is clicked */}
+      {/* Thinking Process - shown when "thought" is clicked */}
+      {isProcessExpanded && thought && (
+        <div className='mt-2 ml-4 pl-3 border-l-2 border-border/30'>
+          <div className='prose prose-sm dark:prose-invert max-w-none'>
+            <div className='bg-muted/30 rounded-md p-3 text-sm'>
+              <div className='text-xs font-semibold text-muted-foreground mb-2'>
+                💭 Thinking Process
+              </div>
+              <MarkdownRenderer markdown={thought} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Conclusion & Next Action - shown when ">" is clicked */}
       {isResultExpanded && (conclusion || next_action) && (
         <div className='mt-2 ml-4 pl-3 border-l-2 border-primary/30'>
           <div className='prose prose-sm dark:prose-invert max-w-none'>
@@ -143,21 +158,6 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
                 <MarkdownRenderer markdown={next_action} />
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Process content - shown when ">" button is clicked */}
-      {isProcessExpanded && thought && (
-        <div className='mt-2 ml-4 pl-3 border-l-2 border-border/30'>
-          <div className='prose prose-sm dark:prose-invert max-w-none'>
-            {/* Thinking process */}
-            <div className='bg-muted/30 rounded-md p-3 text-sm'>
-              <div className='text-xs font-semibold text-muted-foreground mb-2'>
-                💭 Thinking Process
-              </div>
-              <MarkdownRenderer markdown={thought} />
-            </div>
           </div>
         </div>
       )}
