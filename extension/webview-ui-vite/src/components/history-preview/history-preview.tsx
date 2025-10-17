@@ -127,8 +127,8 @@ const HistoryPreview: React.FC<HistoryPreviewProps> = ({ showHistoryView }) => {
 			<div className="flex items-end gap-3">
 				{/* 左侧：标题和按钮的垂直布局 */}
 				<div className="flex flex-col gap-2 flex-shrink-0">
-					<h3 className="flex-line uppercase text-alt">
-						<span className="codicon codicon-history text-alt" />
+					<h3 className="flex-line uppercase bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+						<span className="codicon codicon-history bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text" />
 						Recent Tasks
 					</h3>
 					<VSCodeButton appearance="icon" onClick={showHistoryView}>

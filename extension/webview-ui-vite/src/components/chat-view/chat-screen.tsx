@@ -303,7 +303,17 @@ const ChatScreen: React.FC<{
 									exit={{ opacity: 0, y: -20 }}
 									transition={{ duration: 0.3 }}
 									className="mt-2 text-xl sm:text-2xl md:text-3xl">
-									{showHistory ? "Your previous tasks" : "What should we build today?"}
+									{showHistory ? (
+										"Vlinder"
+									) : (
+										<a
+											href="https://vlinders.org/"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="hover:underline cursor-pointer">
+											https://vlinders.org/
+										</a>
+									)}
 								</motion.div>
 							</AnimatePresence>
 						</CardTitle>

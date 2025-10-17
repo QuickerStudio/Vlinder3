@@ -34,7 +34,7 @@ export default function AnnouncementBanner() {
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-2">
 						<AlertCircle className="h-5 w-5 text-primary" />
-						<h2 className="text-sm font-semibold">Latest Updates (v2.3.0)</h2>
+						<h2 className="text-sm font-semibold">Latest Updates (v3.8.26)</h2>
 					</div>
 					<Button
 						variant="ghost"
@@ -48,15 +48,15 @@ export default function AnnouncementBanner() {
 
 				<Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
 					<div className="mt-2 text-sm text-card-foreground space-y-2">
-						<p>🚀 Added Claude 3.7 Sonnet - New SOTA coding agent highly recommended as daily driver</p>
-						<p>⚙️ Added option to customize Sonnet thinking tokens budget</p>
-						<p>🔧 Direct connection to Anthropic using your own API key</p>
+						<p>🚀 Claude Sonnet 4.5 - Enhanced reasoning and coding capabilities</p>
+						<p>⚡ Improved context management with 1M token context window</p>
+						<p>🎨 Enhanced UI/UX with modern design improvements</p>
 					</div>
 
 					<CollapsibleContent className="mt-2 text-sm text-card-foreground space-y-2">
-						<p>🧠 Fine-tune Sonnet's thinking budget for your specific needs</p>
-						<p>⚡️ Enhanced performance with the latest Claude 3.7 model</p>
-						<p>🔧 General stability improvements</p>
+						<p>🧠 Advanced thinking mode with extended token budgets</p>
+						<p>📊 Better task history and preview system</p>
+						<p>🔧 Performance optimizations and stability improvements</p>
 					</CollapsibleContent>
 
 					<div className="mt-3 flex items-center gap-4">
