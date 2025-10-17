@@ -94,7 +94,7 @@ export const ThinkToolBlock: React.FC<ThinkToolProps> = ({
           className='h-auto py-0.5 px-1.5 text-xs font-normal text-muted-foreground hover:text-foreground'
           onClick={() => setIsProcessExpanded(!isProcessExpanded)}
         >
-          thought
+          Thought
         </Button>
 
         {/* > button - click to show Conclusion & Next Action */}
