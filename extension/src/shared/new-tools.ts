@@ -207,6 +207,15 @@ export type ThinkTool = {
 	 * What to do next based on the thinking
 	 */
     next_action?: string
+	/**
+	 * Optional TODO list to break down next actions into concrete tasks
+	 */
+	todo_list?: Array<{
+		id: string
+		task: string
+		status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+		priority?: 'low' | 'medium' | 'high' | 'critical'
+	}>
     /**
      * When the thinking finished on the backend (ms since epoch)
      */

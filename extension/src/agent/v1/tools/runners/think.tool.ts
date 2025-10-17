@@ -38,7 +38,7 @@ import dedent from 'dedent';
 export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 	async execute(): Promise<ToolResponseV2> {
 		const { input, ask, updateAsk } = this.params;
-		const { thought, conclusion, next_action } = input;
+		const { thought, conclusion, next_action, todo_list } = input;
 
 		// Validate required field
 		if (!thought || thought.trim() === '') {
@@ -65,6 +65,7 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 					thought,
 					conclusion,
 					next_action,
+					todo_list,
 					approvalState: 'loading',
 					ts: this.ts,
 					isSubMsg: this.params.isSubMsg,
@@ -74,13 +75,14 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 		);
 
 		// Store the thinking for context (this could be used for debugging or analysis)
-		this.logThinkingProcess(thought, conclusion, next_action);
+		this.logThinkingProcess(thought, conclusion, next_action, todo_list);
 
 		// Build the thinking record
 		const thinkingRecord = this.buildThinkingRecord(
 			thought,
 			conclusion,
-			next_action
+			next_action,
+			todo_list
 		);
 
 		// Update to approved state after thinking is complete
@@ -94,6 +96,7 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 					thought,
 					conclusion,
 					next_action,
+					todo_list,
 					approvalState: 'approved',
 					completedAt,
 					durationMs,
@@ -116,22 +119,60 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 	private buildThinkingRecord(
 		thought: string,
 		conclusion?: string,
-		nextAction?: string
+		nextAction?: string,
+		todoList?: Array<{
+			id: string;
+			task: string;
+			status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+			priority?: 'low' | 'medium' | 'high' | 'critical';
+		}>
 	): string {
 		const timestamp = new Date().toISOString();
+
+		// Build TODO list section if provided
+		let todoListSection = '';
+		if (todoList && todoList.length > 0) {
+			const todoItems = todoList
+				.map((item) => {
+					const priorityBadge = item.priority ? ` [${item.priority.toUpperCase()}]` : '';
+					const statusIcon = this.getStatusIcon(item.status);
+					return `\t\t\t\t<todo id="${this.escapeXml(item.id)}" status="${item.status}"${item.priority ? ` priority="${item.priority}"` : ''}>
+					${statusIcon} ${this.escapeXml(item.task)}${priorityBadge}
+				</todo>`;
+				})
+				.join('\n');
+
+			todoListSection = `\n\t\t\t<todo_list>
+${todoItems}
+			</todo_list>`;
+		}
 
 		return dedent`<think_tool_response>
 			<status>success</status>
 			<timestamp>${timestamp}</timestamp>
 			<thinking_summary>
 				${conclusion ? `<conclusion>${this.escapeXml(conclusion)}</conclusion>` : '<conclusion>Thinking process completed</conclusion>'}
-				${nextAction ? `<next_action>${this.escapeXml(nextAction)}</next_action>` : ''}
+				${nextAction ? `<next_action>${this.escapeXml(nextAction)}</next_action>` : ''}${todoListSection}
 			</thinking_summary>
 			<note>
 				Thinking process recorded. This space was used for reasoning and planning.
 				${conclusion ? 'Key insights have been identified.' : 'Continue with the planned approach.'}
+				${todoList && todoList.length > 0 ? `\nTODO list created with ${todoList.length} task${todoList.length > 1 ? 's' : ''}.` : ''}
 			</note>
 		</think_tool_response>`;
+	}
+
+	/**
+	 * Get status icon for TODO items
+	 */
+	private getStatusIcon(status: string): string {
+		const icons: Record<string, string> = {
+			pending: '⏳',
+			in_progress: '🔄',
+			completed: '✅',
+			cancelled: '❌',
+		};
+		return icons[status] || '•';
 	}
 
 	/**
@@ -141,19 +182,37 @@ export class ThinkTool extends BaseAgentTool<ThinkToolParams> {
 	private logThinkingProcess(
 		thought: string,
 		conclusion?: string,
-		nextAction?: string
+		nextAction?: string,
+		todoList?: Array<{
+			id: string;
+			task: string;
+			status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+			priority?: 'low' | 'medium' | 'high' | 'critical';
+		}>
 	): void {
 		// Log for debugging (in production, this could go to a proper logging service)
+		const todoInfo = todoList && todoList.length > 0 ? ` | ${todoList.length} TODO(s)` : '';
 		this.logger(
-			`Thinking recorded: ${conclusion || 'Processing'} ${nextAction ? `→ ${nextAction}` : ''}`,
+			`Thinking recorded: ${conclusion || 'Processing'} ${nextAction ? `→ ${nextAction}` : ''}${todoInfo}`,
 			'debug'
 		);
+
+		// Log TODO list details if present
+		if (todoList && todoList.length > 0) {
+			todoList.forEach((item, index) => {
+				this.logger(
+					`  TODO ${index + 1}/${todoList.length}: [${item.status}] ${item.task}${item.priority ? ` (${item.priority})` : ''}`,
+					'debug'
+				);
+			});
+		}
 
 		// Could be extended to:
 		// - Store in a database for analysis
 		// - Track thinking patterns over time
 		// - Provide insights into agent reasoning
 		// - Help debug complex decision-making processes
+		// - Track TODO completion rates and patterns
 	}
 
 	/**
