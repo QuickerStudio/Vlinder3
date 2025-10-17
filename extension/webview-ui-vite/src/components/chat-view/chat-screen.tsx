@@ -259,7 +259,7 @@ const ChatScreen: React.FC<{
 	// Only show starry background when on welcome screen (showing history) AND it's late night
 	useEffect(() => {
 		// 🌙 临时测试：注释掉时间限制，白天也能看星空
-		 if (showHistory && isLateNight) {
+		// if (showHistory && isLateNight) {
 		if (showHistory) {  // 🔥 测试模式：任何时间都显示星空
 			// Send signal to start starry animation
 			startStarryBackground()
@@ -354,10 +354,7 @@ const ChatScreen: React.FC<{
 								transition={{ duration: 0.5 }}
 								className="flex justify-center mb-4"
 								style={getBannerGlowColors() as React.CSSProperties}>
-								<Banner
-									className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 banner-glow"
-									draggable={true}
-								/>
+								<Banner className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 banner-glow" />
 							</motion.div>
 
 							{/* Greeting */}
