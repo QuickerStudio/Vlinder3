@@ -7,6 +7,9 @@ import { useState, useEffect, useCallback } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Monitor, LayoutDashboard, Smartphone, Briefcase, RefreshCcw, Lightbulb } from "lucide-react"
 import { BorderBeam } from "../ui/border-beam"
+import Banner from "../ui/Banner"
+import StarryBackground from "../ui/StarryBackground"
+import MeteorShower from "../ui/MeteorShower"
 
 type ProjectType = "landingPage" | "dashboard" | "mobileApp" | "customProject"
 
@@ -199,6 +202,31 @@ const ChatScreen: React.FC<{
 	const [greeting, setGreeting] = useState("")
 	const [showProjectDialog, setShowProjectDialog] = useState(false)
 	const [projectType, setProjectType] = useState<ProjectType | null>(null)
+	const [starryBackgroundActive, setStarryBackgroundActive] = useState(false)
+
+	// Check if it's late night time
+	const isLateNight = greeting === "Happy late night"
+
+	// Get Banner glow color CSS variables based on time of day
+	const getBannerGlowColors = () => {
+		if (isLateNight) {
+			// Night pink #FF63CB
+			return {
+				'--glow-color-1': 'rgba(255, 99, 203, 0.32)',
+				'--glow-color-2': 'rgba(255, 99, 203, 0.24)',
+				'--glow-color-3': 'rgba(255, 99, 203, 0.16)',
+				'--glow-color-4': 'rgba(255, 99, 203, 0.08)',
+			}
+		} else {
+			// Daytime cyan #66FFDA
+			return {
+				'--glow-color-1': 'rgba(102, 255, 218, 0.32)',
+				'--glow-color-2': 'rgba(102, 255, 218, 0.24)',
+				'--glow-color-3': 'rgba(102, 255, 218, 0.16)',
+				'--glow-color-4': 'rgba(102, 255, 218, 0.08)',
+			}
+		}
+	}
 
 	useEffect(() => {
 		const updateGreeting = () => {
@@ -213,6 +241,33 @@ const ChatScreen: React.FC<{
 		const interval = setInterval(updateGreeting, 60000)
 		return () => clearInterval(interval)
 	}, [])
+
+	// Starry background state machine control
+	const startStarryBackground = useCallback(() => {
+		if (!starryBackgroundActive) {
+			setStarryBackgroundActive(true)
+		}
+	}, [starryBackgroundActive])
+
+	const stopStarryBackground = useCallback(() => {
+		if (starryBackgroundActive) {
+			setStarryBackgroundActive(false)
+		}
+	}, [starryBackgroundActive])
+
+	// State machine: send signals based on interface state and time
+	// Only show starry background when on welcome screen (showing history) AND it's late night
+	useEffect(() => {
+		// 🌙 临时测试：注释掉时间限制，白天也能看星空
+		 if (showHistory && isLateNight) {
+		if (showHistory) {  // 🔥 测试模式：任何时间都显示星空
+			// Send signal to start starry animation
+			startStarryBackground()
+		} else {
+			// Send signal to stop starry animation
+			stopStarryBackground()
+		}
+	}, [showHistory, isLateNight, startStarryBackground, stopStarryBackground])
 
 	const selectStartOption = (type: ProjectType) => {
 		setProjectType(type)
@@ -272,6 +327,10 @@ const ChatScreen: React.FC<{
 
 	return (
 		<>
+			{/* Starry Background and Meteor Shower - only visible in late night */}
+			<StarryBackground active={starryBackgroundActive} />
+			<MeteorShower active={starryBackgroundActive} />
+
 			{projectType && (
 				<ProjectDialog
 					isOpen={showProjectDialog}
@@ -284,10 +343,24 @@ const ChatScreen: React.FC<{
 					}}
 				/>
 			)}
-			<div className="flex flex-col items-center justify-between pb-0 mb-0 p-2 sm:p-4 relative h-full overflow-hidden">
+			<div className="flex flex-col items-center justify-between pb-0 mb-0 p-2 sm:p-4 relative h-full overflow-hidden z-10">
 				<Card className="w-full max-w-screen-lg border-0 border-unset bg-transparent overflow-auto">
 					<CardHeader>
 						<CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
+							{/* Vlinder Logo */}
+							<motion.div
+								initial={{ opacity: 0, scale: 0.8 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ duration: 0.5 }}
+								className="flex justify-center mb-4"
+								style={getBannerGlowColors() as React.CSSProperties}>
+								<Banner
+									className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 banner-glow"
+									draggable={true}
+								/>
+							</motion.div>
+
+							{/* Greeting */}
 							<motion.div
 								initial={{ opacity: 0, y: -20 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -295,6 +368,8 @@ const ChatScreen: React.FC<{
 								className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
 								{greeting}
 							</motion.div>
+
+							{/* Vlinder text or website link */}
 							<AnimatePresence mode="wait">
 								<motion.div
 									key={showHistory ? "history" : "build"}

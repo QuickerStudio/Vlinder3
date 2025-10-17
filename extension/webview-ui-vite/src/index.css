@@ -629,3 +629,164 @@ vscode-dropdown::part(listbox) {
 		scrollbar-color: unset;
 	}
 }
+
+/* ============================== */
+/* Starry Background & Meteor Shower Styles */
+/* ============================== */
+
+/* Static Particles Background Effect */
+.particle {
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	background: #ffffff;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+/* Stars Background Effect */
+.star {
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	background: #fff;
+	border-radius: 50%;
+	animation: twinkle var(--twinkle-duration, 3s) infinite;
+	opacity: var(--initial-opacity, 0.3);
+}
+
+.star::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	background: inherit;
+	filter: blur(1px);
+	animation: glow var(--twinkle-duration, 3s) infinite;
+}
+
+.star.burst::before,
+.star.burst::after {
+	content: '';
+	position: absolute;
+	width: 40px;
+	height: 2px;
+	background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+	left: 50%;
+	top: 50%;
+	transform-origin: center;
+	animation: starBurst 1.5s ease-out;
+	pointer-events: none;
+}
+
+.star.burst::before {
+	transform: translate(-50%, -50%);
+	animation: starBurstHorizontal 1.5s ease-out;
+}
+
+.star.burst::after {
+	transform: translate(-50%, -50%);
+	animation: starBurstVertical 1.5s ease-out;
+}
+
+@keyframes twinkle {
+	0%, 100% {
+		opacity: var(--initial-opacity, 0.3);
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+}
+
+@keyframes glow {
+	0%, 100% {
+		filter: blur(1px) brightness(1);
+	}
+	50% {
+		filter: blur(2px) brightness(1.5);
+	}
+}
+
+@keyframes starBurstHorizontal {
+	0% {
+		transform: translate(-50%, -50%) rotate(0deg) scaleX(0);
+		opacity: 1;
+	}
+	50% {
+		transform: translate(-50%, -50%) rotate(180deg) scaleX(1);
+		opacity: 0.8;
+	}
+	100% {
+		transform: translate(-50%, -50%) rotate(360deg) scaleX(0);
+		opacity: 0;
+	}
+}
+
+@keyframes starBurstVertical {
+	0% {
+		transform: translate(-50%, -50%) rotate(90deg) scaleX(0);
+		opacity: 1;
+	}
+	50% {
+		transform: translate(-50%, -50%) rotate(270deg) scaleX(1);
+		opacity: 0.8;
+	}
+	100% {
+		transform: translate(-50%, -50%) rotate(450deg) scaleX(0);
+		opacity: 0;
+	}
+}
+
+/* Meteor Effect - 流星特效 */
+.meteor {
+	position: fixed;
+	width: 3px;
+	height: 100px;
+	background: linear-gradient(45deg, rgba(255, 255, 255, 1), rgba(255, 216, 156, 0.1));
+	border-radius: 999px;
+	filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+	animation: var(--meteor-animation);
+	z-index: 1;
+}
+
+@keyframes meteor {
+	0% {
+		transform: translateX(0) translateY(-100px) rotate(45deg);
+		opacity: 1;
+	}
+	20% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 0.5;
+	}
+	100% {
+		transform: translateX(-1000px) translateY(1000px) rotate(45deg);
+		opacity: 0;
+	}
+}
+
+/* Banner发光效果 */
+.banner-glow {
+	animation: bannerGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes bannerGlow {
+	0% {
+		filter: drop-shadow(0 0 8px var(--glow-color-1)) 
+				drop-shadow(0 0 16px var(--glow-color-2)) 
+				drop-shadow(0 0 24px var(--glow-color-3));
+	}
+	100% {
+		filter: drop-shadow(0 0 12px var(--glow-color-1)) 
+				drop-shadow(0 0 24px var(--glow-color-2)) 
+				drop-shadow(0 0 36px var(--glow-color-3)) 
+				drop-shadow(0 0 48px var(--glow-color-4));
+	}
+}
