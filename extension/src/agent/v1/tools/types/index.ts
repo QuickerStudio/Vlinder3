@@ -27,7 +27,6 @@ import { RemoveToolParams } from "../schema/remove"
 import { RenameToolParams } from "../schema/rename"
 import { ThinkToolParams } from "../schema/think"
 import { GitBashToolParams } from "../schema/git-bash"
-import { TerminalToolParams } from "../schema/terminal"
 import { ReadImageToolParams } from "../schema/read-image"
 import { GrepSearchToolParams } from "../schema/grep-search"
 import { PatternSearchToolParams } from "../schema/pattern-search"
@@ -77,7 +76,6 @@ export type ToolParams =
 	| RenameToolParams
 	| ThinkToolParams
 	| GitBashToolParams
-	| TerminalToolParams
 	| KillBashToolParams
 	| ReadProgressToolParams
 	| GrepSearchToolParams

@@ -15,7 +15,6 @@ import { renamePrompt } from './rename';
 import { gitBashToolPrompt } from './git-bash';
 import { killBashToolPrompt } from './kill-bash';
 import { readProgressPrompt } from './read-progress';
-import { terminalToolPrompt } from './terminal';
 import { replaceStringPrompt } from './replace-string';
 import { multiReplaceStringPrompt } from './multi-replace-string';
 import { insertEditPrompt } from './insert-edit';
@@ -35,7 +34,6 @@ export const toolPrompts = [
 	
 	// Terminal execution
 	gitBashToolPrompt,
-	terminalToolPrompt,
 	serverRunnerPrompt,
 	
 	// File system - Browse & Read

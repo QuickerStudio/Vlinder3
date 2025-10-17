@@ -20,7 +20,6 @@ import { removeTool } from "./remove"
 import { renameTool } from "./rename"
 import { thinkTool } from "./think"
 import { gitBashTool } from "./git-bash"
-import { terminalTool } from "./terminal"
 import { readImageTool } from "./read-image"
 import { grepSearchTool } from "./grep-search"
 import { patternSearchTool } from "./pattern-search"
@@ -57,7 +56,6 @@ export const tools = [
 	removeTool,
 	renameTool,
 	gitBashTool,
-	terminalTool,
 	killBashTool,
 	readProgressTool,
 	grepSearchTool,
@@ -92,7 +90,6 @@ export {
 	removeTool,
 	renameTool,
 	gitBashTool,
-	terminalTool,
 	killBashTool,
 	readProgressTool,
 	grepSearchTool,
@@ -125,7 +122,6 @@ export {
  * 已修复的工具：
  * - insert_edit: startLine, endLine
  * - timer: duration
- * - terminal: port, startLine, startCharacter, endLine, endCharacter, code
  * - pattern_search: contextLinesBefore, contextLinesAfter
  * 
  * 注意：任何可能从 XML 接收数字值的参数都应使用 z.coerce.number()
