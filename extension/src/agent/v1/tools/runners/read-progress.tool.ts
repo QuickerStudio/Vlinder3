@@ -459,7 +459,7 @@ export class ReadProgressTool extends BaseAgentTool<ReadProgressToolParams> {
 		}
 
 		// Get terminal manager
-		const { terminalManager } = this.koduDev;
+		const { terminalManager } = this.vlinders;
 		if (!(terminalManager instanceof AdvancedTerminalManager)) {
 			throw new Error('AdvancedTerminalManager is not available');
 		}

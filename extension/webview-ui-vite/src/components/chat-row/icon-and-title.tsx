@@ -36,7 +36,7 @@ const IconAndTitle = ({ type, isCommandExecuting, cost, apiRequestFailedMessage,
 		case "command":
 			return [
 				isCommandExecuting ? ProgressIndicator : <span className="codicon codicon-terminal text-alt" />,
-				<h3 className="text-alt">Kodu wants to execute this command:</h3>,
+				<h3 className="text-alt">Vlinder wants to execute this command:</h3>,
 			]
 		case "completion_result":
 			return [
@@ -63,7 +63,7 @@ const IconAndTitle = ({ type, isCommandExecuting, cost, apiRequestFailedMessage,
 		case "followup":
 			return [
 				<span className="codicon codicon-question text-alt" />,
-				<h3 className="text-alt">Kodu has a question:</h3>,
+				<h3 className="text-alt">Vlinder has a question:</h3>,
 			]
 		default:
 			return [null, null]

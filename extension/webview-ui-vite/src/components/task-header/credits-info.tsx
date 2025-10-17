@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { formatPrice } from "../settings-view/utils"
-import { getKoduAddCreditsUrl, getKoduOfferUrl, getKoduReferUrl, getKoduSignInUrl } from "extension/shared/kodu"
+import { getVlinderAddCreditsUrl, getVlinderOfferUrl, getVlinderReferUrl, getVlinderSignInUrl } from "extension/shared/vlinder"
 import { useExtensionState } from "@/context/extension-state-context"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"
@@ -10,11 +10,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { vscode } from "@/utils/vscode"
 
 interface CreditsInfoProps {
-	koduCredits?: number
+	vlinderCredits?: number
 	vscodeUriScheme?: string
 }
 
-const CreditsInfo: React.FC<CreditsInfoProps> = ({ koduCredits, vscodeUriScheme }) => {
+const CreditsInfo: React.FC<CreditsInfoProps> = ({ vlinderCredits, vscodeUriScheme }) => {
 	const { user } = useExtensionState()
 	const [isOpen, setIsOpen] = useState(false)
 	useEffect(() => {
@@ -37,9 +37,9 @@ const CreditsInfo: React.FC<CreditsInfoProps> = ({ koduCredits, vscodeUriScheme 
 				marginLeft: "10px",
 				marginRight: "10px",
 			}}>
-			<div style={{ fontWeight: "500" }}>Kodu Credits Remaining:</div>
+			<div style={{ fontWeight: "500" }}>Vlinder Credits Remaining:</div>
 			<div>
-				{formatPrice(koduCredits || 0)}
+				{formatPrice(vlinderCredits || 0)}
 				<>
 					{" "}
 					<Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -77,7 +77,7 @@ const SignupContent = () => {
 			<CardHeader className="pb-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
 				<CardTitle className="text-lg sm:text-2xl font-bold break-words">Get $10 Free Credit!</CardTitle>
 				<CardDescription className="text-white/90 text-xs sm:text-sm">
-					Create your Kodu.ai account now
+					Create your Vlinder AI account now
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="pt-4 pb-2">
@@ -105,7 +105,7 @@ const SignupContent = () => {
 					onClick={() => {
 						vscode.postMessage({
 							type: "openExternalLink",
-							url: getKoduSignInUrl(uriScheme, extensionName),
+							url: getVlinderSignInUrl(uriScheme, extensionName),
 						})
 					}}
 					className="border-0 w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 text-xs sm:text-sm py-1 sm:py-2">
@@ -129,7 +129,7 @@ const AddCreditsContent = () => {
 					onClick={() => {
 						vscode.postMessage({
 							type: "openExternalLink",
-							url: getKoduReferUrl(),
+							url: getVlinderReferUrl(),
 						})
 					}}
 					variant="ghost"
@@ -146,7 +146,7 @@ const AddCreditsContent = () => {
 					onClick={() => {
 						vscode.postMessage({
 							type: "openExternalLink",
-							url: getKoduOfferUrl(),
+							url: getVlinderOfferUrl(),
 						})
 					}}
 					variant="ghost"
@@ -162,7 +162,7 @@ const AddCreditsContent = () => {
 					onClick={() => {
 						vscode.postMessage({
 							type: "openExternalLink",
-							url: getKoduAddCreditsUrl(),
+							url: getVlinderAddCreditsUrl(),
 						})
 					}}
 					variant="ghost"

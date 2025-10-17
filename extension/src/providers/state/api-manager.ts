@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { fetchKoduUser as fetchKoduUserAPI } from "../../api/providers/kodu"
+import { fetchVlinderUser as fetchVlinderUserAPI } from "../../api/providers/vlinder"
 import { ExtensionProvider } from "../extension-provider"
 import { ApiConfiguration } from "../../api"
 import { getCurrentModelInfo, getProvider } from "../../router/routes/provider-router"
@@ -26,33 +26,33 @@ export class ApiManager {
 		return (await getCurrentModelInfo()).model
 	}
 
-	async saveKoduApiKey(apiKey: string) {
-		await this.context.getSecretStateManager().updateSecretState("koduApiKey", apiKey)
-		console.log("Saved Kodu API key")
-		const user = await this.fetchKoduUser(apiKey)
+	async saveVlinderApiKey(apiKey: string) {
+		await this.context.getSecretStateManager().updateSecretState("vlinderApiKey", apiKey)
+		console.log("Saved Vlinder API key")
+		const user = await this.fetchVlinderUser(apiKey)
 		await this.context.getGlobalStateManager().updateGlobalState("user", user)
 		await this.context.getWebviewManager().postBaseStateToWebview()
-		console.log("Posted state to webview after saving Kodu API key")
-		await this.context.getWebviewManager().postMessageToWebview({ type: "action", action: "koduAuthenticated" })
-		console.log("Posted message to action: koduAuthenticated")
+		console.log("Posted state to webview after saving Vlinder API key")
+		await this.context.getWebviewManager().postMessageToWebview({ type: "action", action: "vlinderAuthenticated" })
+		console.log("Posted message to action: vlinderAuthenticated")
 	}
 
-	async signOutKodu() {
-		await this.context.getSecretStateManager().deleteSecretState("koduApiKey")
+	async signOutVlinder() {
+		await this.context.getSecretStateManager().deleteSecretState("vlinderApiKey")
 		await this.context.getGlobalStateManager().updateGlobalState("user", undefined)
 	}
 
-	async fetchKoduCredits() {
-		const koduApiKey = await this.context.getSecretStateManager().getSecretState("koduApiKey")
-		if (koduApiKey) {
-			const user = await this.fetchKoduUser(koduApiKey)
+	async fetchVlinderCredits() {
+		const vlinderApiKey = await this.context.getSecretStateManager().getSecretState("vlinderApiKey")
+		if (vlinderApiKey) {
+			const user = await this.fetchVlinderUser(vlinderApiKey)
 			if (user) {
 				await this.context.getGlobalStateManager().updateGlobalState("user", user)
 			}
 		}
 	}
 
-	private async fetchKoduUser(apiKey: string) {
-		return await fetchKoduUserAPI({ apiKey })
+	private async fetchVlinderUser(apiKey: string) {
+		return await fetchVlinderUserAPI({ apiKey })
 	}
 }

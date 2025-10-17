@@ -1,5 +1,5 @@
 import { ApiConstructorOptions, ApiHandler, ApiHandlerOptions } from ".."
-import { koduSSEResponse } from "../../shared/kodu"
+import { vlinderSSEResponse } from "../../shared/vlinder"
 import { CoreMessage, LanguageModel, LanguageModelV1, smoothStream, streamText } from "ai"
 import { createDeepSeek } from "@ai-sdk/deepseek"
 import { createOpenAI } from "@ai-sdk/openai"
@@ -140,7 +140,7 @@ const providerToAISDKModel = (settings: ApiConstructorOptions, modelId: string):
 				baseURL: providerSettings.data.baseUrl,
 				name: providerSettings.data.modelId,
 				headers: {
-					"User-Agent": `Kodu/${version}`,
+					"User-Agent": `Vlinder/${version}`,
 				},
 			}).languageModel(modelId)
 
@@ -177,7 +177,7 @@ export class CustomApiHandler implements ApiHandler {
 		modelId,
 		appendAfterCacheToLastMessage,
 		updateAfterCacheInserts,
-	}: Parameters<ApiHandler["createMessageStream"]>[0]): AsyncIterableIterator<koduSSEResponse> {
+	}: Parameters<ApiHandler["createMessageStream"]>[0]): AsyncIterableIterator<vlinderSSEResponse> {
 		const convertedMessages: CoreMessage[] = []
 		let thinkingConfig: GlobalState["thinking"] | undefined
 		if (abortSignal?.aborted) {
@@ -270,7 +270,7 @@ export class CustomApiHandler implements ApiHandler {
 			messages: convertedMessagesFull,
 			temperature: currentModel.id === "deepseek-reasoner" ? undefined : tempature ?? 0.1, // deepseek-reasoner doesn't support temperature
 			topP: top_p ?? undefined,
-			stopSequences: ["</kodu_action>"],
+			stopSequences: ["</vlinder_action>"],
 			abortSignal: abortSignal ?? undefined,
 			experimental_transform: smoothStream(),
 			maxRetries: 3,
@@ -373,7 +373,7 @@ export class CustomApiHandler implements ApiHandler {
 							role: "assistant",
 							stop_reason: "stop_sequence",
 							type: "message",
-							stop_sequence: "</kodu_action>",
+							stop_sequence: "</vlinder_action>",
 							model: modelId,
 							usage: {
 								input_tokens: inputTokens,

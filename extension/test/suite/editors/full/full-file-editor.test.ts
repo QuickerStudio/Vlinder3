@@ -79,7 +79,7 @@ describe("FullFileEditor Integration Tests", async () => {
 
 	beforeEach(async () => {
 		if (!activated) {
-			const extension = vscode.extensions.getExtension("kodu-ai.claude-dev-experimental")!
+			const extension = vscode.extensions.getExtension("QuickerStudio.vlinder")!
 			await extension.activate()
 			activated = true
 		}

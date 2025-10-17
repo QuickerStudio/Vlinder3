@@ -73,7 +73,7 @@ export class TerminalRegistry {
 	static createTerminal(cwd?: string | vscode.Uri | undefined, name?: string): TerminalInfo {
 		const terminal = vscode.window.createTerminal({
 			cwd,
-			name: name || "Kodu.AI",
+			name: name || "Vlinder AI",
 			isTransient: true,
 			env: {
 				PAGER: "cat",
@@ -378,7 +378,7 @@ export class TerminalManager {
 			if (name && t.name === name) {
 				return true
 			}
-			let terminalCwd = t.terminal.shellIntegration?.cwd // One of Kodu's commands could have changed the cwd of the terminal
+			let terminalCwd = t.terminal.shellIntegration?.cwd // One of Vlinder's commands could have changed the cwd of the terminal
 			if (!terminalCwd) {
 				return false
 			}

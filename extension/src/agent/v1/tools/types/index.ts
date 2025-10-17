@@ -114,7 +114,7 @@ export type AgentToolOptions = {
 	cwd: string
 	alwaysAllowReadOnly: boolean
 	alwaysAllowWriteOnly: boolean
-	koduDev: MainAgent
+	vlinders: MainAgent
 	setRunningProcessId?: (pid: number | undefined) => void
 	agentName?: SpawnAgentOptions
 }

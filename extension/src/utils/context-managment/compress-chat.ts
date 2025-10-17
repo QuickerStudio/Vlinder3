@@ -12,8 +12,8 @@ import { isToolResponseV2, parseToolResponse } from "../../shared/format-tools"
 import { ApiHandler } from "../../api"
 import { ToolName } from "../../agent/v1/tools/types"
 
-const KODU_DIFF = "kodu_diff" as const
-const KODU_CONTENT = "kodu_content" as const
+const VLINDER_DIFF = "vlinder_diff" as const
+const VLINDER_CONTENT = "vlinder_content" as const
 
 const logger = (msg: string, level: "info" | "warn" | "error" | "debug") => {
 	console[level](`[CompressToolFromMsg] ${msg}`)
@@ -307,15 +307,15 @@ const processContentBlock = async (
 	}
 
 	// Handle write_to_file compression
-	if ((content.text.includes("</write_to_file>") || content.text.includes(`</${KODU_CONTENT}>`)) && !isToolResponse) {
-		const koduContentType = content.text.includes(`</${KODU_CONTENT}>`) ? KODU_CONTENT : "content"
-		const contentStart = content.text.indexOf(`<${koduContentType}>`)
-		const contentEnd = content.text.indexOf(`</${koduContentType}>`)
+	if ((content.text.includes("</write_to_file>") || content.text.includes(`</${VLINDER_CONTENT}>`)) && !isToolResponse) {
+		const vlinderContentType = content.text.includes(`</${VLINDER_CONTENT}>`) ? VLINDER_CONTENT : "content"
+		const contentStart = content.text.indexOf(`<${vlinderContentType}>`)
+		const contentEnd = content.text.indexOf(`</${vlinderContentType}>`)
 
 		if (contentStart !== -1 && contentEnd !== -1) {
 			const textBeforeContent = content.text.slice(0, contentStart)
-			const textAfterContent = content.text.slice(contentEnd + `</${koduContentType}>`.length)
-			const fullContent = content.text.slice(contentStart + `<${koduContentType}>`.length, contentEnd)
+			const textAfterContent = content.text.slice(contentEnd + `</${vlinderContentType}>`.length)
+			const fullContent = content.text.slice(contentStart + `<${vlinderContentType}>`.length, contentEnd)
 
 			// Ensure extracted content is logged for verification
 			logger(`Extracted content: "${fullContent}"`, "debug")
@@ -324,10 +324,10 @@ const processContentBlock = async (
 			const lines = fullContent.split("\n")
 			const firstThreeLines = lines.slice(0, 3).join("\n")
 			const truncatedContent = firstThreeLines + (lines.length > 3 ? "\n..." : "")
-			const truncatedContentReplace = `<${koduContentType}>${truncatedContent}\n(Original length: ${fullContent.length}, lines: ${lines.length})</${koduContentType}>`
+			const truncatedContentReplace = `<${vlinderContentType}>${truncatedContent}\n(Original length: ${fullContent.length}, lines: ${lines.length})</${vlinderContentType}>`
 
 			logger(
-				`Compressed content for ${koduContentType}: original length: ${fullContent.length}, new length: ${truncatedContentReplace.length}`,
+				`Compressed content for ${vlinderContentType}: original length: ${fullContent.length}, new length: ${truncatedContentReplace.length}`,
 				"info"
 			)
 
@@ -336,30 +336,30 @@ const processContentBlock = async (
 				text: textBeforeContent + truncatedContentReplace + textAfterContent,
 			}
 		} else {
-			logger(`Failed to detect ${koduContentType} block boundaries, skipping compression`, "warn")
+			logger(`Failed to detect ${vlinderContentType} block boundaries, skipping compression`, "warn")
 		}
 	}
 
 	// Handle edit_file_blocks compression
-	if (content.text.includes(`<${KODU_DIFF}>`) && content.text.includes(`</${KODU_DIFF}>`) && !isToolResponse) {
-		const koduDiffStart = content.text.indexOf(`<${KODU_DIFF}>`)
-		const koduDiffEnd = content.text.indexOf(`</${KODU_DIFF}>`)
+	if (content.text.includes(`<${VLINDER_DIFF}>`) && content.text.includes(`</${VLINDER_DIFF}>`) && !isToolResponse) {
+		const vlinderDiffStart = content.text.indexOf(`<${VLINDER_DIFF}>`)
+		const vlinderDiffEnd = content.text.indexOf(`</${VLINDER_DIFF}>`)
 
-		if (koduDiffStart !== -1 && koduDiffEnd !== -1) {
-			const textBeforeContent = content.text.slice(0, koduDiffStart)
-			const textAfterContent = content.text.slice(koduDiffEnd + `</${KODU_DIFF}>`.length)
-			const fullContent = content.text.slice(koduDiffStart + `<${KODU_DIFF}>`.length, koduDiffEnd)
+		if (vlinderDiffStart !== -1 && vlinderDiffEnd !== -1) {
+			const textBeforeContent = content.text.slice(0, vlinderDiffStart)
+			const textAfterContent = content.text.slice(vlinderDiffEnd + `</${VLINDER_DIFF}>`.length)
+			const fullContent = content.text.slice(vlinderDiffStart + `<${VLINDER_DIFF}>`.length, vlinderDiffEnd)
 
 			// Log extracted content for debugging
-			logger(`Extracted ${KODU_DIFF} content: "${fullContent}"`, "debug")
+			logger(`Extracted ${VLINDER_DIFF} content: "${fullContent}"`, "debug")
 
 			// Count SEARCH and REPLACE blocks
 			const searchCount = (fullContent.match(/SEARCH/g) || []).length
 			const replaceCount = (fullContent.match(/REPLACE/g) || []).length
 
-			const truncatedContent = `<${KODU_DIFF}>Compressed diff with ${searchCount} SEARCH/REPLACE blocks</${KODU_DIFF}>`
+			const truncatedContent = `<${VLINDER_DIFF}>Compressed diff with ${searchCount} SEARCH/REPLACE blocks</${VLINDER_DIFF}>`
 			logger(
-				`Compressed ${KODU_DIFF}: original length: ${fullContent.length}, SEARCH: ${searchCount}, REPLACE: ${replaceCount}`,
+				`Compressed ${VLINDER_DIFF}: original length: ${fullContent.length}, SEARCH: ${searchCount}, REPLACE: ${replaceCount}`,
 				"info"
 			)
 
@@ -368,7 +368,7 @@ const processContentBlock = async (
 				text: textBeforeContent + truncatedContent + textAfterContent,
 			}
 		} else {
-			logger(`Failed to detect ${KODU_DIFF} boundaries, skipping compression`, "warn")
+			logger(`Failed to detect ${VLINDER_DIFF} boundaries, skipping compression`, "warn")
 		}
 	}
 

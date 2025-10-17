@@ -1,9 +1,9 @@
 import delay from "delay"
 import * as vscode from "vscode"
-export const DIFF_VIEW_URI_SCHEME = "claude-coder-diff"
-export const MODIFIED_URI_SCHEME = "claude-coder-modified"
-export const INLINE_DIFF_VIEW_URI_SCHEME = "claude-coder-inline-diff"
-export const INLINE_MODIFIED_URI_SCHEME = "claude-coder-inline-modified"
+export const DIFF_VIEW_URI_SCHEME = "vlinder-diff"
+export const MODIFIED_URI_SCHEME = "vlinder-modified"
+export const INLINE_DIFF_VIEW_URI_SCHEME = "vlinder-inline-diff"
+export const INLINE_MODIFIED_URI_SCHEME = "vlinder-inline-modified"
 
 export const fadedOverlayDecorationType = vscode.window.createTextEditorDecorationType({
 	backgroundColor: "rgba(255, 255, 0, 0.1)",

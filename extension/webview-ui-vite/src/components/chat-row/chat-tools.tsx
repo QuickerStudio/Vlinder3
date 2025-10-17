@@ -731,7 +731,7 @@ export const FileChangesPlanBlock: React.FC<
 							<Button variant="ghost" size="sm" className="flex items-center w-full justify-between px-0">
 								<div className="flex items-center space-x-2">
 									<MessageCircle className="h-4 w-4 text-info" />
-									<span className="font-medium">View Kodu Reasoning Steps</span>
+									<span className="font-medium">View Vlinder Reasoning Steps</span>
 								</div>
 								{isReasoningOpen ? (
 									<ChevronUp className="h-4 w-4" />
@@ -770,7 +770,7 @@ export const FileChangesPlanBlock: React.FC<
 							<span className="font-semibold text-sm">Plan Rejected</span>
 						</div>
 						<p className="text-sm text-destructive-foreground">
-							Kodu decided to reject the change plan because of:
+							Vlinder decided to reject the change plan because of:
 						</p>
 						<div className="bg-destructive/20 p-2 rounded-md mt-2">
 							<MarkdownRenderer markdown={rejectedString.trim()} />

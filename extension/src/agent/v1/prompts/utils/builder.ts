@@ -218,7 +218,7 @@ ${tool.examples
 > ${this.config.agentName} Output : ${example.thinking ? "\n> " + example.thinking : ""} ${
 			example.memory ? "\n> " + example.memory : ""
 		}
-<kodu_action>${example.output}</kodu_action>`
+<vlinder_action>${example.output}</vlinder_action>`
 	)
 	.join("\n\n")}`
 		: ""

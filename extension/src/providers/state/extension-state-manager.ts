@@ -1,12 +1,12 @@
 import { GlobalStateManager } from "./global-state-manager"
 import { HistoryItem, isSatifiesHistoryItem } from "../../shared/history-item"
 import { SecretStateManager } from "./secret-state-manager"
-import { fetchKoduUser as fetchKoduUserAPI } from "../../api/providers/kodu"
+import { fetchVlinderUser as fetchVlinderUserAPI } from "../../api/providers/vlinder"
 import { ExtensionProvider } from "../extension-provider"
 import { ExtensionState, isV1ClaudeMessage, V1ClaudeMessage } from "../../shared/messages/extension-message"
 
 /**
- * this at the current form can't be a singleton because it has dependicies on the KoduDev instance, and one extension can have multiple KoduDev instances
+ * this at the current form can't be a singleton because it has dependicies on the Vlinders instance, and one extension can have multiple Vlinders instances
  */
 export class ExtensionStateManager {
 	private globalStateManager: GlobalStateManager
@@ -34,7 +34,7 @@ export class ExtensionStateManager {
 			inlineEditOutputType,
 			observerSettings,
 			apiConfig,
-			koduApiKey,
+			vlinderApiKey,
 			gitCommitterType,
 		] = await Promise.all([
 			this.globalStateManager.getGlobalState("user"),
@@ -52,12 +52,12 @@ export class ExtensionStateManager {
 			this.globalStateManager.getGlobalState("inlineEditOutputType"),
 			this.globalStateManager.getGlobalState("observerSettings"),
 			this.globalStateManager.getGlobalState("apiConfig"),
-			this.secretStateManager.getSecretState("koduApiKey"),
+			this.secretStateManager.getSecretState("vlinderApiKey"),
 			this.globalStateManager.getGlobalState("gitCommitterType"),
 		])
 
-		const currentTaskId = this.context.getKoduDev()?.getStateManager()?.state.taskId
-		const currentClaudeMessage = this.context.getKoduDev()?.getStateManager()?.state.claudeMessages
+		const currentTaskId = this.context.getVlinders()?.getStateManager()?.state.taskId
+		const currentClaudeMessage = this.context.getVlinders()?.getStateManager()?.state.claudeMessages
 
 		const clone = [...(currentClaudeMessage ?? [])]?.reverse()
 		const lastClaudeApiFinished = clone?.find(
@@ -79,11 +79,11 @@ export class ExtensionStateManager {
 			(lastClaudeApiFinished?.apiMetrics?.inputCacheRead ?? 0) +
 			(lastClaudeApiFinished?.apiMetrics?.inputCacheWrite ?? 0)
 		const currentContextWindow = this.context
-			.getKoduDev()
+			.getVlinders()
 			?.getStateManager()
 			?.apiManager.getModelInfo()?.contextWindow
 		if (apiConfig) {
-			apiConfig.koduApiKey = koduApiKey
+			apiConfig.vlinderApiKey = vlinderApiKey
 		}
 
 		return {
@@ -119,17 +119,17 @@ export class ExtensionStateManager {
 	}
 
 	async setAutoCloseTerminal(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setAutoCloseTerminal(value)
+		this.context.getVlinders()?.getStateManager()?.setAutoCloseTerminal(value)
 		return this.globalStateManager.updateGlobalState("autoCloseTerminal", value)
 	}
 
 	async setTerminalCompressionThreshold(value: number | undefined) {
-		this.context.getKoduDev()?.getStateManager()?.setTerminalCompressionThreshold(value)
+		this.context.getVlinders()?.getStateManager()?.setTerminalCompressionThreshold(value)
 		return this.globalStateManager.updateGlobalState("terminalCompressionThreshold", value)
 	}
 
 	async setInlineEditModeType(value: "full" | "diff") {
-		this.context.getKoduDev()?.getStateManager()?.setInlineEditOutputType(value)
+		this.context.getVlinders()?.getStateManager()?.setInlineEditOutputType(value)
 		return this.globalStateManager.updateGlobalState("inlineEditOutputType", value)
 	}
 
@@ -160,19 +160,19 @@ export class ExtensionStateManager {
 		await this.globalStateManager.updateGlobalState("taskHistory", [])
 	}
 
-	async fetchKoduUser() {
-		const koduApiKey = await this.secretStateManager.getSecretState("koduApiKey")
-		if (koduApiKey) {
-			return await fetchKoduUserAPI({ apiKey: koduApiKey })
+	async fetchVlinderUser() {
+		const vlinderApiKey = await this.secretStateManager.getSecretState("vlinderApiKey")
+		if (vlinderApiKey) {
+			return await fetchVlinderUserAPI({ apiKey: vlinderApiKey })
 		}
 		return null
 	}
 
 	async setSkipWriteAnimation(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setSkipWriteAnimation(value)
+		this.context.getVlinders()?.getStateManager()?.setSkipWriteAnimation(value)
 		return this.globalStateManager.updateGlobalState("skipWriteAnimation", value)
 	}
-	async updateKoduCredits(credits: number) {
+	async updateVlinderCredits(credits: number) {
 		const user = await this.globalStateManager.getGlobalState("user")
 		if (user) {
 			user.credits = credits
@@ -181,27 +181,27 @@ export class ExtensionStateManager {
 	}
 
 	setCustomInstructions(value: string | undefined) {
-		this.context.getKoduDev()?.getStateManager()?.setCustomInstructions(value)
+		this.context.getVlinders()?.getStateManager()?.setCustomInstructions(value)
 		return this.globalStateManager.updateGlobalState("customInstructions", value)
 	}
 
 	setAutoSummarize(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setAutoSummarize(value)
+		this.context.getVlinders()?.getStateManager()?.setAutoSummarize(value)
 		return this.globalStateManager.updateGlobalState("autoSummarize", value)
 	}
 
 	setGitHandlerEnabled(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setGitHandlerEnabled(value)
+		this.context.getVlinders()?.getStateManager()?.setGitHandlerEnabled(value)
 		return this.globalStateManager.updateGlobalState("gitHandlerEnabled", value)
 	}
 
 	setAlwaysAllowReadOnly(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setAlwaysAllowReadOnly(value)
+		this.context.getVlinders()?.getStateManager()?.setAlwaysAllowReadOnly(value)
 		return this.globalStateManager.updateGlobalState("alwaysAllowReadOnly", value)
 	}
 
 	setAlwaysAllowWriteOnly(value: boolean) {
-		this.context.getKoduDev()?.getStateManager()?.setAlwaysAllowWriteOnly(value)
+		this.context.getVlinders()?.getStateManager()?.setAlwaysAllowWriteOnly(value)
 		return this.globalStateManager.updateGlobalState("alwaysAllowWriteOnly", value)
 	}
 }

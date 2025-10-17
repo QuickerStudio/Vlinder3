@@ -114,7 +114,7 @@ export function promptTemplate(
 export async function buildPromptFromTemplate(template: string, task?: string): Promise<string> {
 	const vision = (await ApiManager.getInstance().getCurrentModelInfo())?.supportsImages ?? false
 	const config: PromptConfig = {
-		agentName: "Kodu",
+		agentName: "Vlinder",
 		osName: osName(),
 		defaultShell: defaultShell,
 		homeDir: os.homedir().replace(/\\/g, "/"),

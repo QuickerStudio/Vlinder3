@@ -102,9 +102,9 @@ export class ReadFileTool extends BaseAgentTool<ReadFileToolParams> {
 			)
 			const errorString = dedent`<file_read_response><status><result>error</result><operation>file_read</operation><timestamp>${new Date().toISOString()}</timestamp></status><error_details><message>Error reading file: ${JSON.stringify(
 				serializeError(error)
-			)}</message><path>${relPath}</path><help><example_usage><kodu_action>${
+			)}</message><path>${relPath}</path><help><example_usage><vlinder_action>${
 				readFilePrompt.examples[0].output
-			}</kodu_action></example_usage><note>Please provide a valid file path. File reading operations require a valid path parameter.</note></help></error_details></file_read_response>`
+			}</vlinder_action></example_usage><note>Please provide a valid file path. File reading operations require a valid path parameter.</note></help></error_details></file_read_response>`
 
 			await say(
 				"error",

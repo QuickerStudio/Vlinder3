@@ -10,8 +10,8 @@ Key Questions About This License
 
 2. How does this license affect me as a user?
    For most users, this license has minimal impact:
-   Normal Usage: If you're using Kodu for personal or internal use within your organization, the AGPL-3 license does not affect you. You can use the software freely without any obligations.
-   Distribution or Hosting: The license only comes into play if you want to distribute Kodu or host it as a service to others. In these cases, you must make the source code (including any modifications) available under the same AGPL-3 license.
+   Normal Usage: If you're using Vlinder for personal or internal use within your organization, the AGPL-3 license does not affect you. You can use the software freely without any obligations.
+   Distribution or Hosting: The license only comes into play if you want to distribute Vlinder or host it as a service to others. In these cases, you must make the source code (including any modifications) available under the same AGPL-3 license.
 
 3. What is AGPL-3 and why did we choose it?
    The GNU Affero General Public License version 3 (AGPL-3) is a copyleft license designed to ensure that the software remains open source, even when used to provide services over a network.
@@ -253,7 +253,7 @@ Claude Dev License:
 
 MIT License
 
-Copyright (c) 2024 Kodu AI
+Copyright (c) 2024 QuickerStudio
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

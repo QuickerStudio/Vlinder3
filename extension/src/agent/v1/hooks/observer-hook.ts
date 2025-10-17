@@ -144,8 +144,8 @@ Now, it's your turn to evaluate the agent's last action. Remember to provide a c
 export class ObserverHook extends BaseHook {
 	private options: ObserverHookOptions
 
-	constructor(options: ObserverHookOptions, koduDev: MainAgent) {
-		super(options, koduDev)
+	constructor(options: ObserverHookOptions, vlinders: MainAgent) {
+		super(options, vlinders)
 		this.options = options
 	}
 
@@ -153,13 +153,13 @@ export class ObserverHook extends BaseHook {
 		// check if last message spawned agent
 
 		try {
-			const lastMessage = this.koduDev.getStateManager().state.apiConversationHistory.slice(-1)?.[0]?.content?.[0]
+			const lastMessage = this.vlinders.getStateManager().state.apiConversationHistory.slice(-1)?.[0]?.content?.[0]
 			const lastMessageText =
 				typeof lastMessage === "string" ? lastMessage : lastMessage.type === "text" ? lastMessage.text : ""
 			const lastAgentTag = `</${spawnAgentTool.schema.name}>`
 			const isSpawnAgentAction = lastMessageText.includes(lastAgentTag)
-			const isInSubAgent = !!this.koduDev.getStateManager().subAgentManager.currentSubAgentId
-			const pastFirstMsg = this.koduDev.getStateManager().state.apiConversationHistory.length > 2
+			const isInSubAgent = !!this.vlinders.getStateManager().subAgentManager.currentSubAgentId
+			const pastFirstMsg = this.vlinders.getStateManager().state.apiConversationHistory.length > 2
 
 			return (
 				pastFirstMsg &&
@@ -216,7 +216,7 @@ export class ObserverHook extends BaseHook {
 				)
 				return null
 			}
-			this.koduDev.taskExecutor.sayHook({
+			this.vlinders.taskExecutor.sayHook({
 				hookName: "observer",
 				state: "pending",
 				output: "",
@@ -229,10 +229,10 @@ export class ObserverHook extends BaseHook {
 				models: providerData.models,
 				model,
 			}
-			const apiManager = new ApiManager(this.koduDev.providerRef.deref()!, providerSettings)
+			const apiManager = new ApiManager(this.vlinders.providerRef.deref()!, providerSettings)
 			const thirdPartyObserver = await apiManager.createApiStreamRequest(
 				taskHistory,
-				this.koduDev.taskExecutor.abortController!,
+				this.vlinders.taskExecutor.abortController!,
 				{
 					systemPrompt: observerSettings.observePrompt ?? observerHookDefaultPrompt,
 				},
@@ -262,7 +262,7 @@ export class ObserverHook extends BaseHook {
 				}
 			}
 
-			this.koduDev.taskExecutor.sayHook({
+			this.vlinders.taskExecutor.sayHook({
 				hookName: "observer",
 				state: "completed",
 				output: finalOutput,
@@ -280,7 +280,7 @@ export class ObserverHook extends BaseHook {
 				## End of Observer Feedback ##
 				`
 			} else {
-				this.koduDev.taskExecutor.sayHook({
+				this.vlinders.taskExecutor.sayHook({
 					hookName: "observer",
 					state: "error",
 					output: finalOutput,
@@ -293,7 +293,7 @@ export class ObserverHook extends BaseHook {
 
 			return finalOutput
 		} catch (error) {
-			this.koduDev.taskExecutor.sayHook({
+			this.vlinders.taskExecutor.sayHook({
 				hookName: "observer",
 				state: "error",
 				output: "",
@@ -310,7 +310,7 @@ export class ObserverHook extends BaseHook {
 	 * Get current context from state
 	 */
 	private getCurrentContext() {
-		const history = this.koduDev.getStateManager().state.apiConversationHistory
+		const history = this.vlinders.getStateManager().state.apiConversationHistory
 		if (history.length === 0) {
 			return {
 				history: [],

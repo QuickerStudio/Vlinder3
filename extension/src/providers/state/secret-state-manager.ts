@@ -1,9 +1,9 @@
 import * as vscode from "vscode"
 
-const secretKeys = ["koduApiKey"] as const
+const secretKeys = ["vlinderApiKey"] as const
 
 type SecretState = {
-	koduApiKey: string
+	vlinderApiKey: string
 	fp: string
 	providers?: string
 }

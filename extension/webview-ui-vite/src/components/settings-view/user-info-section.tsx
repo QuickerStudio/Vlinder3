@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useExtensionState } from "../../context/extension-state-context"
 import { vscode } from "@/utils/vscode"
 import { formatPrice } from "./utils"
-import { getKoduAddCreditsUrl, getKoduOfferUrl, getKoduSignInUrl } from "extension/shared/kodu"
+import { getVlinderAddCreditsUrl, getVlinderOfferUrl, getVlinderSignInUrl } from "extension/shared/vlinder"
 import { GiftIcon, KeyIcon } from "lucide-react"
 
 const UserInfoSection: React.FC = () => {
@@ -20,8 +20,8 @@ const UserInfoSection: React.FC = () => {
 						vscode.postTrackingEvent("AuthStart")
 					}}
 					asChild>
-					<a href={getKoduSignInUrl(extensionState.uriScheme, extensionState.extensionName)}>
-						Sign in to Kodu
+					<a href={getVlinderSignInUrl(extensionState.uriScheme, extensionState.extensionName)}>
+						Sign in to Vlinder
 					</a>
 				</Button>
 				{isClicked && (
@@ -48,12 +48,12 @@ const UserInfoSection: React.FC = () => {
 						variant="link"
 						size="sm"
 						className="text-sm !text-muted-foreground"
-						onClick={() => vscode.postMessage({ type: "didClickKoduSignOut" })}>
+						onClick={() => vscode.postMessage({ type: "didClickVlinderSignOut" })}>
 						sign out
 					</Button>
 				</div>
 				<div className="max-[280px]:mt-2">
-					<p className="text-xs font-medium">Kodu Credits remaining</p>
+					<p className="text-xs font-medium">Vlinder Credits remaining</p>
 					<p className="text-lg font-bold">{formatPrice(extensionState.user?.credits || 0)}</p>
 				</div>
 			</div>
@@ -64,7 +64,7 @@ const UserInfoSection: React.FC = () => {
 						vscode.postTrackingEvent("ExtensionCreditAddSelect", "purchase")
 					}}
 					asChild>
-					<a href={getKoduAddCreditsUrl(extensionState.uriScheme)}>Add Credits</a>
+					<a href={getVlinderAddCreditsUrl(extensionState.uriScheme)}>Add Credits</a>
 				</Button>
 				<Button
 					onClick={() => {
@@ -73,7 +73,7 @@ const UserInfoSection: React.FC = () => {
 					}}
 					variant={"outline"}
 					asChild>
-					<a href={getKoduOfferUrl(extensionState.uriScheme)}>
+					<a href={getVlinderOfferUrl(extensionState.uriScheme)}>
 						<GiftIcon className="size-4 mr-1" />
 						$10 Free Credits
 					</a>

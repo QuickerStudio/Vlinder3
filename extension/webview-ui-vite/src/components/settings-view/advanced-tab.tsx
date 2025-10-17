@@ -251,12 +251,12 @@ const AdvancedTab: React.FC = () => {
 							<Label className="text-xs font-medium">Git Committer</Label>
 							<RadioGroup
 								value={gitCommitterType}
-								onValueChange={(value) => handleSetGitCommitterType(value as "kodu" | "user")}
-								className="flex flex-col space-y-1">
-								<div className="flex items-center space-x-2">
-									<RadioGroupItem value="kodu" id="kodu" />
-									<Label htmlFor="kodu" className="text-sm">
-										Kodu AI
+							onValueChange={(value) => handleSetGitCommitterType(value as "vlinder" | "user")}
+							className="flex flex-col space-y-1">
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="vlinder" id="vlinder" />
+								<Label htmlFor="vlinder" className="text-sm">
+										Vlinder AI
 									</Label>
 								</div>
 								<div className="flex items-center space-x-2">
@@ -296,7 +296,7 @@ const AdvancedTab: React.FC = () => {
 							<div className="space-y-2">
 								<Label className="text-xs">Observer Frequency (requests)</Label>
 								<div className="text-xs text-muted-foreground mb-2">
-									How often the observer agent should analyze Kodu's actions. Lower values mean more
+									How often the observer agent should analyze Vlinder's actions. Lower values mean more
 									frequent observations but may impact performance.
 								</div>
 								<Slider
@@ -334,7 +334,7 @@ const AdvancedTab: React.FC = () => {
 							<div className="space-y-2">
 								<Label className="text-xs">Select Observer Model</Label>
 								<div className="text-xs text-muted-foreground mb-2">
-									The AI model that will analyze Kodu's actions. Different models may offer varying levels
+									The AI model that will analyze Vlinder's actions. Different models may offer varying levels
 									of insight and performance.
 								</div>
 								<ModelSelector
@@ -352,7 +352,7 @@ const AdvancedTab: React.FC = () => {
 									</Button>
 								</ModelSelector>
 								{observerData.observerSettings?.providerId &&
-									observerData.observerSettings?.providerId !== "kodu" &&
+									observerData.observerSettings?.providerId !== "vlinder" &&
 									!currentModelInfo?.providerData.currentProvider && (
 										<span
 											onClick={() => {
@@ -542,8 +542,8 @@ const AdvancedTab: React.FC = () => {
 						Customize Instructions
 					</Label>
 					<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground`}>
-						Let's you customize the instructions that Kodu will follow when executing Tasks. You can
-						customize the tools and general instructions that Kodu will follow.
+					Let's you customize the instructions that Vlinder will follow when executing Tasks. You can
+					customize the tools and general instructions that Vlinder will follow.
 					</p>
 				</div>
 

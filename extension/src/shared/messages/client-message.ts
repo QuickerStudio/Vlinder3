@@ -154,7 +154,7 @@ export type PromptActions =
 
 export type ActionMessage = {
 	type: "action"
-	action: "didBecomeVisible" | "koduAuthenticated" | "koduCreditsFetched"
+	action: "didBecomeVisible" | "vlinderAuthenticated" | "vlinderCreditsFetched"
 	text?: string
 	state?: BaseExtensionState
 }
@@ -229,8 +229,8 @@ export type WebviewMessage =
 				| "exportTaskWithId"
 				| "togglePinTask"
 				| "promptEditorLoaded"
-				| "didClickKoduSignOut"
-				| "fetchKoduCredits"
+				| "didClickVlinderSignOut"
+				| "fetchVlinderCredits"
 				| "resetState"
 				| "fileTree"
 			text?: string

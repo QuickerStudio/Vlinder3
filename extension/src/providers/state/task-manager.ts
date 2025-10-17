@@ -21,12 +21,12 @@ export class TaskManager {
 
 	async clearTask() {
 		const now = new Date()
-		const koduDev = this.provider.getKoduDev()
+		const vlinders = this.provider.getVlinders()
 
-		this.provider.koduDev = undefined
+		this.provider.vlinders = undefined
 
-		if (koduDev) {
-			koduDev.abortTask().catch((err) => {
+		if (vlinders) {
+			vlinders.abortTask().catch((err) => {
 				console.error("Error during task abort:", err)
 			})
 		}
@@ -41,9 +41,9 @@ export class TaskManager {
 	}
 
 	async handleAskResponse(askResponse: any, text?: string, images?: string[], attachements?: Resource[]) {
-		const koduDev = this.provider.getKoduDev()
-		if (!koduDev) {
-			console.error("No KoduDev instance found when handling ask response")
+		const vlinders = this.provider.getVlinders()
+		if (!vlinders) {
+			console.error("No Vlinders instance found when handling ask response")
 			return
 		}
 
@@ -51,7 +51,7 @@ export class TaskManager {
 			const compressedImages = await compressImages(images ?? [])
 			const additionalContextBlocks = await formatAttachementsIntoBlocks(attachements)
 
-			await koduDev.handleWebviewAskResponse(
+			await vlinders.handleWebviewAskResponse(
 				askResponse,
 				text ? text + additionalContextBlocks : undefined,
 				compressedImages
@@ -77,7 +77,7 @@ export class TaskManager {
 	) {
 		let currentTaskId = params.taskId
 		if (params.isCurentTask) {
-			currentTaskId = this.provider.getKoduDev()?.getStateManager()?.state.taskId!
+			currentTaskId = this.provider.getVlinders()?.getStateManager()?.state.taskId!
 		}
 		if (!currentTaskId) {
 			vscode.window.showErrorMessage(`Task not found`)
@@ -113,14 +113,14 @@ export class TaskManager {
 	}
 
 	async exportCurrentTask() {
-		const currentTaskId = this.provider.getKoduDev()?.getStateManager()?.state.taskId
+		const currentTaskId = this.provider.getVlinders()?.getStateManager()?.state.taskId
 		if (currentTaskId) {
 			await this.exportTaskWithId(currentTaskId)
 		}
 	}
 
 	async showTaskWithId(id: string) {
-		if (id !== this.provider.getKoduDev()?.getStateManager().state.taskId) {
+		if (id !== this.provider.getVlinders()?.getStateManager().state.taskId) {
 			const { historyItem } = await this.getTaskWithId(id)
 			await this.provider.initWithHistoryItem(historyItem)
 		}
@@ -137,7 +137,7 @@ export class TaskManager {
 	}
 
 	async deleteTaskWithId(id: string) {
-		if (id === this.provider.getKoduDev()?.getStateManager().state.taskId) {
+		if (id === this.provider.getVlinders()?.getStateManager().state.taskId) {
 			await this.clearTask()
 		}
 

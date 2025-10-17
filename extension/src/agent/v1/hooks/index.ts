@@ -19,7 +19,7 @@ export type { HookState }
 export { HookManager }
 
 // Hook type for type safety when registering hooks
-export type HookConstructor<T extends BaseHook> = new (options: HookOptions, koduDev: MainAgent) => T
+export type HookConstructor<T extends BaseHook> = new (options: HookOptions, vlinders: MainAgent) => T
 
 // Hook registration helper type
 export type RegisteredHook = {
@@ -31,7 +31,7 @@ export type RegisteredHook = {
  * Example usage:
  *
  * ```typescript
- * const hookManager = new HookManager(koduDev)
+ * const hookManager = new HookManager(vlinders)
  *
  * // Register diagnostic hook
  * hookManager.registerHook(DiagnosticHook, {

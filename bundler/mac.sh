@@ -24,12 +24,12 @@ fi
 
 # Install the VS Code extension
 echo "Installing the VS Code extension..."
-/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code --install-extension kodu-ai.claude-dev-experimental
+/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code --install-extension QuickerStudio.vlinder
 
 # Open VS Code and focus on the installed extension
 echo "Opening Visual Studio Code and focusing on the extension..."
 open -a "Visual Studio Code"
 sleep 5
-open "vscode://kodu-ai.claude-dev-experimental/kodu-claude-coder-main.plusButtonTapped"
+open "vscode://QuickerStudio.vlinder/vlinder-main.plusButtonTapped"
 
 echo "Installation and setup complete!"

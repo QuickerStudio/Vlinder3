@@ -20,7 +20,7 @@ import { useSwitchToProviderManager } from "./atoms"
  * @param modelId        The currently selected model ID (string)
  * @param providerId     The currently selected provider ID (string)
  * @param onChangeModel  Handler to set the new model ID when a user selects a model from the list
- * @param models         Optional record of models; defaults to koduModels
+ * @param models         Optional record of models; defaults to vlinderModels
  * @param showDetails    Whether to show the selected model's details (CPM, contextWindow, output limit, badges) below the popover
  */
 interface ModelSelectorProps {
@@ -268,7 +268,7 @@ export const ModelSelector: FC<ModelSelectorProps> = ({
 									Prices are shown per million tokens
 								</span>
 								<br />
-								{selectedModel.provider !== "kodu" &&
+								{selectedModel.provider !== "vlinder" &&
 									!currentModelInfo?.providerData.currentProvider && (
 										<span
 											onClick={() => {

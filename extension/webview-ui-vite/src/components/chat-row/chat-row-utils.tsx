@@ -1,5 +1,5 @@
 import { AlertCircle, LogIn, CreditCard, CircleX, X, ChevronDown, ChevronRight, Settings, Gift } from "lucide-react"
-import { loginKodu } from "@/utils/kodu-links"
+import { loginVlinder } from "@/utils/vlinder-links"
 import { useExtensionState } from "@/context/extension-state-context"
 
 function formatElapsedTime(ms: number): string {
@@ -14,7 +14,7 @@ function formatElapsedTime(ms: number): string {
 }
 import { useCollapseState } from "@/hooks/use-collapse-state"
 import { vscode } from "@/utils/vscode"
-import { getKoduAddCreditsUrl, getKoduOfferUrl } from "extension/shared/kodu"
+import { getVlinderAddCreditsUrl, getVlinderOfferUrl } from "extension/shared/vlinder"
 import { TextWithAttachments } from "@/utils/extract-attachments"
 import { SyntaxHighlighterStyle } from "@/utils/get-syntax-highlighter-style-from-theme"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
@@ -91,7 +91,7 @@ export const APIRequestMessage: React.FC<{ message: V1ClaudeMessage }> = React.m
 								<div className="flex justify-between">
 									<span className="text-secondary-foreground/80">Agent</span>
 									<span className="text-secondary-foreground">
-										{message.agentName ?? "Kodu Main"}
+										{message.agentName ?? "Vlinder Main"}
 									</span>
 								</div>
 								<div className="flex justify-between">
@@ -378,7 +378,7 @@ export function ErrorMsgComponent({ type }: { type: "unauthorized" | "payment_re
 				{type === "unauthorized" ? (
 					<button className={buttonStyles}>
 						<span
-							onClick={() => loginKodu({ uriScheme: uriScheme!, extensionName: extensionName! })}
+							onClick={() => loginVlinder({ uriScheme: uriScheme!, extensionName: extensionName! })}
 							className="flex items-center justify-center">
 							<LogIn className="mr-2 h-3 w-3" /> Log In
 						</span>
@@ -386,7 +386,7 @@ export function ErrorMsgComponent({ type }: { type: "unauthorized" | "payment_re
 				) : (
 					<>
 						<button className={buttonStyles}>
-							<a className="!text-foreground" href={getKoduOfferUrl(uriScheme)}>
+							<a className="!text-foreground" href={getVlinderOfferUrl(uriScheme)}>
 								<span
 									onClick={() => {
 										vscode.postTrackingEvent("OfferwallView")
@@ -398,7 +398,7 @@ export function ErrorMsgComponent({ type }: { type: "unauthorized" | "payment_re
 							</a>
 						</button>
 						<button className={buttonStyles}>
-							<a className="!text-foreground" href={getKoduAddCreditsUrl(uriScheme)}>
+							<a className="!text-foreground" href={getVlinderAddCreditsUrl(uriScheme)}>
 								<span
 									onClick={() => {
 										vscode.postTrackingEvent("ExtensionCreditAddOpen")

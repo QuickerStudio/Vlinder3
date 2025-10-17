@@ -472,7 +472,7 @@ export default ToolParser
 
 // Since this appears to be a self-test task to demonstrate understanding of TypeScript generic syntax, I should use attempt_completion to present this understanding.
 // </thinking>
-// <kodu_action><attempt_completion>
+// <vlinder_action><attempt_completion>
 // <result>
 // The example demonstrates correct vs incorrect TypeScript generic type syntax:
 
@@ -486,7 +486,7 @@ export default ToolParser
 // - Uses angle brackets <> for generic type parameters
 // - Properly nests the generic types: Promise containing EnvironmentResponse containing ApprovalResponse
 // </result>
-// </attempt_completion></kodu_action>`
+// </attempt_completion></vlinder_action>`
 
 // function processAsChunksStream(input: string, delay: number) {
 // 	let i = 0
@@ -510,7 +510,7 @@ export default ToolParser
 
 // processAsChunksStream(input, 2)
 
-// const input = `<kodu_action><attempt_completion><result>**Warning:** CodeGate detected one or more malicious, deprecated or archived packages.\n- Pkg 1: [https://www.insight.stacklok.com/report/pypi/malicious-pypi-dummy](https://www.insight.stacklok.com/report/pypi/malicious-pypi-dummy?utm_source=codegate)\n\nYou should not use the \`malicious-pypi-dummy\` package as it has been identified as malicious. Using such packages can expose your application to security vulnerabilities and potential risks. It is advisable to look for alternative packages that are well-reviewed and maintained.</result></attempt_completion></kodu_action>`
+// const input = `<vlinder_action><attempt_completion><result>**Warning:** CodeGate detected one or more malicious, deprecated or archived packages.\n- Pkg 1: [https://www.insight.stacklok.com/report/pypi/malicious-pypi-dummy](https://www.insight.stacklok.com/report/pypi/malicious-pypi-dummy?utm_source=codegate)\n\nYou should not use the \`malicious-pypi-dummy\` package as it has been identified as malicious. Using such packages can expose your application to security vulnerabilities and potential risks. It is advisable to look for alternative packages that are well-reviewed and maintained.</result></attempt_completion></vlinder_action>`
 
 // parser.appendText(input)
 // parser.endParsing()
@@ -527,7 +527,7 @@ export default ToolParser
 // - Did the user provide the content of the file? No
 // - Do i have the last content of the file? No, this is a new file
 
-// The file will be created at: /home/matan/code/test-3/kodu/test/html.md
+// The file will be created at: /home/matan/code/test-3/vlinder/test/html.md
 // </thinking>
 
 // <write_to_file>
@@ -611,7 +611,7 @@ export default ToolParser
 // - Code examples where appropriate
 // - Clear markdown formatting for readability
 
-// The file has been written to /home/matan/code/test-3/kodu/test/html.md
+// The file has been written to /home/matan/code/test-3/vlinder/test/html.md
 // </result>
 // </attempt_completion>`
 

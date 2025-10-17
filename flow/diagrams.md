@@ -8,12 +8,12 @@ The following diagram illustrates the relationships between the main components 
 
 ```mermaid
 graph TB
-    KoduDev --> ApiManager
-    KoduDev --> StateManager
-    KoduDev --> TaskExecutor
+    Vlinders --> ApiManager
+    Vlinders --> StateManager
+    Vlinders --> TaskExecutor
     TaskExecutor --> ToolExecutor
     ApiManager --> SystemPrompts
-    KoduDev --> Constants
+    Vlinders --> Constants
     StateManager --> Constants
     ApiManager --> Constants
     TaskExecutor --> Constants
@@ -21,7 +21,7 @@ graph TB
 
 ### Explanation:
 
-- KoduDev acts as the central coordinator, interacting directly with ApiManager, StateManager, and TaskExecutor.
+- Vlinders acts as the central coordinator, interacting directly with ApiManager, StateManager, and TaskExecutor.
 - TaskExecutor uses ToolExecutor for specific actions.
 - ApiManager utilizes SystemPrompts to guide AI interactions.
 - Constants are used throughout the system for configuration, accessed by multiple components.
@@ -33,16 +33,16 @@ The following sequence diagram shows the flow of execution from the user's initi
 ```mermaid
 sequenceDiagram
     participant User
-    participant KoduDev
+    participant Vlinders
     participant StateManager
     participant ApiManager
     participant TaskExecutor
     participant ToolExecutor
 
-    User->>KoduDev: Provide task or history item
-    KoduDev->>StateManager: Initialize state
-    KoduDev->>ApiManager: Initialize API
-    KoduDev->>TaskExecutor: Start or resume task
+    User->>Vlinders: Provide task or history item
+    Vlinders->>StateManager: Initialize state
+    Vlinders->>ApiManager: Initialize API
+    Vlinders->>TaskExecutor: Start or resume task
     loop Task Execution
         TaskExecutor->>ApiManager: Request AI decision
         ApiManager->>TaskExecutor: Provide AI response
@@ -50,16 +50,16 @@ sequenceDiagram
         ToolExecutor->>TaskExecutor: Tool result
         TaskExecutor->>StateManager: Update state
     end
-    TaskExecutor->>KoduDev: Task completed
-    KoduDev->>User: Present result
-    User->>KoduDev: Provide feedback (optional)
-    KoduDev->>TaskExecutor: Improve based on feedback (if needed)
+    TaskExecutor->>Vlinders: Task completed
+    Vlinders->>User: Present result
+    User->>Vlinders: Provide feedback (optional)
+    Vlinders->>TaskExecutor: Improve based on feedback (if needed)
 ```
 
 ### Explanation:
 
-1. The user initiates the process by providing a task or history item to KoduDev.
-2. KoduDev sets up the initial state and API connection.
+1. The user initiates the process by providing a task or history item to Vlinders.
+2. Vlinders sets up the initial state and API connection.
 3. TaskExecutor begins the task execution process.
 4. The main execution loop involves:
    - Requesting AI decisions from ApiManager

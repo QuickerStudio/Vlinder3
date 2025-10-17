@@ -12,7 +12,7 @@ export class AskFollowupQuestionTool extends BaseAgentTool<AskFollowupQuestionTo
 		if (question === undefined || question === "") {
 			await say(
 				"error",
-				"Kodu tried to use ask_followup_question without value for required parameter 'question'. Retrying..."
+				"Vlinder tried to use ask_followup_question without value for required parameter 'question'. Retrying..."
 			)
 			const errorMsg = dedent`<question_tool_response>
 <status>
@@ -25,9 +25,9 @@ export class AskFollowupQuestionTool extends BaseAgentTool<AskFollowupQuestionTo
 	<message>Missing required parameter 'question'</message>
 	<help>
 		<example_usage>
-		<kodu_action>
+		<vlinder_action>
 		${askFollowupQuestionPrompt.examples[0].output}
-		</kodu_action>
+		</vlinder_action>
 		</example_usage>
 		<note>Follow-up questions require a valid question parameter to proceed</note>
 	</help>

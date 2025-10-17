@@ -314,7 +314,7 @@ const ChatView: React.FC<ChatViewProps> = ({
 								onClose={() => vscode.postMessage({ type: "clearTask" })}
 								isHidden={isHidden}
 								lastMessageAt={currentTask.ts}
-								koduCredits={user?.credits ?? 0}
+								vlinderCredits={user?.credits ?? 0}
 								vscodeUriScheme={uriScheme}
 							/>
 							<ChatMessages
@@ -368,7 +368,7 @@ const ChatView: React.FC<ChatViewProps> = ({
 						</div>
 						<span className="text-sm">
 							The conversation has reached its context window limit and cannot continue further. To
-							proceed, you'll need to start a new task. Don't worry - Kodu will still have access to your
+							proceed, you'll need to start a new task. Don't worry - Vlinder will still have access to your
 							project's files and structure in the new task.
 						</span>
 					</div>

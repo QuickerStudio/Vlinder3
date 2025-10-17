@@ -131,7 +131,7 @@ const ChatRowV1: React.FC<ChatRowProps> = ({ message, isFirst, nextMessage }) =>
 										supported shell: zsh, bash, fish, or PowerShell (
 										<code>CMD/CTRL + Shift + P</code> → "Terminal: Select Default Profile").{" "}
 										<a
-											href="https://github.com/kodu-ai/claude-coder/wiki/Troubleshooting-terminal-issues"
+											href="https://github.com/QuickerStudio/Vlinder/wiki/Troubleshooting-terminal-issues"
 											style={{ color: "inherit", textDecoration: "underline" }}>
 											Still having trouble?
 										</a>

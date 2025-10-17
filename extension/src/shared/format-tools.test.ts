@@ -12,8 +12,8 @@
 
 // describe("Tool Response Utilities", () => {
 // 	describe("isToolResponseV2", () => {
-// 		it("should work compress write_to_file with kodu_content", () => {
-// 			const toolCall = `<write_to_file><path>src/index.ts</path><kodu_content>export const test = 'test'</kodu_content></write_to_file>`
+// 		it("should work compress write_to_file with vlinder_content", () => {
+// 			const toolCall = `<write_to_file><path>src/index.ts</path><vlinder_content>export const test = 'test'</vlinder_content></write_to_file>`
 // 			const result = compressToolFromMsg([{ type: "text", text: toolCall }])
 // 			expect(result[0].type).toBe("text")
 // 			if (isTextBlock(result[0])) {
@@ -67,7 +67,7 @@
 // 			const textBlock = result[0] as TextBlockParam
 // 			expect(textBlock.text).toContain("Compressed")
 // 		})
-// 		it("should keep the edit_file_blocks kodu_content", () => {
+// 		it("should keep the edit_file_blocks vlinder_content", () => {
 // 			const msgs: Array<TextBlockParam | ImageBlockParam> = [
 // 				{
 // 					type: "text",
@@ -84,7 +84,7 @@
 // 					text: `
 // 			  <edit_file_blocks>
 // 				<path>src/index.ts</path>
-// 				<kodu_diff>export const test = 'test'</kodu_diff>
+// 				<vlinder_diff>export const test = 'test'</vlinder_diff>
 // 			  </edit_file_blocks>
 // 			`,
 // 				},

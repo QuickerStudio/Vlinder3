@@ -82,7 +82,7 @@ export class DevServerTool extends BaseAgentTool<ServerRunnerToolParams> {
 	async execute() {
 		const { input, ask, say } = this.params
 		const { commandType, commandToRun, serverName } = input
-		const { terminalManager } = this.koduDev
+		const { terminalManager } = this.vlinders
 
 		if (!commandType || !serverName) {
 			await say("error", "Missing required parameters 'commandType' or 'serverName'")
@@ -101,7 +101,7 @@ export class DevServerTool extends BaseAgentTool<ServerRunnerToolParams> {
 					</validation>
 					<help>
 						<example_usage>
-						<kodu_action>${serverRunnerPrompt.examples[0].output}</kodu_action>
+						<vlinder_action>${serverRunnerPrompt.examples[0].output}</vlinder_action>
 						</example_usage>
 						<note>All required parameters must be provided for server operations</note>
 					</help>

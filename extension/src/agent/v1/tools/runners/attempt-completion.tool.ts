@@ -10,7 +10,7 @@ export class AttemptCompletionTool extends BaseAgentTool<AttemptCompletionToolPa
 		if (result === undefined) {
 			await say(
 				"error",
-				"Kodu tried to use attempt_completion without value for required parameter 'result'. Retrying..."
+				"Vlinder tried to use attempt_completion without value for required parameter 'result'. Retrying..."
 			)
 			const errorMsg = `
 			<completion_tool_response>
@@ -24,7 +24,7 @@ export class AttemptCompletionTool extends BaseAgentTool<AttemptCompletionToolPa
 					<message>Missing required parameter 'result'</message>
 					<help>
 						<example_usage>
-						<kodu_action>${attemptCompletionPrompt.examples[0].output}</kodu_action>
+						<vlinder_action>${attemptCompletionPrompt.examples[0].output}</vlinder_action>
 						</example_usage>
 						<note>Completion attempts require a valid result parameter to proceed</note>
 					</help>
@@ -49,10 +49,10 @@ export class AttemptCompletionTool extends BaseAgentTool<AttemptCompletionToolPa
 			true
 		)
 		if (response === "yesButtonTapped") {
-			await this.koduDev.providerRef
+			await this.vlinders.providerRef
 				.deref()
 				?.getTaskManager()
-				?.markTaskAsCompleted(this.koduDev.getStateManager().taskId, {
+				?.markTaskAsCompleted(this.vlinders.getStateManager().taskId, {
 					manual: true,
 				})
 

@@ -39,7 +39,7 @@ const autoCloseTerminalAtom = atom(false)
 autoCloseTerminalAtom.debugLabel = "autoCloseTerminal"
 const gitHandlerEnabledAtom = atom(true)
 gitHandlerEnabledAtom.debugLabel = "gitHandlerEnabled"
-const gitCommitterTypeAtom = atom<"kodu" | "user">("kodu")
+const gitCommitterTypeAtom = atom<"vlinder" | "user">("vlinder")
 gitCommitterTypeAtom.debugLabel = "gitCommitterType"
 const skipWriteAnimationAtom = atom(false)
 skipWriteAnimationAtom.debugLabel = "skipWriteAnimation"
@@ -190,7 +190,7 @@ export const ExtensionStateProvider: React.FC<{ children: React.ReactNode }> = (
 			}
 			setCommandTimeout(message.state.commandTimeout)
 			setApiConfig(message.state.apiConfig)
-			setGitCommitterType(message.state.gitCommitterType ?? "kodu")
+			setGitCommitterType(message.state.gitCommitterType ?? "vlinder")
 			setTerminalCompressionThreshold(message.state.terminalCompressionThreshold)
 			setAutoSummarize(!!message.state.autoSummarize)
 			setInlineEditModeType(message.state.inlineEditOutputType ?? "full")
@@ -213,7 +213,7 @@ export const ExtensionStateProvider: React.FC<{ children: React.ReactNode }> = (
 			setThemeName(message.state.themeName)
 			setUriScheme(message.state.uriScheme)
 		}
-		if (message.type === "action" && message.action === "koduCreditsFetched") {
+		if (message.type === "action" && message.action === "vlinderCreditsFetched") {
 			setUser(message.user)
 		}
 	}

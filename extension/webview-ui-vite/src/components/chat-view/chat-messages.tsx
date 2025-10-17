@@ -7,7 +7,7 @@ import { SyntaxHighlighterStyle } from "../../utils/get-syntax-highlighter-style
 import ChatRowV1 from "../chat-row/chat-row"
 import { Button } from "../ui/button"
 
-const isActionTag = (txt: string) => txt.trim().startsWith("<kodu_action>") || txt.trim().startsWith("</kodu_action>")
+const isActionTag = (txt: string) => txt.trim().startsWith("<vlinder_action>") || txt.trim().startsWith("</vlinder_action>")
 
 interface ChatMessagesProps {
 	visibleMessages: ClaudeMessage[]

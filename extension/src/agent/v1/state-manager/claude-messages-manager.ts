@@ -1,6 +1,6 @@
 import { findLastIndex } from "lodash"
 import { ExtensionProvider } from "../../../providers/extension-provider"
-import { KoduAgentState, ClaudeMessage } from "../types"
+import { VlinderAgentState, ClaudeMessage } from "../types"
 import { IOManager } from "./io-manager"
 import { getApiMetrics } from "../../../shared/get-api-metrics"
 import { isV1ClaudeMessage } from "../../../shared/messages/extension-message"
@@ -8,7 +8,7 @@ import { StateManager } from "."
 import { ChatTool } from "../../../shared/new-tools"
 
 interface ClaudeMessagesManagerOptions {
-	state: KoduAgentState
+	state: VlinderAgentState
 	ioManager: IOManager
 	providerRef: WeakRef<ExtensionProvider>
 	stateManager: StateManager
@@ -22,7 +22,7 @@ export type OverwriteClaudeMessagesOptions = {
 
 export class ClaudeMessagesManager {
 	private stateManager: StateManager
-	private state: KoduAgentState
+	private state: VlinderAgentState
 	private ioManager: IOManager
 	private providerRef: WeakRef<ExtensionProvider>
 

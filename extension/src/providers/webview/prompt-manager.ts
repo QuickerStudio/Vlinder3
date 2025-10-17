@@ -113,7 +113,7 @@ export class PromptManager {
 	private async createPromptEditorPanel() {
 		this.promptEditorPanel = vscode.window.createWebviewPanel(
 			"promptEditor",
-			"Kodu - Prompt Templates",
+			"Vlinder - Prompt Templates",
 			vscode.ViewColumn.One,
 			{
 				enableScripts: true,
@@ -125,7 +125,7 @@ export class PromptManager {
 		this.promptEditorPanel.iconPath = vscode.Uri.joinPath(
 			this.webviewManager.provider.getContext().extensionUri,
 			"assets",
-			"kodu.png"
+			"vlinder.png"
 		)
 
 		this.promptEditorPanel.webview.html = this.getPromptEditorHtmlContent(this.promptEditorPanel.webview)

@@ -19,7 +19,7 @@ import { PromptStateManager } from "../state/prompt-state-manager"
 import { PromptManager } from "./prompt-manager"
 import { ExtensionContext } from "../../router/utils/context"
 import { ExtensionServer } from "../../router/utils/extension-server"
-import { koduConfig } from "../../api/providers/config/kodu"
+import { vlinderConfig } from "../../api/providers/config/vlinder"
 
 /**
  * Represents an item in the file tree structure.
@@ -57,7 +57,7 @@ const excludedDirectories = [
 ]
 
 /**
- * Manages the webview interface for the Claude Coder extension.
+ * Manages the webview interface for the Vlinder extension.
  * Handles communication between the extension and webview, manages state updates,
  * and provides functionality for file system operations and user interactions.
  */
@@ -137,8 +137,8 @@ export class WebviewManager {
 	 * only post claude messages to webview
 	 */
 	async postClaudeMessagesToWebview(msgs?: ClaudeMessage[] | null) {
-		const claudeMessages = this.provider.getKoduDev()?.getStateManager().state.claudeMessages ?? []
-		const taskId = this.provider.getKoduDev()?.getStateManager().state.taskId
+		const claudeMessages = this.provider.getVlinders()?.getStateManager().state.claudeMessages ?? []
+		const taskId = this.provider.getVlinders()?.getStateManager().state.taskId
 		if (!taskId) {
 			// reset
 			return await this.postMessageToWebview({
@@ -155,7 +155,7 @@ export class WebviewManager {
 	}
 
 	async postClaudeMessageToWebview(msg: ClaudeMessage) {
-		const taskId = this.provider.getKoduDev()?.getStateManager().state.taskId
+		const taskId = this.provider.getVlinders()?.getStateManager().state.taskId
 		if (!taskId) {
 			// reset
 			return await this.postMessageToWebview({
@@ -249,7 +249,7 @@ export class WebviewManager {
 				<meta http-equiv="Content-Security-Policy" content="${csp.join("; ")}">
 				<link rel="stylesheet" type="text/css" href="${stylesUri}">				
 				<link href="${codiconsUri}" rel="stylesheet" />
-				<title>Claude Coder</title>
+				<title>Vlinder</title>
 			  </head>
 			  <body>
 				<noscript>You need to enable JavaScript to run this app.</noscript>
@@ -325,7 +325,7 @@ export class WebviewManager {
 				await this.promptManager.handleMessage(message)
 				switch (message.type) {
 					case "pauseTemporayAutoMode":
-						this.provider.getKoduDev()?.getStateManager()?.setTemporaryPauseAutomaticMode(message.mode)
+						this.provider.getVlinders()?.getStateManager()?.setTemporaryPauseAutomaticMode(message.mode)
 						break
 					case "terminalCompressionThreshold":
 						await this.provider.getStateManager().setTerminalCompressionThreshold(message.value)
@@ -377,12 +377,12 @@ export class WebviewManager {
 						AmplitudeWebviewManager.handleMessage(message)
 						break
 					case "cancelCurrentRequest":
-						await this.provider.getKoduDev()?.taskExecutor.abortTask()
+						await this.provider.getVlinders()?.taskExecutor.abortTask()
 						break
 					case "autoSummarize":
 						await this.provider.getStateManager().setAutoSummarize(message.bool)
-						if (this.provider.koduDev) {
-							this.provider.koduDev.getStateManager().setAutoSummarize(message.bool)
+						if (this.provider.vlinders) {
+							this.provider.vlinders.getStateManager().setAutoSummarize(message.bool)
 						}
 						await this.postBaseStateToWebview()
 						break
@@ -418,7 +418,7 @@ export class WebviewManager {
 							.handleAskResponse(message.askResponse!, message.text, message.images, message.attachements)
 						break
 					case "toggleGitHandler":
-						this.provider.koduDev?.getStateManager().setGitHandlerEnabled(message.enabled)
+						this.provider.vlinders?.getStateManager().setGitHandlerEnabled(message.enabled)
 						await this.provider.getStateManager().setGitHandlerEnabled(message.enabled)
 						await this.postBaseStateToWebview()
 						break
@@ -433,7 +433,7 @@ export class WebviewManager {
 						break
 
 					case "pauseNext":
-						await this.provider.getKoduDev()?.taskExecutor.pauseNextRequest()
+						await this.provider.getVlinders()?.taskExecutor.pauseNextRequest()
 						break
 					case "didCloseAnnouncement":
 						const packageJSON = this.provider.getContext().extension?.packageJSON
@@ -464,8 +464,8 @@ export class WebviewManager {
 					case "togglePinTask":
 						await this.provider.getTaskManager().togglePinTask(message.text!)
 						break
-					case "didClickKoduSignOut":
-						await this.provider.getApiManager().signOutKodu()
+					case "didClickVlinderSignOut":
+						await this.provider.getApiManager().signOutVlinder()
 						await this.postBaseStateToWebview()
 						break
 					case "commandTimeout":
@@ -475,11 +475,11 @@ export class WebviewManager {
 						)
 						await this.postBaseStateToWebview()
 						break
-					case "fetchKoduCredits":
-						await this.provider.getApiManager().fetchKoduCredits()
+					case "fetchVlinderCredits":
+						await this.provider.getApiManager().fetchVlinderCredits()
 						await this.postMessageToWebview({
 							type: "action",
-							action: "koduCreditsFetched",
+							action: "vlinderCreditsFetched",
 							state: await this.getBaseStateToPostToWebview(),
 						})
 						break
@@ -490,11 +490,11 @@ export class WebviewManager {
 						await this.postBaseStateToWebview()
 						break
 					case "viewFile":
-						// await this.provider.getKoduDev()?.viewFileInDiff(message.path, message.version)
+						// await this.provider.getVlinders()?.viewFileInDiff(message.path, message.version)
 						break
 					// case "rollbackToCheckpoint":
 					// 	await this.provider
-					// 		.getKoduDev()
+					// 		.getVlinders()
 					// 		?.rollbackToCheckpoint(message.path, message.version, message.ts)
 					// 	break
 					case "resetState":
@@ -513,7 +513,7 @@ export class WebviewManager {
 	}
 
 	private async handleDebugInstruction(): Promise<void> {
-		let agent = this.provider.getKoduDev()
+		let agent = this.provider.getVlinders()
 		let noTask = false
 		const openFolders = vscode.workspace.workspaceFolders
 		if (!openFolders) {
@@ -529,7 +529,7 @@ export class WebviewManager {
 		if (!agent) {
 			// create a new task
 			await this.provider.initWithNoTask()
-			agent = this.provider.getKoduDev()!
+			agent = this.provider.getVlinders()!
 			noTask = true
 		}
 		vscode.window.showInformationMessage(

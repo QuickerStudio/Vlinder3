@@ -145,7 +145,7 @@ updateDisplay();
 // - Did the user provide the content of the file? No
 // - Do i have the last content of the file? No, this is a new file
 
-// The file will be created at: /home/matan/code/test-3/kodu/test/html.md
+// The file will be created at: /home/matan/code/test-3/vlinder/test/html.md
 // </thinking>
 
 // <write_to_file>
@@ -229,7 +229,7 @@ updateDisplay();
 // - Code examples where appropriate
 // - Clear markdown formatting for readability
 
-// The file has been written to /home/matan/code/test-3/kodu/test/html.md
+// The file has been written to /home/matan/code/test-3/vlinder/test/html.md
 // </result>
 // </attempt_completion>`
 

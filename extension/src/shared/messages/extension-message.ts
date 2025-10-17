@@ -102,8 +102,8 @@ export type BaseExtensionMessage = {
 		| "historyButtonTapped"
 		| "promptEditorButtonTapped"
 		| "didBecomeVisible"
-		| "koduAuthenticated"
-		| "koduCreditsFetched"
+		| "vlinderAuthenticated"
+		| "vlinderCreditsFetched"
 
 	state?: BaseExtensionState
 	images?: string[]
@@ -195,7 +195,7 @@ export interface BaseExtensionState {
 	maxRequestsPerTask?: number
 	lastShownAnnouncementId?: string
 	gitHandlerEnabled?: boolean
-	gitCommitterType?: "kodu" | "user"
+	gitCommitterType?: "vlinder" | "user"
 	currentContextTokens: number
 	currentContextWindow: number
 	terminalCompressionThreshold: number | undefined

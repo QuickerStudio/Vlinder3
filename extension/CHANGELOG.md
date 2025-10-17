@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the "claude-coder" extension will be documented in this file.
+All notable changes to the "Vlinder" extension will be documented in this file.
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
@@ -87,14 +87,14 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 ### Fixed
 
--   Add file editor kodu content to chat compression (help small context window models)
+-   Add file editor vlinder content to chat compression (help small context window models)
 
 ## [2.2.5] - 2025-01-25
 
 ### New
 
 -   Visual indicator for diagnostic handler
--   Better indicators for which model requires api key and how Kodu credit works
+-   Better indicators for which model requires api key and how Vlinder credit works
 
 ### Fixed
 
@@ -177,8 +177,8 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 -   diagnostic handler will not receive updates correctly if the tab is closed
 -   marking a task as complete wouldn't let you send messages afterwards unless you reopen it
--   notify Kodu on how to delete, copy and moved files (using execute_command tool)
--   attempt to enforce Kodu to always pick up the latest file content based on the timestamp and file version.
+-   notify Vlinder on how to delete, copy and moved files (using execute_command tool)
+-   attempt to enforce Vlinder to always pick up the latest file content based on the timestamp and file version.
 
 ## [2.0.4] - 2025-01-06
 
@@ -189,8 +189,8 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 ### Changed
 
--   When kodu thinks the task is marked as complete you will be prompted to verify it or provide feedback.
--   Update the initial repo filemap that's provided to Kodu.
+-   When vlinder thinks the task is marked as complete you will be prompted to verify it or provide feedback.
+-   Update the initial repo filemap that's provided to Vlinder.
 
 ## [2.0.3] - 2025-01-05
 
@@ -242,21 +242,21 @@ All notable changes to the "claude-coder" extension will be documented in this f
 ### Changed
 
 -   Better obedience to prompt
--   rewrite tools output to better guide Kodu
+-   rewrite tools output to better guide Vlinder
 -   rewrite system prompt to use ReAct prompting
 
 ### New
 
--   search symbol tool lets Kodu find where a symbol is called in the project
+-   search symbol tool lets Vlinder find where a symbol is called in the project
 -   read file tool now default to read page by page instead of the entire file at once and output lines correctly
 -   file editor tool with option to read file version, file change summary, rollback to file version
--   search repo tool lets Kodu search repo folder for symbols and high level definitions in an entire folder and maps it to easy to digest output
--   better diagnostic now show Kodu the hover hints, related intelligence and the actual line that the error has occurred on.
--   interested files tool lets Kodu note interested files for further usage and remembers it in memory at all time
--   3rd party observer LLM that auto correct Kodu when Kodu makes mistakes and guide Kodu to the path passively
+-   search repo tool lets Vlinder search repo folder for symbols and high level definitions in an entire folder and maps it to easy to digest output
+-   better diagnostic now show Vlinder the hover hints, related intelligence and the actual line that the error has occurred on.
+-   interested files tool lets Vlinder note interested files for further usage and remembers it in memory at all time
+-   3rd party observer LLM that auto correct Vlinder when Vlinder makes mistakes and guide Vlinder to the path passively
 -   reduced token usage
 -   improved extension speed
--   Prompt Editor allow you to truly configure your Kodu instructions.
+-   Prompt Editor allow you to truly configure your Vlinder instructions.
 -   auto fix inline edits in the same request
 -   multi agent system preview
 
@@ -264,10 +264,10 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 ### Changed
 
--   Tool response adjusted to xml to better match the current structure this increases Kodu understanding and accuracy
--   Linter error response format - now we format the error with clear guidelines and indicators to where the error have occurred giving Kodu easier time resolving bugs
--   Reduced Environment details, this reduces the total amount of tokens used by Kodu by a solid 10-20% on large projects and long tasks.
--   New Adjusted system prompt with less noise and more focus on the task inhand this helps Kodu stay on track and reason his way more correctly.
+-   Tool response adjusted to xml to better match the current structure this increases Vlinder understanding and accuracy
+-   Linter error response format - now we format the error with clear guidelines and indicators to where the error have occurred giving Vlinder easier time resolving bugs
+-   Reduced Environment details, this reduces the total amount of tokens used by Vlinder by a solid 10-20% on large projects and long tasks.
+-   New Adjusted system prompt with less noise and more focus on the task inhand this helps Vlinder stay on track and reason his way more correctly.
 
 ### Fixed
 
@@ -289,11 +289,11 @@ All notable changes to the "claude-coder" extension will be documented in this f
 ### New
 
 -   File history control
-    -   Automatic checkpoint creation at file edits, Kodu now remembers old files and let you easily view previous version or do a full rollback.
+    -   Automatic checkpoint creation at file edits, Vlinder now remembers old files and let you easily view previous version or do a full rollback.
     -   You can now view old files from the history as long as you're on the related project workspace.
     -   You can now rollback conversation to one of your task checkpoints, reverting the chat history and file changes.
--   Automatic Git commit handling, Kodu will automatically commit any changes made making it easy to identify changes and remove if needed
--   Automatic commit awareness, Kodu is now aware of each commit it made
+-   Automatic Git commit handling, Vlinder will automatically commit any changes made making it easy to identify changes and remove if needed
+-   Automatic commit awareness, Vlinder is now aware of each commit it made
 
 ### Fixed
 
@@ -403,7 +403,7 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 ## [1.11.1] - 2024-11-15
 
--   Fix opening Kodu on a new tab
+-   Fix opening Vlinder on a new tab
 
 ## [1.11.0] - 2024-11-14
 
@@ -508,13 +508,13 @@ All notable changes to the "claude-coder" extension will be documented in this f
 -   [NEW]: Added settings tab for more customization options.
 -   [NEW]: Auto-close terminal after execution (toggleable).
 -   [NEW]: Option to disable write file animation.
--   [NEW]: Server runner tool for efficiently managing development servers, providing better insights for Kodu.
+-   [NEW]: Server runner tool for efficiently managing development servers, providing better insights for Vlinder.
 -   [NEW]: Chain-of-thought prompting to prevent getting stuck in loops.
 -   [FIX]: Resolved write-to-file corruption in certain edge cases.
 -   [FIX]: Improved terminal behavior for better accuracy.
 -   [FIX]: Stabilized automatic mode for increased effectiveness.
 -   [REMOVE]: Removed trial offer.
--   [ADJUSTMENT]: Relaxed linting checks to prevent Kodu from getting stuck on non-critical errors.
+-   [ADJUSTMENT]: Relaxed linting checks to prevent Vlinder from getting stuck on non-critical errors.
 
 ## [1.9.16]
 
@@ -569,7 +569,7 @@ All notable changes to the "claude-coder" extension will be documented in this f
 
 ## [1.7.3]
 
--   mid merge v1.8.0 https://github.com/kodu-ai/claude-coder/pull/11
+-   mid merge v1.8.0 https://github.com/QuickerStudio/Vlinder/pull/11
 
 ## [1.7.1-beta]
 
@@ -580,11 +580,11 @@ All notable changes to the "claude-coder" extension will be documented in this f
 -   Autofix Message format on corruption
 -   Refactor Context Window (improved context window algorithm, caveat currently there is not public tokenizer for Claude 3+)
 -   Improved Task search and task saving (allow you to name tasks and search using fuzzy search)
--   .kodu - allow you to create custom config without breaking the system cache and having higher weight.
+-   .vlinder - allow you to create custom config without breaking the system cache and having higher weight.
 
 ## [1.7.0-beta]
 
--   Add web search tool let's claude coder to search the web with a crawling agent!
+-   Add web search tool let's Vlinder to search the web with a crawling agent!
 
 ## [1.5.6]
 

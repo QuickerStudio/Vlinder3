@@ -1,20 +1,20 @@
 {
-	"name": "claude-dev-experimental",
-	"displayName": "Claude Coder",
-	"description": "Claude Coder: Your AI pair programmer in VSCode. Powered by Anthropic's Claude, it assists both beginners and pros in coding, debugging, and more. Create/edit files and execute commands with AI guidance. Perfect for no-coders to senior devs. Enjoy free credits to supercharge your coding experience. Let Claude Coder transform your IDE into a collaborative AI workspace.",
+	"name": "vlinder",
+	"displayName": "Vlinder",
+	"description": "Vlinder: Your AI pair programmer in VSCode. Powered by Anthropic's Claude, it assists both beginners and pros in coding, debugging, and more. Create/edit files and execute commands with AI guidance. Perfect for no-coders to senior devs. Enjoy free credits to supercharge your coding experience. Let Vlinder transform your IDE into a collaborative AI workspace.",
 	"version": "2.3.13",
 	"icon": "assets/icon.png",
 	"engines": {
 		"vscode": "^1.96.0"
 	},
 	"author": {
-		"name": "Kodu AI"
+		"name": "Quicker"
 	},
 	"license": "AGPL-3.0-or-later",
-	"publisher": "kodu-ai",
+	"publisher": "QuickerStudio",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kodu-ai/claude-coder"
+		"url": "https://github.com/QuickerStudio/Vlinder"
 	},
 	"categories": [
 		"AI",
@@ -70,77 +70,77 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "kodu-claude-coder-main-ActivityBar",
-					"title": "Coder by Kodu.ai",
-					"icon": "assets/kodu-logo.svg"
+					"id": "vlinder-main-ActivityBar",
+					"title": "Coder by Vlinder AI",
+					"icon": "assets/vlinder-logo.svg"
 				}
 			]
 		},
 		"views": {
-			"kodu-claude-coder-main-ActivityBar": [
+			"vlinder-main-ActivityBar": [
 				{
 					"type": "webview",
-					"id": "kodu-claude-coder-main.SidebarProvider",
+					"id": "vlinder-main.SidebarProvider",
 					"name": ""
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "kodu-claude-coder-main.setApiKey",
-				"title": "Kodu.AI: Set API Key"
+				"command": "vlinder-main.setApiKey",
+				"title": "Vlinder AI: Set API Key"
 			},
 			{
 				"command": "extension.openExternalLink",
 				"title": "Open External Link"
 			},
 			{
-				"command": "kodu-claude-coder-main.plusButtonTapped",
+				"command": "vlinder-main.plusButtonTapped",
 				"title": "New Task",
 				"icon": "$(add)"
 			},
 			{
-				"command": "kodu-claude-coder-main.historyButtonTapped",
+				"command": "vlinder-main.historyButtonTapped",
 				"title": "History",
 				"icon": "$(history)"
 			},
 			{
-				"command": "kodu-claude-coder-main.popoutButtonTapped",
+				"command": "vlinder-main.popoutButtonTapped",
 				"title": "Open in Editor",
 				"icon": "$(link-external)"
 			},
 			{
-				"command": "kodu-claude-coder-main.settingsButtonTapped",
+				"command": "vlinder-main.settingsButtonTapped",
 				"title": "Settings",
 				"icon": "$(settings-gear)"
 			},
 			{
-				"command": "kodu-claude-coder-main.openInNewTab",
+				"command": "vlinder-main.openInNewTab",
 				"title": "Open In New Tab",
-				"category": "Kodu"
+				"category": "Vlinder"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
-					"command": "kodu-claude-coder-main.plusButtonTapped",
+					"command": "vlinder-main.plusButtonTapped",
 					"group": "navigation@1",
-					"when": "view == kodu-claude-coder-main.SidebarProvider"
+					"when": "view == vlinder-main.SidebarProvider"
 				},
 				{
-					"command": "kodu-claude-coder-main.historyButtonTapped",
+					"command": "vlinder-main.historyButtonTapped",
 					"group": "navigation@2",
-					"when": "view == kodu-claude-coder-main.SidebarProvider"
+					"when": "view == vlinder-main.SidebarProvider"
 				},
 				{
-					"command": "kodu-claude-coder-main.popoutButtonTapped",
+					"command": "vlinder-main.popoutButtonTapped",
 					"group": "navigation@3",
-					"when": "view == kodu-claude-coder-main.SidebarProvider"
+					"when": "view == vlinder-main.SidebarProvider"
 				},
 				{
-					"command": "kodu-claude-coder-main.settingsButtonTapped",
+					"command": "vlinder-main.settingsButtonTapped",
 					"group": "navigation@4",
-					"when": "view == kodu-claude-coder-main.SidebarProvider"
+					"when": "view == vlinder-main.SidebarProvider"
 				}
 			]
 		}
@@ -214,7 +214,7 @@
 		"@anthropic-ai/sdk": "^0.26.1",
 		"@ewoudenberg/difflib": "^0.1.0",
 		"@libsql/client": "^0.14.0",
-		"@openrouter/ai-sdk-provider": "https://github.com/kodu-ai/ai-sdk-provider-openrouter.git",
+		"@openrouter/ai-sdk-provider": "https://github.com/QuickerStudio/ai-sdk-provider-openrouter.git",
 		"@types/clone-deep": "^4.0.4",
 		"@types/pdf-parse": "^1.1.4",
 		"@vscode/codicons": "^0.0.36",

@@ -13,13 +13,13 @@ const schema = z.object({
 		return undefined // This will fail the enum check if not a string
 	}, z.enum(FileEditorModes).describe("The mode of the file editor tool.")),
 	commit_message: z.string().optional().describe("The commit message to use when committing changes to the file."),
-	kodu_content: z
+	vlinder_content: z
 		.string()
 		.describe(
 			"The full content to write to the file when creating a new file. Always provide the complete content without any truncation."
 		)
 		.optional(),
-	kodu_diff: z
+	vlinder_diff: z
 		.string()
 		.describe(
 			"The `SEARCH/REPLACE` blocks representing the changes to be made to an existing file. These blocks must be formatted correctly, matching exact existing content for `SEARCH` and precise modifications for `REPLACE`."

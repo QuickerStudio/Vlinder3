@@ -14,7 +14,7 @@ export class SearchFilesTool extends BaseAgentTool<SearchFilesToolParams> {
 		if (relDirPath === undefined) {
 			await say(
 				"error",
-				"Kodu tried to use search_files without value for required parameter 'path'. Retrying..."
+				"Vlinder tried to use search_files without value for required parameter 'path'. Retrying..."
 			)
 
 			const errorMsg = `
@@ -29,7 +29,7 @@ export class SearchFilesTool extends BaseAgentTool<SearchFilesToolParams> {
 					<message>Missing required parameter 'path'</message>
 					<help>
 						<example_usage>
-						<kodu_action>${searchFilesPrompt.examples[0].output}</kodu_action>
+						<vlinder_action>${searchFilesPrompt.examples[0].output}</vlinder_action>
 						</example_usage>
 						<note>Both path and regex parameters are required for file searching</note>
 					</help>
@@ -41,7 +41,7 @@ export class SearchFilesTool extends BaseAgentTool<SearchFilesToolParams> {
 		if (regex === undefined) {
 			await say(
 				"error",
-				"Kodu tried to use search_files without value for required parameter 'regex'. Retrying..."
+				"Vlinder tried to use search_files without value for required parameter 'regex'. Retrying..."
 			)
 
 			const errorMsg = `

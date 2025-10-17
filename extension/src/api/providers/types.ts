@@ -104,8 +104,8 @@ export interface OpenAICompatibleSettings extends BaseProviderSettings, Provider
 	// ...ProviderCustomSchema
 }
 
-export interface KoduSettings extends BaseProviderSettings {
-	providerId: "kodu"
+export interface VlinderSettings extends BaseProviderSettings {
+	providerId: "vlinder"
 	apiKey: string
 }
 
@@ -115,7 +115,7 @@ export interface MistralSettings extends BaseProviderSettings {
 }
 
 export type ProviderSettings =
-	| KoduSettings
+	| VlinderSettings
 	| GoogleGenAISettings
 	| GoogleVertexSettings
 	| AmazonBedrockSettings

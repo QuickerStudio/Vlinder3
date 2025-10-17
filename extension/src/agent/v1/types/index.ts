@@ -85,7 +85,7 @@ export type InterestedFile = {
 	 */
 	path: string
 	/**
-	 * why Kodu is interested in this file
+	 * why Vlinder is interested in this file
 	 */
 	why: string
 	/**
@@ -121,8 +121,8 @@ export type CheckpointEntry = {
 	taskId: string
 	agentId: number
 	agentState?: SubAgentState
-	content: KoduAgentState["apiConversationHistory"][number]
-	errorHistory: KoduAgentState["historyErrors"]
+	content: VlinderAgentState["apiConversationHistory"][number]
+	errorHistory: VlinderAgentState["historyErrors"]
 }
 
 export type Checkpoint = {
@@ -130,7 +130,7 @@ export type Checkpoint = {
 	enteries: CheckpointEntry[]
 }
 
-export interface KoduAgentState {
+export interface VlinderAgentState {
 	taskId: string
 	apiConversationHistory: ApiHistoryItem[]
 	claudeMessages: ClaudeMessage[]

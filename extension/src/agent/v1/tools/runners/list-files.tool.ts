@@ -12,7 +12,7 @@ export class ListFilesTool extends BaseAgentTool<ListFilesToolParams> {
 		const { path: relDirPath, recursive: recursiveRaw } = input
 
 		if (relDirPath === undefined) {
-			await say("error", "Kodu tried to use list_files without value for required parameter 'path'. Retrying...")
+			await say("error", "Vlinder tried to use list_files without value for required parameter 'path'. Retrying...")
 			const errorMsg = `
 			<file_list_response>
 				<status>
@@ -25,7 +25,7 @@ export class ListFilesTool extends BaseAgentTool<ListFilesToolParams> {
 					<message>Missing required parameter 'path'</message>
 					<help>
 						<example_usage>
-						<kodu_action>${listFilesPrompt.examples[0].output}</kodu_action>
+						<vlinder_action>${listFilesPrompt.examples[0].output}</vlinder_action>
 						</example_usage>
 						<note>A valid directory path is required to list files</note>
 					</help>

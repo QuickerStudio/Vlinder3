@@ -14,7 +14,7 @@ The Claude Dev agent system is a sophisticated software development assistant de
 
 The system is built around several core components:
 
-1. **KoduDev**: The central orchestrator of the entire system.
+1. **Vlinders**: The central orchestrator of the entire system.
 2. **ApiManager**: Handles communication with the AI model.
 3. **StateManager**: Manages the system's state and history.
 4. **TaskExecutor**: Breaks down and executes tasks.

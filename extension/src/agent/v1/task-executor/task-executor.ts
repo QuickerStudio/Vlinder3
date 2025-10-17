@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk"
 import { ExtensionProvider } from "../../../providers/extension-provider"
 import { isV1ClaudeMessage } from "../../../shared/messages/extension-message"
 import { toolResponseToAIState } from "../../../shared/format-tools"
-import { KODU_ERROR_CODES, KoduError, koduSSEResponse } from "../../../shared/kodu"
+import { VLINDER_ERROR_CODES, VlinderError, vlinderSSEResponse } from "../../../shared/vlinder"
 import { ChatTool } from "../../../shared/new-tools"
 import { ChunkProcessor } from "../chunk-proccess"
 import { StateManager } from "../state-manager"
@@ -296,7 +296,7 @@ export class TaskExecutor extends TaskExecutorUtils {
 	public async makeClaudeRequest(): Promise<void> {
 		try {
 			const provider = this.providerRef.deref()
-			if (!provider?.koduDev) {
+			if (!provider?.vlinders) {
 				return
 			}
 			if (this.pauseNext) {
@@ -339,11 +339,11 @@ export class TaskExecutor extends TaskExecutorUtils {
 			// Execute hooks before making the API request
 			const startedReqId = await this.say("api_req_started")
 			this._currentStreamTs = startedReqId
-			if (provider?.koduDev) {
+			if (provider?.vlinders) {
 				// mark the task as uncompleted
-				await provider.koduDev.markAsUncompleted()
+				await provider.vlinders.markAsUncompleted()
 
-				const hookContent = await provider.koduDev.executeHooks()
+				const hookContent = await provider.vlinders.executeHooks()
 				if (hookContent) {
 					// Add hook content to the user content
 					if (Array.isArray(this.currentUserContent)) {
@@ -401,13 +401,13 @@ export class TaskExecutor extends TaskExecutorUtils {
 					await this.handleApiError(error)
 					return
 				}
-				if (error instanceof KoduError) {
-					console.log("[TaskExecutor] KoduError:", error)
-					if (error.errorCode === KODU_ERROR_CODES.AUTHENTICATION_ERROR) {
+				if (error instanceof VlinderError) {
+					console.log("[TaskExecutor] VlinderError:", error)
+					if (error.errorCode === VLINDER_ERROR_CODES.AUTHENTICATION_ERROR) {
 						await this.handleApiError(new TaskError({ type: "UNAUTHORIZED", message: error.message }))
 						return
 					}
-					if (error.errorCode === KODU_ERROR_CODES.PAYMENT_REQUIRED) {
+					if (error.errorCode === VLINDER_ERROR_CODES.PAYMENT_REQUIRED) {
 						await this.handleApiError(new TaskError({ type: "PAYMENT_REQUIRED", message: error.message }))
 						return
 					}
@@ -427,7 +427,7 @@ export class TaskExecutor extends TaskExecutorUtils {
 	}
 
 	private async processApiResponse(
-		stream: AsyncGenerator<koduSSEResponse, any, unknown>,
+		stream: AsyncGenerator<vlinderSSEResponse, any, unknown>,
 		startedReqId: number
 	): Promise<void> {
 		if (this.state !== TaskState.PROCESSING_RESPONSE || this.isRequestCancelled || this.isAborting) {
@@ -505,7 +505,7 @@ export class TaskExecutor extends TaskExecutorUtils {
 							true
 						)
 						this.stateManager.providerRef.deref()?.getWebviewManager()?.postBaseStateToWebview()
-						throw new KoduError({ code: chunk.body.status ?? 500 })
+						throw new VlinderError({ code: chunk.body.status ?? 500 })
 					}
 				},
 
@@ -702,7 +702,7 @@ export class TaskExecutor extends TaskExecutorUtils {
 			this.currentUserContent = [
 				{
 					type: "text",
-					text: `You must use a tool to proceed. Either use attempt_completion if you've completed the task, or ask_followup_question if you need more information. you must adhere to the tool format <kodu_action><tool_name><parameter1_name>value1</parameter1_name><parameter2_name>value2</parameter2_name>... additional parameters as needed in the same format ...</tool_name></kodu_action>`,
+					text: `You must use a tool to proceed. Either use attempt_completion if you've completed the task, or ask_followup_question if you need more information. you must adhere to the tool format <vlinder_action><tool_name><parameter1_name>value1</parameter1_name><parameter2_name>value2</parameter2_name>... additional parameters as needed in the same format ...</tool_name></vlinder_action>`,
 				},
 			]
 			await this.makeClaudeRequest()

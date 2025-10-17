@@ -5,7 +5,7 @@ This document outlines the execution flow of the Claude Dev agent system, from i
 ## 1. Initialization
 
 1. The user provides a task or a history item to resume.
-2. KoduDev is instantiated with necessary options.
+2. Vlinders is instantiated with necessary options.
 3. StateManager is initialized with the initial state.
 4. ApiManager is set up with the required API configurations.
 5. ToolExecutor is initialized with the current working directory and permissions.
@@ -14,11 +14,11 @@ This document outlines the execution flow of the Claude Dev agent system, from i
 ## 2. Task Start or Resume
 
 - If it's a new task:
-  1. KoduDev calls TaskExecutor to start the new task.
+  1. Vlinders calls TaskExecutor to start the new task.
   2. The initial task details are added to the state.
 
 - If it's a history item:
-  1. KoduDev calls a method to resume the task from history.
+  1. Vlinders calls a method to resume the task from history.
   2. The saved state is loaded, including conversation history and task progress.
 
 ## 3. Task Processing
@@ -50,14 +50,14 @@ Throughout the process:
 
 ## 6. Completion
 
-1. Once TaskExecutor determines the task is complete, it notifies KoduDev.
-2. KoduDev prepares the final result.
+1. Once TaskExecutor determines the task is complete, it notifies Vlinders.
+2. Vlinders prepares the final result.
 3. The result is presented to the user.
 
 ## 7. Feedback and Iteration (Optional)
 
 If the user provides feedback:
-1. KoduDev receives the feedback.
+1. Vlinders receives the feedback.
 2. The feedback is passed to TaskExecutor.
 3. TaskExecutor may iterate on the task, going back to step 3 (Task Processing) to make improvements.
 4. This process continues until the user is satisfied or no further improvements can be made.

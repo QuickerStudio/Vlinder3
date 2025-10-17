@@ -1,14 +1,14 @@
 import { ApiManager } from "../../../api/api-handler"
 import { ExtensionProvider } from "../../../providers/extension-provider"
 import { amplitudeTracker } from "../../../utils/amplitude"
-import { KoduAgentState, MainAgentOptions, FileVersion, SubAgentState } from "../types"
+import { VlinderAgentState, MainAgentOptions, FileVersion, SubAgentState } from "../types"
 import { ApiHistoryManager } from "./api-history-manager"
 import { ClaudeMessagesManager } from "./claude-messages-manager"
 import { IOManager } from "./io-manager"
 import { SubAgentManager } from "./sub-agent-manager"
 
 export class StateManager {
-	private _state: KoduAgentState
+	private _state: VlinderAgentState
 	private _apiManager: ApiManager
 	private _providerRef: WeakRef<ExtensionProvider>
 	private _alwaysAllowReadOnly: boolean
@@ -90,7 +90,7 @@ export class StateManager {
 		})
 	}
 
-	get state(): KoduAgentState {
+	get state(): VlinderAgentState {
 		return this._state
 	}
 
@@ -161,7 +161,7 @@ export class StateManager {
 	 * Instead of replacing _state entirely, we merge properties into the existing
 	 * _state object to keep all references stable.
 	 */
-	public setState(newState: KoduAgentState): void {
+	public setState(newState: VlinderAgentState): void {
 		// Copy primitive values
 		this._state.taskId = newState.taskId
 
@@ -193,11 +193,11 @@ export class StateManager {
 		this._state.gitHandlerEnabled = newValue
 	}
 
-	get historyErrors(): KoduAgentState["historyErrors"] | undefined {
+	get historyErrors(): VlinderAgentState["historyErrors"] | undefined {
 		return this._state.historyErrors
 	}
 
-	set historyErrors(newErrors: KoduAgentState["historyErrors"]) {
+	set historyErrors(newErrors: VlinderAgentState["historyErrors"]) {
 		if (newErrors) {
 			for (const key in newErrors) {
 				this._state.historyErrors[key] = newErrors[key]
@@ -205,7 +205,7 @@ export class StateManager {
 		}
 	}
 
-	public setHistoryErrorsEntry(key: string, value: NonNullable<KoduAgentState["historyErrors"]>[string]): void {
+	public setHistoryErrorsEntry(key: string, value: NonNullable<VlinderAgentState["historyErrors"]>[string]): void {
 		this._state.historyErrors[key] = value
 	}
 

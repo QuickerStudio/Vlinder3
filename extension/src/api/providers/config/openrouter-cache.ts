@@ -102,8 +102,8 @@ export class OpenRouterModelCache {
 			console.log("Fetching fresh OpenRouter models")
 			const response = await axios.get("https://openrouter.ai/api/v1/models", {
 				headers: {
-					"HTTP-Referer": "https://kodu.ai", // Required by OpenRouter
-					"X-Title": "Kodu.ai",
+					"HTTP-Referer": "https://vlinders.org", // Required by OpenRouter
+					"X-Title": "Vlinder AI",
 				},
 			})
 

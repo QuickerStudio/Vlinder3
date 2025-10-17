@@ -7,7 +7,7 @@ export class ExitAgentTool extends BaseAgentTool<ExitAgentToolParams> {
 		const { input, ask, say } = this.params
 		const { result } = input
 
-		const agentName = this.koduDev.getStateManager().subAgentManager.state?.name
+		const agentName = this.vlinders.getStateManager().subAgentManager.state?.name
 		if (!agentName) {
 			return this.toolResponse("error", "No sub-agent is currently running.")
 		}
@@ -27,7 +27,7 @@ export class ExitAgentTool extends BaseAgentTool<ExitAgentToolParams> {
 		)
 
 		// this will exit the sub-agent and return back to the main agent
-		await this.koduDev.getStateManager().subAgentManager.exitSubAgent()
+		await this.vlinders.getStateManager().subAgentManager.exitSubAgent()
 
 		return this.toolResponse(
 			"success",

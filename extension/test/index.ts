@@ -11,7 +11,7 @@ async function main() {
 
 		// Path to the test suite
 		const extensionTestsPath = path.resolve(__dirname, "./suite")
-		const extension = vscode.extensions.getExtension("kodu-ai.claude-dev-experimental")!
+		const extension = vscode.extensions.getExtension("QuickerStudio.vlinder")!
 		await extension.activate()
 		// Run the integration tests
 		await runTests({

@@ -20,7 +20,7 @@ export abstract class BaseAgentTool<T extends ToolParams> {
 	protected cwd: string
 	protected alwaysAllowReadOnly: boolean
 	protected alwaysAllowWriteOnly: boolean
-	protected koduDev: MainAgent
+	protected vlinders: MainAgent
 	protected isAbortingTool: boolean = false
 	protected setRunningProcessId: (pid: number | undefined) => void
 	protected AbortController: AbortController
@@ -31,7 +31,7 @@ export abstract class BaseAgentTool<T extends ToolParams> {
 		this.cwd = options.cwd
 		this.alwaysAllowReadOnly = options.alwaysAllowReadOnly
 		this.alwaysAllowWriteOnly = options.alwaysAllowWriteOnly
-		this.koduDev = options.koduDev
+		this.vlinders = options.vlinders
 		this.setRunningProcessId = options.setRunningProcessId!
 		this.AbortController = new AbortController()
 		this.params = params
@@ -131,7 +131,7 @@ export abstract class BaseAgentTool<T extends ToolParams> {
 			cwd: this.cwd,
 			alwaysAllowReadOnly: this.alwaysAllowReadOnly,
 			alwaysAllowWriteOnly: this.alwaysAllowWriteOnly,
-			koduDev: this.koduDev,
+			vlinders: this.vlinders,
 			setRunningProcessId: this.setRunningProcessId,
 		}
 	}

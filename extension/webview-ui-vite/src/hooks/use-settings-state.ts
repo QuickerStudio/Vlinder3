@@ -8,7 +8,7 @@ export function useSettingsState() {
 	const [readOnly, setReadOnly] = useState(extensionState.alwaysAllowReadOnly || false)
 	const [autoCloseTerminal, setAutoCloseTerminal] = useState(extensionState.autoCloseTerminal || false)
 	const [gitHandlerEnabled, setGitHandlerEnabled] = useState(extensionState.gitHandlerEnabled ?? true)
-	const [gitCommitterType, setGitCommitterType] = useState(extensionState.gitCommitterType ?? "kodu")
+	const [gitCommitterType, setGitCommitterType] = useState(extensionState.gitCommitterType ?? "vlinder")
 	const [experimentalFeatureStates, setExperimentalFeatureStates] = useState({
 		alwaysAllowWriteOnly: extensionState.alwaysAllowWriteOnly || false,
 		autoSummarize: extensionState.autoSummarize || false,
@@ -73,7 +73,7 @@ export function useSettingsState() {
 	}, [])
 
 	const handleSetGitCommitterType = useCallback(
-		(type: "kodu" | "user") => {
+		(type: "vlinder" | "user") => {
 			setGitCommitterType(type)
 			extensionState.setGitCommitterType(type)
 			vscode.postMessage({

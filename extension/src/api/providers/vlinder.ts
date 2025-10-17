@@ -2,14 +2,14 @@ import { Anthropic } from "@anthropic-ai/sdk"
 import axios from "axios"
 import { ApiConstructorOptions, ApiHandler, ApiHandlerOptions, withoutImageData } from ".."
 import {
-	KODU_ERROR_CODES,
-	KoduError,
-	getKoduCurrentUser,
-	getKoduInferenceUrl,
-	getKoduWebSearchUrl,
-	koduErrorMessages,
-	koduSSEResponse,
-} from "../../shared/kodu"
+	VLINDER_ERROR_CODES,
+	VlinderError,
+	getVlinderCurrentUser,
+	getVlinderInferenceUrl,
+	getVlinderWebSearchUrl,
+	vlinderErrorMessages,
+	vlinderSSEResponse,
+} from "../../shared/vlinder"
 import { WebSearchResponseDto } from "../interfaces"
 import { ApiHistoryItem } from "../../agent/v1/main-agent"
 import { cloneDeep } from "lodash"
@@ -18,8 +18,8 @@ import { ModelInfo } from "./types"
 import { GlobalStateManager } from "../../providers/state/global-state-manager"
 import * as vscode from "vscode"
 
-export async function fetchKoduUser({ apiKey }: { apiKey: string }) {
-	const response = await axios.get(getKoduCurrentUser(), {
+export async function fetchVlinderUser({ apiKey }: { apiKey: string }) {
+	const response = await axios.get(getVlinderCurrentUser(), {
 		headers: {
 			"x-api-key": apiKey,
 			"Cache-Control": "no-cache, no-store, must-revalidate",
@@ -41,7 +41,7 @@ export async function fetchKoduUser({ apiKey }: { apiKey: string }) {
 
 // const findLastMessageTextMsg
 
-export class KoduHandler implements ApiHandler {
+export class VlinderHandler implements ApiHandler {
 	private _options: ApiConstructorOptions
 	private abortController: AbortController | null = null
 
@@ -69,7 +69,7 @@ export class KoduHandler implements ApiHandler {
 		modelId,
 		appendAfterCacheToLastMessage,
 		updateAfterCacheInserts,
-	}: Parameters<ApiHandler["createMessageStream"]>[0]): AsyncIterableIterator<koduSSEResponse> {
+	}: Parameters<ApiHandler["createMessageStream"]>[0]): AsyncIterableIterator<vlinderSSEResponse> {
 		// first rebuild the api handler
 		let system: Anthropic.Beta.PromptCaching.Messages.PromptCachingBetaTextBlockParam[] = []
 
@@ -146,13 +146,13 @@ export class KoduHandler implements ApiHandler {
 			temperature: tempature ?? 0.1,
 			top_p: top_p ?? undefined,
 			// temporaily turn off stop_sequence
-			// stop_sequences: ["</kodu_action>"],
+			// stop_sequences: ["</vlinder_action>"],
 			...(thinkingConfig ? { thinking: thinkingConfig } : {}),
 		}
 		this.abortController = new AbortController()
 
 		const response = await axios.post(
-			getKoduInferenceUrl(),
+			getVlinderInferenceUrl(),
 			{
 				...requestBody,
 			},
@@ -169,21 +169,21 @@ export class KoduHandler implements ApiHandler {
 		)
 
 		if (response.status !== 200) {
-			if (response.status in koduErrorMessages) {
-				throw new KoduError({
-					code: response.status as keyof typeof koduErrorMessages,
+			if (response.status in vlinderErrorMessages) {
+				throw new VlinderError({
+					code: response.status as keyof typeof vlinderErrorMessages,
 				})
 			}
-			throw new KoduError({
-				code: KODU_ERROR_CODES.NETWORK_REFUSED_TO_CONNECT,
+			throw new VlinderError({
+				code: VLINDER_ERROR_CODES.NETWORK_REFUSED_TO_CONNECT,
 			})
 		}
 
 		if (response.data) {
 			const reader = response.data
 			const decoder = new TextDecoder("utf-8")
-			let finalResponse: Extract<koduSSEResponse, { code: 1 }> | null = null
-			let partialResponse: Extract<koduSSEResponse, { code: 2 }> | null = null
+			let finalResponse: Extract<vlinderSSEResponse, { code: 1 }> | null = null
+			let partialResponse: Extract<vlinderSSEResponse, { code: 2 }> | null = null
 			let buffer = ""
 
 			for await (const chunk of reader) {
@@ -192,7 +192,7 @@ export class KoduHandler implements ApiHandler {
 				buffer = lines.pop() || ""
 				for (const line of lines) {
 					if (line.startsWith("data: ")) {
-						const eventData = JSON.parse(line.slice(6)) as koduSSEResponse
+						const eventData = JSON.parse(line.slice(6)) as vlinderSSEResponse
 						if (eventData.code === 2) {
 							// -> Happens to the current message
 							// We have a partial response, so we need to add it to the message shown to the user and refresh the UI
@@ -208,7 +208,7 @@ export class KoduHandler implements ApiHandler {
 								yield {
 									code: 2,
 									body: {
-										text: "</kodu_action>",
+										text: "</vlinder_action>",
 									},
 								}
 								await delay(50)
@@ -228,8 +228,8 @@ export class KoduHandler implements ApiHandler {
 			}
 
 			if (!finalResponse) {
-				throw new KoduError({
-					code: KODU_ERROR_CODES.NETWORK_REFUSED_TO_CONNECT,
+				throw new VlinderError({
+					code: VLINDER_ERROR_CODES.NETWORK_REFUSED_TO_CONNECT,
 				})
 			}
 		}

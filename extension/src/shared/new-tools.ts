@@ -136,8 +136,8 @@ export type FileEditorTool = {
 	tool: "file_editor"
 	path: string
 	mode: "edit" | "whole_write" | "rollback" | "list_versions"
-	kodu_content?: string
-	kodu_diff?: string
+	vlinder_content?: string
+	vlinder_diff?: string
 	list_versions?: boolean
 	rollback_version?: string
 	list_versions_output?: string

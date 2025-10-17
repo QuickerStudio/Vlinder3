@@ -1,6 +1,6 @@
 /**
- * THIS FILE WAS CREATED BY KODU.AI v1.9.19 - https://kodu.ai/
- * THIS LETS KODU STREAM DIFF IN MEMORY AND SHOW IT IN VS CODE
+ * THIS FILE WAS CREATED BY Vlinder AI v1.9.19 - https://vlinders.org/
+ * THIS LETS VLINDER STREAM DIFF IN MEMORY AND SHOW IT IN VS CODE
  * ALSO IT UPDATES THE WORKSPACE TIMELINE WITH THE CHANGES
  */
 import * as vscode from "vscode"
@@ -170,7 +170,7 @@ export class DiffViewProvider {
 			"vscode.diff",
 			this.originalUri,
 			this.modifiedUri,
-			`${fileName}: ${this.originalContent ? "Original ↔ Kodu's Changes" : "New File"} (Editable)`,
+			`${fileName}: ${this.originalContent ? "Original ↔ Vlinder's Changes" : "New File"} (Editable)`,
 			{
 				preview: true,
 				preserveFocus: true,

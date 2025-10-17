@@ -15,7 +15,7 @@ export class SearchSymbolsTool extends BaseAgentTool<SearchSymbolsToolParams> {
 		if (!symbolName) {
 			await say(
 				"error",
-				"Kodu tried to use search_symbol without value for required parameter 'symbolName'. Retrying..."
+				"Vlinder tried to use search_symbol without value for required parameter 'symbolName'. Retrying..."
 			)
 
 			const errorMsg = `
@@ -30,7 +30,7 @@ export class SearchSymbolsTool extends BaseAgentTool<SearchSymbolsToolParams> {
                     <message>Missing required parameter 'symbolName'</message>
                     <help>
                         <example_usage>
-						<kodu_action>${searchSymbolPrompt.examples[0].output}</kodu_action>
+						<vlinder_action>${searchSymbolPrompt.examples[0].output}</vlinder_action>
                         </example_usage>
                         <note>The symbolName parameter is required for symbol searching</note>
                     </help>

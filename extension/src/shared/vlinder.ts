@@ -1,62 +1,62 @@
 import Anthropic from "@anthropic-ai/sdk"
 
-// const KODU_BASE_URL = "http://localhost:3000"
-const KODU_BASE_URL = "https://www.kodu.ai"
+// const VLINDER_BASE_URL = "http://localhost:3000"
+const VLINDER_BASE_URL = "https://vlinders.org"
 
-export function getKoduSignInUrl(uriScheme?: string, extensionName?: string) {
-	return `${KODU_BASE_URL}/auth/login?redirectTo=${uriScheme}://kodu-ai.${extensionName}&ext=1`
+export function getVlinderSignInUrl(uriScheme?: string, extensionName?: string) {
+	return `${VLINDER_BASE_URL}/auth/login?redirectTo=${uriScheme}://QuickerStudio.${extensionName}&ext=1`
 }
 
-export function getKoduReferUrl(_uriScheme?: string) {
-	return `${KODU_BASE_URL}/dashboard/referrals`
+export function getVlinderReferUrl(_uriScheme?: string) {
+	return `${VLINDER_BASE_URL}/dashboard/referrals`
 }
 
-export function getKoduOfferUrl(_uriScheme?: string) {
-	return `${KODU_BASE_URL}/dashboard/offerwall`
+export function getVlinderOfferUrl(_uriScheme?: string) {
+	return `${VLINDER_BASE_URL}/dashboard/offerwall`
 }
 
-export function getKoduAddCreditsUrl(_uriScheme?: string) {
-	return `${KODU_BASE_URL}/pricing`
+export function getVlinderAddCreditsUrl(_uriScheme?: string) {
+	return `${VLINDER_BASE_URL}/pricing`
 }
 
-export function getKoduCurrentUser() {
-	return `${KODU_BASE_URL}/api/me`
+export function getVlinderCurrentUser() {
+	return `${VLINDER_BASE_URL}/api/me`
 }
 
-export function getKoduVisitorUrl() {
-	return `${KODU_BASE_URL}/api/extension/visitor`
+export function getVlinderVisitorUrl() {
+	return `${VLINDER_BASE_URL}/api/extension/visitor`
 }
 
-export function getKoduInferenceUrl() {
-	return `${KODU_BASE_URL}/api/inference-stream`
-	// return `${KODU_BASE_URL}/api/v1/inference`
+export function getVlinderInferenceUrl() {
+	return `${VLINDER_BASE_URL}/api/inference-stream`
+	// return `${VLINDER_BASE_URL}/api/v1/inference`
 }
 
-export function getKoduBugReportUrl() {
-	return `${KODU_BASE_URL}/api/bug-report`
+export function getVlinderBugReportUrl() {
+	return `${VLINDER_BASE_URL}/api/bug-report`
 }
 
-export function getKoduSummarizeUrl() {
-	return `${KODU_BASE_URL}/api/tools/summarize`
+export function getVlinderSummarizeUrl() {
+	return `${VLINDER_BASE_URL}/api/tools/summarize`
 }
 
-export function getKoduWebSearchUrl() {
-	return `${KODU_BASE_URL}/api/tools/new-web-search`
+export function getVlinderWebSearchUrl() {
+	return `${VLINDER_BASE_URL}/api/tools/new-web-search`
 }
 
-export function getKoduScreenshotUrl() {
-	return `${KODU_BASE_URL}/api/tools/screenshot`
+export function getVlinderScreenshotUrl() {
+	return `${VLINDER_BASE_URL}/api/tools/screenshot`
 }
 
-export function getKoduConsultantUrl() {
-	return `${KODU_BASE_URL}/api/tools/consultant`
+export function getVlinderConsultantUrl() {
+	return `${VLINDER_BASE_URL}/api/tools/consultant`
 }
 
-export function getKoduHomepageUrl() {
-	return `${KODU_BASE_URL}`
+export function getVlinderHomepageUrl() {
+	return `${VLINDER_BASE_URL}`
 }
 
-export enum KODU_ERROR_CODES {
+export enum VLINDER_ERROR_CODES {
 	/**
 	 * Invalid request error: There was an issue with the format or content of your request. We may also use this error type for other 4XX status codes not listed below.
 	 */
@@ -98,7 +98,7 @@ export enum KODU_ERROR_CODES {
 	 */
 	NETWORK_REFUSED_TO_CONNECT = 1,
 }
-export const koduErrorMessages: Record<KODU_ERROR_CODES, string> = {
+export const vlinderErrorMessages: Record<VLINDER_ERROR_CODES, string> = {
 	// 	400 - invalid_request_error: There was an issue with the format or content of your request. We may also use this error type for other 4XX status codes not listed below.
 	// 401 - authentication_error: There’s an issue with your API key.
 	// 403 - permission_error: Your API key does not have permission to use the specified resource.
@@ -120,20 +120,20 @@ export const koduErrorMessages: Record<KODU_ERROR_CODES, string> = {
 	1: "Network refused to connect",
 }
 
-export class KoduError extends Error {
-	public errorCode: KODU_ERROR_CODES
+export class VlinderError extends Error {
+	public errorCode: VLINDER_ERROR_CODES
 	constructor({ code }: { code: number }) {
-		if (code in KODU_ERROR_CODES) {
-			super(koduErrorMessages[code as KODU_ERROR_CODES])
+		if (code in VLINDER_ERROR_CODES) {
+			super(vlinderErrorMessages[code as VLINDER_ERROR_CODES])
 		} else {
 			super("Unknown error")
 		}
-		this.name = "KoduError"
+		this.name = "VlinderError"
 		this.errorCode = code
 	}
 }
 
-/** Kodu streaming ui example
+/** Vlinder streaming ui example
  messageStream.on("error", (error) => {
     console.error(`Error in message stream`, error);
   });
@@ -145,7 +145,7 @@ export class KoduError extends Error {
   });
  */
 
-export type koduSSEResponse =
+export type vlinderSSEResponse =
 	| {
 			code: 0
 			body: undefined

@@ -12,20 +12,20 @@ export type GitCommitResult = {
 
 export class GitHandler {
 	private repoPath: string | undefined
-	private readonly KODU_USER_NAME = "kodu-ai"
-	private readonly KODU_USER_EMAIL = "bot@kodu.ai"
+	private readonly VLINDER_USER_NAME = "QuickerStudio"
+	private readonly VLINDER_USER_EMAIL = "bot@vlinders.org"
 
 	constructor(repoPath: string) {
 		this.repoPath = repoPath
 	}
 
 	private async getCommitterInfo(): Promise<{ name: string; email: string }> {
-		const committerType = GlobalStateManager.getInstance().getGlobalState("gitCommitterType") ?? "kodu"
+		const committerType = GlobalStateManager.getInstance().getGlobalState("gitCommitterType") ?? "vlinder"
 
-		if (committerType === "kodu") {
+		if (committerType === "vlinder") {
 			return {
-				name: this.KODU_USER_NAME,
-				email: this.KODU_USER_EMAIL,
+				name: this.VLINDER_USER_NAME,
+				email: this.VLINDER_USER_EMAIL,
 			}
 		}
 
@@ -36,10 +36,10 @@ export class GitHandler {
 				(await this.getLocalConfigValue("user.email")) || (await this.getGlobalConfigValue("user.email"))
 
 			if (!name || !email) {
-				console.log("User git config not found, falling back to kodu")
+				console.log("User git config not found, falling back to vlinder")
 				return {
-					name: this.KODU_USER_NAME,
-					email: this.KODU_USER_EMAIL,
+					name: this.VLINDER_USER_NAME,
+					email: this.VLINDER_USER_EMAIL,
 				}
 			}
 
@@ -47,8 +47,8 @@ export class GitHandler {
 		} catch (error) {
 			console.error("Error getting user git config:", error)
 			return {
-				name: this.KODU_USER_NAME,
-				email: this.KODU_USER_EMAIL,
+				name: this.VLINDER_USER_NAME,
+				email: this.VLINDER_USER_EMAIL,
 			}
 		}
 	}

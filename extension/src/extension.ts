@@ -14,7 +14,7 @@ import { PromptStateManager } from "./providers/state/prompt-state-manager"
 import DB from "./db"
 import { OpenRouterModelCache } from "./api/providers/config/openrouter-cache"
 import { SecretStateManager } from "./providers/state/secret-state-manager"
-import { fetchKoduUser } from "./api/providers/kodu"
+import { fetchVlinderUser } from "./api/providers/vlinder"
 import { GlobalStateManager } from "./providers/state/global-state-manager"
 
 /*
@@ -36,12 +36,12 @@ async function updateUserCredit(provider?: ExtensionProvider) {
 		return
 	}
 	lastFetchedAt = now
-	const user = await provider?.getStateManager()?.fetchKoduUser()
+	const user = await provider?.getStateManager()?.fetchVlinderUser()
 	if (user) {
-		provider?.getStateManager().updateKoduCredits(user.credits)
+		provider?.getStateManager().updateVlinderCredits(user.credits)
 		provider?.getWebviewManager().postMessageToWebview({
 			type: "action",
-			action: "koduCreditsFetched",
+			action: "vlinderCreditsFetched",
 			user,
 		})
 	}
@@ -85,12 +85,12 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	OpenRouterModelCache.getInstance(context)
 
-	// DB.init(path.join(context.globalStorageUri.fsPath, "db", "kodu.db"), context)
+	// DB.init(path.join(context.globalStorageUri.fsPath, "db", "vlinder.db"), context)
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	//console.log('Congratulations, your extension "Kodu" is now active!')
-	outputChannel = vscode.window.createOutputChannel("Kodu")
+	//console.log('Congratulations, your extension "Vlinder" is now active!')
+	outputChannel = vscode.window.createOutputChannel("Vlinder")
 	const user = getCurrentUser()
 	const version = context.extension.packageJSON.version ?? "0.0.0"
 	amplitudeTracker
@@ -98,10 +98,10 @@ export function activate(context: vscode.ExtensionContext) {
 		.then(() => {
 			handleFirstInstall(context)
 		})
-	outputChannel.appendLine("Kodu extension activated")
+	outputChannel.appendLine("Vlinder extension activated")
 	const sidebarProvider = new ExtensionProvider(context, outputChannel)
 	context.subscriptions.push(outputChannel)
-	console.log(`Kodu extension activated`)
+	console.log(`Vlinder extension activated`)
 
 	// Set up the window state change listener
 	context.subscriptions.push(
@@ -132,7 +132,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand(`${extensionName}.setApiKey`, async () => {
 			const apiKey = await vscode.window.showInputBox({
-				prompt: "Enter your Kodu API Key",
+				prompt: "Enter your Vlinder API Key",
 				placeHolder: "API Key",
 				password: true, // Masks the input
 				ignoreFocusOut: true, // Keeps input box open when focus is lost
@@ -150,12 +150,12 @@ export function activate(context: vscode.ExtensionContext) {
 						async (progress) => {
 							try {
 								progress.report({ increment: 0, message: "Saving API key..." })
-								await SecretStateManager.getInstance(context).updateSecretState("koduApiKey", apiKey)
-								console.log("[SetApiKey Command]: Saved Kodu API key")
+								await SecretStateManager.getInstance(context).updateSecretState("vlinderApiKey", apiKey)
+								console.log("[SetApiKey Command]: Saved Vlinder API key")
 
 								progress.report({ increment: 50, message: "Verifying credentials..." })
 								// Attempt to verify the API key by fetching user data
-								const user = await fetchKoduUser({ apiKey })
+								const user = await fetchVlinderUser({ apiKey })
 								// If the user data is returned, the API key is valid
 
 								if (user) {
@@ -166,14 +166,14 @@ export function activate(context: vscode.ExtensionContext) {
 									// Post the new user data to the webview
 									await sidebarProvider.getWebviewManager().postBaseStateToWebview()
 									console.log(
-										"[SetApiKey Command]: Posted state to webview after saving Kodu API key"
+										"[SetApiKey Command]: Posted state to webview after saving Vlinder API key"
 									)
 									// Post the new user data to the webview
 									await sidebarProvider.getWebviewManager().postMessageToWebview({
 										type: "action",
-										action: "koduAuthenticated",
+										action: "vlinderAuthenticated",
 									})
-									console.log("[SetApiKey Command]: Posted message to action: koduAuthenticated")
+									console.log("[SetApiKey Command]: Posted message to action: vlinderAuthenticated")
 
 									// Wait a moment for the success message to be visible
 									await new Promise((resolve) => setTimeout(resolve, 500))
@@ -182,10 +182,10 @@ export function activate(context: vscode.ExtensionContext) {
 									amplitudeTracker.authSuccess()
 
 									// Update credits and UI
-									sidebarProvider.getStateManager().updateKoduCredits(user.credits)
+									sidebarProvider.getStateManager().updateVlinderCredits(user.credits)
 									sidebarProvider.getWebviewManager().postMessageToWebview({
 										type: "action",
-										action: "koduCreditsFetched",
+										action: "vlinderCreditsFetched",
 										user,
 									})
 
@@ -225,14 +225,14 @@ export function activate(context: vscode.ExtensionContext) {
 	)
 
 	const openExtensionInNewTab = async () => {
-		outputChannel.appendLine("Opening Kodu in new tab")
+		outputChannel.appendLine("Opening Vlinder in new tab")
 		// (this example uses webviewProvider activation event which is necessary to deserialize cached webview, but since we use retainContextWhenHidden, we don't need to use that event)
 		// https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample/src/extension.ts
 		const tabProvider = new ExtensionProvider(context, outputChannel)
 		//const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined
 		const lastCol = Math.max(...vscode.window.visibleTextEditors.map((editor) => editor.viewColumn || 0))
 		const targetCol = Math.max(lastCol + 1, 1)
-		const panel = vscode.window.createWebviewPanel(ExtensionProvider.tabPanelId, "Kodu", targetCol, {
+		const panel = vscode.window.createWebviewPanel(ExtensionProvider.tabPanelId, "Vlinder", targetCol, {
 			enableScripts: true,
 			retainContextWhenHidden: true,
 			localResourceRoots: [context.extensionUri],
@@ -245,7 +245,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// TODO: use better svg icon with light and dark variants (see https://stackoverflow.com/questions/58365687/vscode-extension-iconpath)
 		panel.iconPath = vscode.Uri.joinPath(context.extensionUri, "assets/icon.png")
 		tabProvider.resolveWebviewView(panel)
-		console.log("Opened Kodu in new tab")
+		console.log("Opened Vlinder in new tab")
 
 		// Lock the editor group so clicking on files doesn't open over the panel
 		new Promise((resolve) => setTimeout(resolve, 100)).then(() => {
@@ -261,7 +261,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(`${extensionName}.settingsButtonTapped`, () => {
-			//const message = "kodu-claude-coder-main.settingsButtonTapped!"
+			//const message = "vlinder-main.settingsButtonTapped!"
 			//vscode.window.showInformationMessage(message)
 			sidebarProvider
 				?.getWebviewManager()
@@ -345,10 +345,10 @@ export function activate(context: vscode.ExtensionContext) {
 			amplitudeTracker.authSuccess()
 			console.log(`Received token: ${apiKey}`)
 			try {
-				await SecretStateManager.getInstance(context).updateSecretState("koduApiKey", apiKey)
-				console.log("[HandleURI Command]: Saved Kodu API key")
+				await SecretStateManager.getInstance(context).updateSecretState("vlinderApiKey", apiKey)
+				console.log("[HandleURI Command]: Saved Vlinder API key")
 				// Attempt to verify the API key by fetching user data
-				const user = await fetchKoduUser({ apiKey })
+				const user = await fetchVlinderUser({ apiKey })
 				// If the user data is returned, the API key is valid
 
 				if (user) {
@@ -357,13 +357,13 @@ export function activate(context: vscode.ExtensionContext) {
 					console.log("[HandleURI Command]: Saved New user data: ", user)
 					// Post the new user data to the webview
 					await sidebarProvider.getWebviewManager().postBaseStateToWebview()
-					console.log("[HandleURI Command]: Posted state to webview after saving Kodu API key")
+					console.log("[HandleURI Command]: Posted state to webview after saving Vlinder API key")
 					// Post the new user data to the webview
 					await sidebarProvider.getWebviewManager().postMessageToWebview({
 						type: "action",
-						action: "koduAuthenticated",
+						action: "vlinderAuthenticated",
 					})
-					console.log("[HandleURI Command]: Posted message to action: koduAuthenticated")
+					console.log("[HandleURI Command]: Posted message to action: vlinderAuthenticated")
 
 					// Wait a moment for the success message to be visible
 					await new Promise((resolve) => setTimeout(resolve, 500))
@@ -371,10 +371,10 @@ export function activate(context: vscode.ExtensionContext) {
 					amplitudeTracker.authSuccess()
 
 					// Update credits and UI
-					sidebarProvider.getStateManager().updateKoduCredits(user.credits)
+					sidebarProvider.getStateManager().updateVlinderCredits(user.credits)
 					sidebarProvider.getWebviewManager().postMessageToWebview({
 						type: "action",
-						action: "koduCreditsFetched",
+						action: "vlinderCreditsFetched",
 						user,
 					})
 
@@ -409,5 +409,5 @@ export function activate(context: vscode.ExtensionContext) {
 // This method is called when your extension is deactivated
 export function deactivate() {
 	DB.disconnect()
-	outputChannel.appendLine("Kodu extension deactivated")
+	outputChannel.appendLine("Vlinder extension deactivated")
 }

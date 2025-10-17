@@ -28,7 +28,7 @@ interface TaskHeaderProps {
 	totalCost: number
 	onClose: () => void
 	isHidden: boolean
-	koduCredits?: number
+	vlinderCredits?: number
 	vscodeUriScheme?: string
 	elapsedTime?: number
 	lastMessageAt?: number
@@ -54,7 +54,7 @@ export default function TaskHeader({
 	cacheReads,
 	totalCost,
 	onClose,
-	koduCredits,
+	vlinderCredits,
 	vscodeUriScheme,
 	elapsedTime,
 	lastMessageAt,
@@ -205,7 +205,7 @@ export default function TaskHeader({
 							</div>
 						)}
 					</div>
-					<CreditsInfo koduCredits={koduCredits} vscodeUriScheme={vscodeUriScheme} />
+					<CreditsInfo vlinderCredits={vlinderCredits} vscodeUriScheme={vscodeUriScheme} />
 				</CollapsibleContent>
 			</Collapsible>
 		</section>

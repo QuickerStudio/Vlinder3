@@ -55,7 +55,7 @@ export class KillBashTool extends BaseAgentTool<KillBashToolParams> {
 		// Sanitize terminal name
 		const sanitizedTerminalName = terminalName?.trim();
 
-		const { terminalManager } = this.koduDev;
+		const { terminalManager } = this.vlinders;
 		if (!(terminalManager instanceof AdvancedTerminalManager)) {
 			throw new Error('AdvancedTerminalManager is not available');
 		}

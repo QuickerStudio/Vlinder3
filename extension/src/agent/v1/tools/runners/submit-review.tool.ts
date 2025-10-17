@@ -9,7 +9,7 @@ export class SubmitReviewTool extends BaseAgentTool<SubmitReviewToolParams> {
         if (!review) {
             await say(
                 "error",
-                "Kodu tried to use submit_review without review content. Retrying..."
+                "Vlinder tried to use submit_review without review content. Retrying..."
             )
             const errorMsg = `
             <review_tool_response>

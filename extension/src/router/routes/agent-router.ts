@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { procedure } from "../utils"
 import { router } from "../utils/router"
-import { koduConfig } from "../../api/providers/config/kodu"
+import { vlinderConfig } from "../../api/providers/config/vlinder"
 import { observerHookDefaultPrompt } from "../../agent/v1/hooks/observer-hook"
 import * as vscode from "vscode"
 import {
@@ -63,7 +63,7 @@ class PromptFileSystemProvider implements FileSystemProvider {
 }
 
 const promptFsProvider = new PromptFileSystemProvider()
-workspace.registerFileSystemProvider("kodu-prompt", promptFsProvider, { isCaseSensitive: true })
+workspace.registerFileSystemProvider("vlinder-prompt", promptFsProvider, { isCaseSensitive: true })
 
 const agentRouter = router({
 	getObserverSettings: procedure.input(z.object({})).resolve(async (ctx) => {
@@ -79,18 +79,18 @@ const agentRouter = router({
 		.resolve(async (ctx, input) => {
 			if (!input.enabled) {
 				ctx.provider.getGlobalStateManager().updateGlobalState("observerSettings", undefined)
-				ctx.provider.getKoduDev()?.observerHookEvery(undefined)
+				ctx.provider.getVlinders()?.observerHookEvery(undefined)
 				return { success: true }
 			}
 			const triggerEveryXRequests = 3
 			const pullMessages = 6
 			ctx.provider.getGlobalStateManager().updateGlobalState("observerSettings", {
-				modelId: koduConfig.models[0].id,
-				providerId: koduConfig.id,
+				modelId: vlinderConfig.models[0].id,
+				providerId: vlinderConfig.id,
 				observeEveryXRequests: triggerEveryXRequests,
 				observePullMessages: pullMessages,
 			})
-			ctx.provider.getKoduDev()?.observerHookEvery(triggerEveryXRequests)
+			ctx.provider.getVlinders()?.observerHookEvery(triggerEveryXRequests)
 
 			return { success: true }
 		}),
@@ -118,7 +118,7 @@ const agentRouter = router({
 				}
 			}
 			if (input.observeEveryXRequests) {
-				ctx.provider.getKoduDev()?.observerHookEvery(input.observeEveryXRequests)
+				ctx.provider.getVlinders()?.observerHookEvery(input.observeEveryXRequests)
 			}
 			return { success: true }
 		}),
@@ -127,7 +127,7 @@ const agentRouter = router({
 		const config = ctx.provider.getGlobalStateManager().getGlobalState("observerSettings")
 
 		// Use a constant URI for single instance
-		const uri = Uri.parse("kodu-prompt:/Kodu Observer Prompt.md")
+		const uri = Uri.parse("vlinder-prompt:/Vlinder Observer Prompt.md")
 
 		// Check for existing editor
 		const existingDoc = workspace.textDocuments.find((d) => d.uri.toString() === uri.toString())
@@ -186,7 +186,7 @@ const agentRouter = router({
 			})
 
 			// Register save command
-			const saveDisposable = commands.registerCommand("kodu.savePrompt", saveHandler)
+			const saveDisposable = commands.registerCommand("vlinder.savePrompt", saveHandler)
 
 			// Auto-save on close
 			const closeDisposable = window.onDidChangeActiveTextEditor(async (e) => {

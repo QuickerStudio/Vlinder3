@@ -1,7 +1,7 @@
 import type { Anthropic } from "@anthropic-ai/sdk"
-import { KoduHandler } from "./providers/kodu"
+import { VlinderHandler } from "./providers/vlinder"
 import { WebSearchResponseDto } from "./interfaces"
-import { koduSSEResponse } from "../shared/kodu"
+import { vlinderSSEResponse } from "../shared/vlinder"
 import { ApiHistoryItem } from "../agent/v1/main-agent"
 import { CustomApiHandler } from "./providers/custom-provider"
 import { PROVIDER_IDS, ProviderId } from "./providers/constants"
@@ -18,7 +18,7 @@ export interface ApiHandlerMessageResponse {
 export type ApiConfiguration = {
 	providerId: ProviderId
 	modelId: string
-	koduApiKey: string
+	vlinderApiKey: string
 }
 
 export type ApiHandlerOptions = Omit<ProviderConfig, "models"> & {
@@ -53,7 +53,7 @@ export interface ApiHandler {
 			messages: ApiHistoryItem[],
 			systemMessages: Anthropic.Beta.PromptCaching.Messages.PromptCachingBetaTextBlockParam[]
 		) => Promise<[ApiHistoryItem[], Anthropic.Beta.PromptCaching.Messages.PromptCachingBetaTextBlockParam[]]>
-	}): AsyncIterableIterator<koduSSEResponse>
+	}): AsyncIterableIterator<vlinderSSEResponse>
 
 	get options(): ApiConstructorOptions
 
@@ -61,10 +61,10 @@ export interface ApiHandler {
 }
 
 export function buildApiHandler(configuration: ApiConstructorOptions): ApiHandler {
-	if (configuration.providerSettings.providerId !== "kodu") {
+	if (configuration.providerSettings.providerId !== "vlinder") {
 		return new CustomApiHandler(configuration)
 	}
-	return new KoduHandler(configuration)
+	return new VlinderHandler(configuration)
 }
 
 export function withoutImageData(

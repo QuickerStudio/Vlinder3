@@ -1,10 +1,10 @@
-# Crafting Effective Prompts and Maximizing Agent Capabilities in Kodu
+# Crafting Effective Prompts and Maximizing Agent Capabilities in Vlinder
 
-Kodu is a powerful AI development assistant that uses a sophisticated multi-agent system and prompt architecture to help you accomplish complex tasks. This guide will help you understand how to craft effective prompts and leverage Kodu's agent capabilities for maximum effectiveness.
+Vlinder is a powerful AI development assistant that uses a sophisticated multi-agent system and prompt architecture to help you accomplish complex tasks. This guide will help you understand how to craft effective prompts and leverage Vlinder's agent capabilities for maximum effectiveness.
 
-## Understanding Kodu's Prompt Architecture
+## Understanding Vlinder's Prompt Architecture
 
-Kodu uses a ReAct (Reasoning-Acting-Observing) pattern for processing tasks:
+Vlinder uses a ReAct (Reasoning-Acting-Observing) pattern for processing tasks:
 
 1. **Reasoning**: Analyzes the task and plans approach
 2. **Acting**: Executes specific actions using available tools
@@ -31,9 +31,9 @@ Kodu uses a ReAct (Reasoning-Acting-Observing) pattern for processing tasks:
 
 ## Leveraging Multi-Agent Capabilities
 
-Kodu uses a powerful multi-agent system with three main types of agents:
+Vlinder uses a powerful multi-agent system with three main types of agents:
 
-### 1. Main Agent (Kodu)
+### 1. Main Agent (Vlinder)
 
 - Primary agent for task execution
 - Follows ReAct pattern
@@ -195,4 +195,4 @@ This prompt is effective because it:
    - Request explanations for complex changes
    - Seek alternatives for important decisions
 
-Remember: Kodu's agents work best when given clear direction while maintaining enough flexibility to leverage their specialized capabilities. The key is finding the right balance between specificity and allowing agents to use their expertise.
+Remember: Vlinder's agents work best when given clear direction while maintaining enough flexibility to leverage their specialized capabilities. The key is finding the right balance between specificity and allowing agents to use their expertise.

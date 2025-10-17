@@ -9,7 +9,7 @@ interface ChatHeaderProps {
 	selectedModelSupportsPromptCache: boolean
 	onClose: () => void
 	isHidden: boolean
-	koduCredits: number
+	vlinderCredits: number
 	vscodeUriScheme: string
 }
 
@@ -19,7 +19,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 	selectedModelSupportsPromptCache,
 	onClose,
 	isHidden,
-	koduCredits,
+	vlinderCredits,
 	vscodeUriScheme,
 }) => {
 	if (!task) return null
@@ -35,7 +35,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 			totalCost={apiMetrics?.cost ?? 0}
 			onClose={onClose}
 			isHidden={isHidden}
-			koduCredits={koduCredits}
+			vlinderCredits={vlinderCredits}
 			vscodeUriScheme={vscodeUriScheme}
 		/>
 	)

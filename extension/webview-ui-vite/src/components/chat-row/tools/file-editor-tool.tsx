@@ -29,8 +29,8 @@ export const FileEditorTool: React.FC<FileEditorToolParams & ToolAddons> = memo(
 	({
 		path,
 		mode = "whole_write",
-		kodu_content,
-		kodu_diff,
+		vlinder_content,
+		vlinder_diff,
 		list_versions_output,
 		rollback_version,
 		notAppliedCount = 0,
@@ -49,10 +49,10 @@ export const FileEditorTool: React.FC<FileEditorToolParams & ToolAddons> = memo(
 		let displayedContent = ""
 		if (mode === "list_versions" && list_versions_output) {
 			displayedContent = list_versions_output
-		} else if (kodu_content) {
-			displayedContent = kodu_content
-		} else if (kodu_diff) {
-			displayedContent = kodu_diff
+		} else if (vlinder_content) {
+			displayedContent = vlinder_content
+		} else if (vlinder_diff) {
+			displayedContent = vlinder_diff
 		} else {
 			displayedContent = ""
 		}
@@ -188,8 +188,8 @@ export const FileEditorTool: React.FC<FileEditorToolParams & ToolAddons> = memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps.approvalState === nextProps.approvalState &&
-			prevProps.kodu_content === nextProps.kodu_content &&
-			prevProps.kodu_diff === nextProps.kodu_diff &&
+			prevProps.vlinder_content === nextProps.vlinder_content &&
+			prevProps.vlinder_diff === nextProps.vlinder_diff &&
 			prevProps.list_versions_output === nextProps.list_versions_output &&
 			prevProps.ts === nextProps.ts &&
 			prevProps.path === nextProps.path &&

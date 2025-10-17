@@ -1,5 +1,5 @@
 /**
- * @fileoverview Tool Executor manages the lifecycle and execution of various tools in the Kodu extension.
+ * @fileoverview Tool Executor manages the lifecycle and execution of various tools in the Vlinder extension.
  * It handles tool creation, execution queuing, state management, and cleanup of running tools.
  */
 
@@ -62,7 +62,7 @@ interface ToolContext {
 }
 
 /**
- * Manages the execution and lifecycle of tools in the Kodu extension
+ * Manages the execution and lifecycle of tools in the Vlinder extension
  * Handles tool creation, queuing, state management, and cleanup
  */
 export class ToolExecutor {
@@ -70,8 +70,8 @@ export class ToolExecutor {
 	private runningProcessId: number | undefined
 	/** Current working directory for tool execution */
 	private readonly cwd: string
-	/** Reference to the KoduDev instance */
-	private readonly koduDev: MainAgent
+	/** Reference to the Vlinders instance */
+	private readonly vlinders: MainAgent
 	/** Parser for handling tool commands and updates */
 	private readonly toolParser: ToolParser
 	/** Queue for managing sequential tool execution */
@@ -90,7 +90,7 @@ export class ToolExecutor {
 	 */
 	constructor(options: AgentToolOptions) {
 		this.cwd = options.cwd
-		this.koduDev = options.koduDev
+		this.vlinders = options.vlinders
 		this.queue = new PQueue({ concurrency: 1 })
 
 		this.toolParser = new ToolParser(
@@ -110,11 +110,11 @@ export class ToolExecutor {
 	public get options(): AgentToolOptions {
 		return {
 			cwd: this.cwd,
-			alwaysAllowReadOnly: this.koduDev.getStateManager().alwaysAllowReadOnly,
-			alwaysAllowWriteOnly: this.koduDev.getStateManager().alwaysAllowWriteOnly,
-			koduDev: this.koduDev,
+			alwaysAllowReadOnly: this.vlinders.getStateManager().alwaysAllowReadOnly,
+			alwaysAllowWriteOnly: this.vlinders.getStateManager().alwaysAllowWriteOnly,
+			vlinders: this.vlinders,
 			setRunningProcessId: this.setRunningProcessId.bind(this),
-			agentName: this.koduDev.getStateManager().subAgentManager.state?.name,
+			agentName: this.vlinders.getStateManager().subAgentManager.state?.name,
 		}
 	}
 
@@ -297,9 +297,9 @@ export class ToolExecutor {
 				ts,
 				isFinal: false,
 				isLastWriteToFile: false,
-				ask: this.koduDev.taskExecutor.ask.bind(this.koduDev.taskExecutor),
-				say: this.koduDev.taskExecutor.say.bind(this.koduDev.taskExecutor),
-				updateAsk: this.koduDev.taskExecutor.updateAsk.bind(this.koduDev.taskExecutor),
+				ask: this.vlinders.taskExecutor.ask.bind(this.vlinders.taskExecutor),
+				say: this.vlinders.taskExecutor.say.bind(this.vlinders.taskExecutor),
+				updateAsk: this.vlinders.taskExecutor.updateAsk.bind(this.vlinders.taskExecutor),
 			})
 
 			context = { id, tool, status: "pending" }
@@ -311,15 +311,15 @@ export class ToolExecutor {
 
 		// Handle partial updates for write file tool
 		if (context.tool instanceof FileEditorTool && params.path) {
-			if (params.kodu_content) {
-				if (params.kodu_content) {
-					await context.tool.handlePartialUpdate(params.path, params.kodu_content)
+			if (params.vlinder_content) {
+				if (params.vlinder_content) {
+					await context.tool.handlePartialUpdate(params.path, params.vlinder_content)
 				}
 			}
 			// enable after updating the animation
-			if (params.kodu_diff) {
+			if (params.vlinder_diff) {
 				// this.updateToolStatus(context, params, ts)
-				await context.tool.handlePartialUpdateDiff(params.path, params.kodu_diff)
+				await context.tool.handlePartialUpdateDiff(params.path, params.vlinder_diff)
 			}
 		} else {
 			await this.updateToolStatus(context, params, ts)
@@ -347,9 +347,9 @@ export class ToolExecutor {
 				ts: Date.now(),
 				isFinal: true,
 				isLastWriteToFile: false,
-				ask: this.koduDev.taskExecutor.ask.bind(this.koduDev.taskExecutor),
-				say: this.koduDev.taskExecutor.say.bind(this.koduDev.taskExecutor),
-				updateAsk: this.koduDev.taskExecutor.updateAsk.bind(this.koduDev.taskExecutor),
+				ask: this.vlinders.taskExecutor.ask.bind(this.vlinders.taskExecutor),
+				say: this.vlinders.taskExecutor.say.bind(this.vlinders.taskExecutor),
+				updateAsk: this.vlinders.taskExecutor.updateAsk.bind(this.vlinders.taskExecutor),
 			})
 
 			context = { id, tool, status: "pending" }
@@ -384,7 +384,7 @@ export class ToolExecutor {
 
 		await context?.tool.abortToolExecution()
 
-		await this.koduDev.taskExecutor.updateAsk(
+		await this.vlinders.taskExecutor.updateAsk(
 			"tool",
 			{
 				tool: {
@@ -406,12 +406,12 @@ export class ToolExecutor {
 	 * @param ts Timestamp of the update
 	 */
 	private async updateToolStatus(context: ToolContext, params: any, ts: number) {
-		await this.koduDev.taskExecutor.updateAsk(
+		await this.vlinders.taskExecutor.updateAsk(
 			"tool",
 			{
 				tool: {
 					tool: context.tool.name,
-					agentName: this.koduDev.getStateManager().subAgentManager.state?.name,
+					agentName: this.vlinders.getStateManager().subAgentManager.state?.name,
 					...params,
 					ts,
 					approvalState: "loading",
@@ -450,9 +450,9 @@ export class ToolExecutor {
 				ts: context.tool.ts,
 				isFinal: true,
 				isLastWriteToFile: false,
-				ask: this.koduDev.taskExecutor.ask.bind(this.koduDev.taskExecutor),
-				say: this.koduDev.taskExecutor.say.bind(this.koduDev.taskExecutor),
-				updateAsk: this.koduDev.taskExecutor.updateAsk.bind(this.koduDev.taskExecutor),
+				ask: this.vlinders.taskExecutor.ask.bind(this.vlinders.taskExecutor),
+				say: this.vlinders.taskExecutor.say.bind(this.vlinders.taskExecutor),
+				updateAsk: this.vlinders.taskExecutor.updateAsk.bind(this.vlinders.taskExecutor),
 			})
 
 			this.toolResults.push({ name: context.tool.name, result })
@@ -462,7 +462,7 @@ export class ToolExecutor {
 			console.error(`Error executing tool: ${context.tool.name}`, error)
 			context.status = "error"
 			context.error = error as Error
-			await this.koduDev.taskExecutor.partialUpdateTool(
+			await this.vlinders.taskExecutor.partialUpdateTool(
 				{
 					ts: context.tool.ts,
 					approvalState: "error",

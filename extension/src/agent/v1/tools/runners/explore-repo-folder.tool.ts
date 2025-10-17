@@ -14,7 +14,7 @@ export class ExploreRepoFolderTool extends BaseAgentTool<ExploreRepoFolderToolPa
 		if (relDirPath === undefined) {
 			await say(
 				"error",
-				"Kodu tried to use explore_repo_folder without value for required parameter 'path'. Retrying..."
+				"Vlinder tried to use explore_repo_folder without value for required parameter 'path'. Retrying..."
 			)
 
 			return this.toolResponse(
@@ -31,7 +31,7 @@ export class ExploreRepoFolderTool extends BaseAgentTool<ExploreRepoFolderToolPa
 						<message>Missing required parameter 'path'</message>
 						<help>
 							<example_usage>
-							<kodu_action>${exploreRepoFolderPrompt.examples[0].output}</kodu_action>
+							<vlinder_action>${exploreRepoFolderPrompt.examples[0].output}</vlinder_action>
 							</example_usage>
 							<note>A valid directory path is required to list code definitions</note>
 						</help>

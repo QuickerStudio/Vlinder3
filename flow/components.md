@@ -2,9 +2,9 @@
 
 This document provides a detailed description of the main components in the Claude Dev agent system.
 
-## 1. KoduDev (index.ts)
+## 1. Vlinders (index.ts)
 
-KoduDev is the central class that orchestrates the entire system. It's responsible for:
+Vlinders is the central class that orchestrates the entire system. It's responsible for:
 
 - Initializing other components (ApiManager, StateManager, TaskExecutor, ToolExecutor)
 - Coordinating interactions between components

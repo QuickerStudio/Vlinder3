@@ -2,10 +2,10 @@
 import { ProviderConfig } from "../types"
 import { DEFAULT_BASE_URLS, PROVIDER_IDS, PROVIDER_NAMES } from "../constants"
 
-export const koduConfig: ProviderConfig = {
-	id: PROVIDER_IDS.KODU,
-	name: PROVIDER_NAMES[PROVIDER_IDS.KODU],
-	baseUrl: DEFAULT_BASE_URLS[PROVIDER_IDS.KODU],
+export const vlinderConfig: ProviderConfig = {
+	id: PROVIDER_IDS.VLINDER,
+	name: PROVIDER_NAMES[PROVIDER_IDS.VLINDER],
+	baseUrl: DEFAULT_BASE_URLS[PROVIDER_IDS.VLINDER],
 	models: [
 		{
 			id: "claude-3-7-sonnet-20250219",
@@ -18,9 +18,9 @@ export const koduConfig: ProviderConfig = {
 			outputPrice: 15.0,
 			cacheWritesPrice: 3.75,
 			cacheReadsPrice: 0.3,
-			name: "Claude 3.7 Sonnet - Kodu Tunnel",
+			name: "Claude 3.7 Sonnet - Vlinder Tunnel",
 			isRecommended: true,
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		{
 			id: "claude-3-5-sonnet-20241022",
@@ -33,7 +33,7 @@ export const koduConfig: ProviderConfig = {
 			cacheWritesPrice: 3.75,
 			cacheReadsPrice: 0.3,
 			name: "Claude 3.5 Sonnet (New)",
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		{
 			id: "claude-3-5-sonnet-20240620",
@@ -46,7 +46,7 @@ export const koduConfig: ProviderConfig = {
 			cacheWritesPrice: 3.75,
 			cacheReadsPrice: 0.3,
 			name: "Claude 3.5 Sonnet (Old)",
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		{
 			id: "claude-3-opus-20240229",
@@ -59,7 +59,7 @@ export const koduConfig: ProviderConfig = {
 			cacheWritesPrice: 18.75,
 			cacheReadsPrice: 1.5,
 			name: "Claude 3 Opus",
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		{
 			id: "claude-3-haiku-20240307",
@@ -72,7 +72,7 @@ export const koduConfig: ProviderConfig = {
 			cacheWritesPrice: 0.3,
 			cacheReadsPrice: 0.03,
 			name: "Claude 3 Haiku",
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		{
 			id: "claude-3-5-haiku-20241022",
@@ -85,7 +85,7 @@ export const koduConfig: ProviderConfig = {
 			cacheWritesPrice: 1.25,
 			cacheReadsPrice: 0.1,
 			name: "Claude 3.5 Haiku",
-			provider: PROVIDER_IDS.KODU,
+			provider: PROVIDER_IDS.VLINDER,
 		},
 		// {
 		// 	id: "deepseek-v3-platform",
@@ -99,7 +99,7 @@ export const koduConfig: ProviderConfig = {
 		// 	cacheReadsPrice: 0.014,
 		// 	name: "DeepSeek V3 (Deepseek Platform)",
 		// 	isRecommended: true,
-		// 	provider: PROVIDER_IDS.KODU,
+		// 	provider: PROVIDER_IDS.VLINDER,
 		// },
 		// {
 		// 	id: "deepseek-v3-fireworks-ai",
@@ -110,7 +110,7 @@ export const koduConfig: ProviderConfig = {
 		// 	inputPrice: 0.9,
 		// 	outputPrice: 0.9,
 		// 	name: "DeepSeek V3 (Fireworks.ai)",
-		// 	provider: PROVIDER_IDS.KODU,
+		// 	provider: PROVIDER_IDS.VLINDER,
 		// },
 	],
 	requiredFields: ["apiKey"],

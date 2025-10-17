@@ -11,8 +11,8 @@ import { OpenAICompatibleSettings, ProviderConfig } from "../../api/providers/ty
 import { openRouterConfig } from "../../api/providers/config/openrouter"
 
 export async function getProvider(id: string) {
-	if (id === "kodu") {
-		return { provider: providerConfigs.kodu }
+	if (id === "vlinder") {
+		return { provider: providerConfigs.vlinder }
 	}
 	const providersString = await SecretStateManager.getInstance().getSecretState("providers")
 	const providers = z.array(providerSettingsSchema).safeParse(JSON.parse(providersString || "[]")).data
@@ -41,17 +41,17 @@ function openaiCompatibleModel(p: OpenAICompatibleSettings) {
 }
 
 export async function getModelProviderData(providerId: string) {
-	if (providerId === "kodu") {
-		const apiKey = await SecretStateManager.getInstance().getSecretState("koduApiKey")
+	if (providerId === "vlinder") {
+		const apiKey = await SecretStateManager.getInstance().getSecretState("vlinderApiKey")
 		const providerSettings: ProviderSettings = {
-			providerId: "kodu",
+			providerId: "vlinder",
 			apiKey,
-			modelId: "kodu",
+			modelId: "vlinder",
 		}
 		return {
 			providerId,
 			currentProvider: providerSettings,
-			models: providerConfigs.kodu.models,
+			models: providerConfigs.vlinder.models,
 		}
 	}
 	const providersData = await SecretStateManager.getInstance().getSecretState("providers")
@@ -197,7 +197,7 @@ const providerRouter = router({
 				providerId: input.providerId as ProviderId,
 				modelId: input.modelId,
 			})
-			await ctx.provider.koduDev?.getApiManager().pullLatestApi()
+			await ctx.provider.vlinders?.getApiManager().pullLatestApi()
 
 			return { success: true }
 		}),
@@ -226,7 +226,7 @@ const providerRouter = router({
 		const newProviders = [...providers, newProvider]
 
 		await SecretStateManager.getInstance().updateSecretState("providers", JSON.stringify(newProviders))
-		await ctx.provider.koduDev?.getApiManager().pullLatestApi()
+		await ctx.provider.vlinders?.getApiManager().pullLatestApi()
 
 		return { provider: newProvider }
 	}),
@@ -243,7 +243,7 @@ const providerRouter = router({
 
 		const newProviders = providers.map((p) => (p.providerId === input.providerId ? input : p))
 		await SecretStateManager.getInstance().updateSecretState("providers", JSON.stringify(newProviders))
-		await ctx.provider.koduDev?.getApiManager().pullLatestApi()
+		await ctx.provider.vlinders?.getApiManager().pullLatestApi()
 
 		return { provider: input }
 	}),
@@ -254,7 +254,7 @@ const providerRouter = router({
 		const newProviders = providers.filter((p) => p.providerId !== input.id)
 
 		await SecretStateManager.getInstance().updateSecretState("providers", JSON.stringify(newProviders))
-		await ctx.provider.koduDev?.getApiManager().pullLatestApi()
+		await ctx.provider.vlinders?.getApiManager().pullLatestApi()
 
 		return { success: true }
 	}),

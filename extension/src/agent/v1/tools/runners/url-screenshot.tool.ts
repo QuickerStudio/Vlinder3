@@ -100,7 +100,7 @@ export class UrlScreenshotTool extends BaseAgentTool<UrlScreenshotToolParams> {
 				throw new Error("Tool execution was aborted")
 			}
 
-			const browserManager = this.koduDev.browserManager
+			const browserManager = this.vlinders.browserManager
 			await browserManager.launchBrowser()
 
 			// Check if aborted before screenshot
@@ -173,7 +173,7 @@ export class UrlScreenshotTool extends BaseAgentTool<UrlScreenshotToolParams> {
 
 	private async cleanup() {
 		try {
-			await this.koduDev.browserManager.closeBrowser()
+			await this.vlinders.browserManager.closeBrowser()
 		} catch (err) {
 			console.error("Error during cleanup:", err)
 		}
@@ -182,7 +182,7 @@ export class UrlScreenshotTool extends BaseAgentTool<UrlScreenshotToolParams> {
 	private async onBadInputReceived() {
 		await this.params.say(
 			"error",
-			"Kodu tried to use `url_screenshot` without required parameter `url`. Retrying..."
+			"Vlinder tried to use `url_screenshot` without required parameter `url`. Retrying..."
 		)
 
 		const errMsg = `

@@ -1,15 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk"
 import { ExtensionProvider } from "../../../providers/extension-provider"
-import { KoduAgentState, ApiHistoryItem } from "../types"
+import { VlinderAgentState, ApiHistoryItem } from "../types"
 import { IOManager } from "./io-manager"
 
 interface ApiHistoryManagerOptions {
-	state: KoduAgentState
+	state: VlinderAgentState
 	ioManager: IOManager
 }
 
 export class ApiHistoryManager {
-	private state: KoduAgentState
+	private state: VlinderAgentState
 	private ioManager: IOManager
 
 	constructor(options: ApiHistoryManagerOptions) {

@@ -65,16 +65,16 @@ export class SpawnAgentTool extends BaseAgentTool<SpawnAgentToolParams> {
 		let systemPrompt = ""
 		switch (agentName) {
 			case "planner":
-				systemPrompt = PLANNER_SYSTEM_PROMPT(this.koduDev.getApiManager().getModelInfo()?.supportsImages)
+				systemPrompt = PLANNER_SYSTEM_PROMPT(this.vlinders.getApiManager().getModelInfo()?.supportsImages)
 				break
 			case "sub_task":
-				systemPrompt = SUBTASK_SYSTEM_PROMPT(this.koduDev.getApiManager().getModelInfo()?.supportsImages)
+				systemPrompt = SUBTASK_SYSTEM_PROMPT(this.vlinders.getApiManager().getModelInfo()?.supportsImages)
 				break
 		}
 
 		// const systemPrompt
 
-		await this.koduDev.getStateManager().subAgentManager.spawnSubAgent(this.ts, {
+		await this.vlinders.getStateManager().subAgentManager.spawnSubAgent(this.ts, {
 			name: agentName,
 			state: "RUNNING",
 			ts: this.ts,

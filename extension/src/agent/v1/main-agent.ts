@@ -29,7 +29,7 @@ import { GlobalStateManager } from "../../providers/state/global-state-manager"
 import dedent from "dedent"
 import { nanoid } from "nanoid"
 
-// new KoduDev
+// new Vlinders
 export class MainAgent {
 	private stateManager: StateManager
 	private apiManager: ApiManager
@@ -86,7 +86,7 @@ export class MainAgent {
 			cwd: getCwd(),
 			alwaysAllowReadOnly: this.stateManager.alwaysAllowReadOnly,
 			alwaysAllowWriteOnly: this.stateManager.alwaysAllowWriteOnly,
-			koduDev: this,
+			vlinders: this,
 		})
 		this.terminalManager = new AdvancedTerminalManager()
 		this.taskExecutor = new TaskExecutor(this.stateManager, this.toolExecutor, this.providerRef)

@@ -47,7 +47,7 @@ export class FileEditorTool extends BaseAgentTool<FileEditorToolParams> {
 		this.diffViewProvider = new DiffViewProvider(getCwd())
 		this.inlineEditor = new InlineEditHandler()
 		this.diffBlockManager = new DiffBlockManager()
-		if (!!this.koduDev.getStateManager().skipWriteAnimation) {
+		if (!!this.vlinders.getStateManager().skipWriteAnimation) {
 			this.skipWriteAnimation = true
 		}
 	}
@@ -105,7 +105,7 @@ export class FileEditorTool extends BaseAgentTool<FileEditorToolParams> {
 						tool: "file_editor",
 						path: relPath,
 						mode,
-						kodu_diff: diff,
+						vlinder_diff: diff,
 						approvalState: "loading",
 						ts: this.ts,
 					},
@@ -143,7 +143,7 @@ export class FileEditorTool extends BaseAgentTool<FileEditorToolParams> {
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_diff: diff,
+					vlinder_diff: diff,
 					approvalState: "loading",
 					ts: this.ts,
 				},
@@ -236,7 +236,7 @@ export class FileEditorTool extends BaseAgentTool<FileEditorToolParams> {
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: acculmatedContent,
+					vlinder_content: acculmatedContent,
 					approvalState: "loading",
 					ts: this.ts,
 				},
@@ -316,7 +316,7 @@ export class FileEditorTool extends BaseAgentTool<FileEditorToolParams> {
 						tool: "file_editor",
 						path,
 						mode,
-						kodu_diff: content,
+						vlinder_diff: content,
 						approvalState: "error",
 						ts: this.ts,
 						notAppliedCount: failedCount,
@@ -356,7 +356,7 @@ ${REPLACE_HEAD}
 					tool: "file_editor",
 					path,
 					mode,
-					kodu_diff: content,
+					vlinder_diff: content,
 					approvalState: "pending",
 					ts: this.ts,
 				},
@@ -371,7 +371,7 @@ ${REPLACE_HEAD}
 						tool: "file_editor",
 						path,
 						mode,
-						kodu_diff: content,
+						vlinder_diff: content,
 						approvalState: "rejected",
 						ts: this.ts,
 						userFeedback: text,
@@ -394,7 +394,7 @@ ${REPLACE_HEAD}
 		}
 		const { finalContent, results, finalContentRaw } = await this.inlineEditor.saveChanges()
 
-		this.koduDev.getStateManager().addErrorPath(path)
+		this.vlinders.getStateManager().addErrorPath(path)
 
 		const notAppliedCount = results.filter((result) => !result.wasApplied).length
 		const validationMsg =
@@ -405,7 +405,7 @@ ${REPLACE_HEAD}
 		let commitXmlInfo = ""
 		let commitResult: GitCommitResult | undefined
 		try {
-			commitResult = await this.koduDev.gitHandler.commitOnFileWrite(path, this.params.input.commit_message)
+			commitResult = await this.vlinders.gitHandler.commitOnFileWrite(path, this.params.input.commit_message)
 			commitXmlInfo = this.commitXMLGenerator(commitResult)
 		} catch (error) {
 			this.logger(`Error committing changes: ${error}`, "error")
@@ -422,7 +422,7 @@ ${REPLACE_HEAD}
 					tool: "file_editor",
 					path,
 					mode,
-					kodu_diff: content,
+					vlinder_diff: content,
 					approvalState: "approved",
 					ts: this.ts,
 					saved_version: newVersion.version.toString(),
@@ -434,7 +434,7 @@ ${REPLACE_HEAD}
 			this.ts
 		)
 
-		const currentOutputMode = this.koduDev.getStateManager().inlineEditOutputType
+		const currentOutputMode = this.vlinders.getStateManager().inlineEditOutputType
 		if (currentOutputMode === "diff") {
 			return this.toolResponse(
 				"success",
@@ -500,7 +500,7 @@ ${finalContent}
 
 	private async finalizeFileEdit(relPath: string, content: string): Promise<ToolResponseV2> {
 		// determine mode based on whether content is entire or partial
-		// If kodu_content is provided from input, it likely means whole content replacement. If kodu_diff, it's edit.
+		// If vlinder_content is provided from input, it likely means whole content replacement. If vlinder_diff, it's edit.
 		// If we got here without diff, that means it's a "whole" operation.
 		const mode = "whole_write"
 
@@ -514,7 +514,7 @@ ${finalContent}
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: content,
+					vlinder_content: content,
 					approvalState: "pending",
 					ts: this.ts,
 				},
@@ -529,7 +529,7 @@ ${finalContent}
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: content,
+					vlinder_content: content,
 					approvalState: "pending",
 					ts: this.ts,
 				},
@@ -545,7 +545,7 @@ ${finalContent}
 						tool: "file_editor",
 						path: relPath,
 						mode,
-						kodu_content: content,
+						vlinder_content: content,
 						approvalState: "rejected",
 						ts: this.ts,
 						userFeedback: text,
@@ -565,12 +565,12 @@ ${finalContent}
 		this.logger(`User approved to write to file: ${relPath}`, "info")
 		const { userEdits, finalContent } = await this.diffViewProvider.saveChanges()
 		this.logger(`Changes saved to file: ${relPath}`, "info")
-		this.koduDev.getStateManager().addErrorPath(relPath)
+		this.vlinders.getStateManager().addErrorPath(relPath)
 
 		let commitXmlInfo = ""
 		let commitResult: GitCommitResult | undefined
 		try {
-			commitResult = await this.koduDev.gitHandler.commitOnFileWrite(relPath, this.params.input.commit_message)
+			commitResult = await this.vlinders.gitHandler.commitOnFileWrite(relPath, this.params.input.commit_message)
 			commitXmlInfo = this.commitXMLGenerator(commitResult)
 		} catch (error) {
 			this.logger(`Error committing changes: ${error}`, "error")
@@ -584,7 +584,7 @@ ${finalContent}
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: content,
+					vlinder_content: content,
 					saved_version: newVersion.version.toString(),
 					approvalState: "approved",
 					ts: this.ts,
@@ -626,7 +626,7 @@ ${commitXmlInfo}`
 
 	private async processFileWrite() {
 		try {
-			const { path: relPath, kodu_content: content, kodu_diff: diff, mode } = this.params.input
+			const { path: relPath, vlinder_content: content, vlinder_diff: diff, mode } = this.params.input
 			if (!relPath) {
 				throw new Error("Missing required parameter 'path'")
 			}
@@ -640,7 +640,7 @@ ${commitXmlInfo}`
 			} else if (content) {
 				return await this.finalizeFileEdit(relPath, content)
 			} else {
-				throw new Error("Missing required parameter 'kodu_content' or 'kodu_diff'")
+				throw new Error("Missing required parameter 'vlinder_content' or 'vlinder_diff'")
 			}
 		} catch (error) {
 			this.logger(`Error in processFileWrite: ${error}`, "error")
@@ -652,8 +652,8 @@ ${commitXmlInfo}`
 						tool: "file_editor",
 						path: this.params.input.path ?? "",
 						mode,
-						kodu_content: this.params.input.kodu_content ?? undefined,
-						kodu_diff: this.params.input.kodu_diff ?? undefined,
+						vlinder_content: this.params.input.vlinder_content ?? undefined,
+						vlinder_diff: this.params.input.vlinder_diff ?? undefined,
 						approvalState: "error",
 						ts: this.ts,
 						error: `Failed to write to file`,
@@ -676,7 +676,7 @@ ${commitXmlInfo}`
 
 		if (didAbort) {
 			this.pQueue.clear()
-			if (this.params.input.kodu_diff) {
+			if (this.params.input.vlinder_diff) {
 				await this.inlineEditor.rejectChanges()
 				await this.inlineEditor.dispose()
 			} else {
@@ -704,7 +704,7 @@ ${commitXmlInfo}`
 	 * Saves a new file version after changes are made to the file.
 	 */
 	private async saveNewFileVersion(relPath: string, content: string): Promise<FileVersion> {
-		const versions = await this.koduDev.getStateManager().getFileVersions(relPath)
+		const versions = await this.vlinders.getStateManager().getFileVersions(relPath)
 		// if we don't have any versions we only need to save the original content as the first version of the file
 		if (versions.length === 0) {
 			const newVersion: FileVersion = {
@@ -713,7 +713,7 @@ ${commitXmlInfo}`
 				createdAt: Date.now(),
 				content: this.fileState?.orignalContent ?? "",
 			}
-			await this.koduDev.getStateManager().saveFileVersion(newVersion)
+			await this.vlinders.getStateManager().saveFileVersion(newVersion)
 			return newVersion
 		}
 		const nextVersion = versions.length > 0 ? Math.max(...versions.map((v) => v.version)) + 1 : 1
@@ -723,14 +723,14 @@ ${commitXmlInfo}`
 			createdAt: Date.now(),
 			content,
 		}
-		await this.koduDev.getStateManager().saveFileVersion(newVersion)
+		await this.vlinders.getStateManager().saveFileVersion(newVersion)
 		return newVersion
 	}
 
 	private async handleRollback(relPath: string): Promise<ToolResponseV2> {
 		const mode = "rollback"
 
-		const versions = await this.koduDev.getStateManager().getFileVersions(relPath)
+		const versions = await this.vlinders.getStateManager().getFileVersions(relPath)
 		const versionToRollback = versions.at(-1)
 		if (!versionToRollback) {
 			return this.toolResponse(
@@ -758,7 +758,7 @@ ${commitXmlInfo}`
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: versionToRollback.content,
+					vlinder_content: versionToRollback.content,
 					approvalState: "pending",
 					ts: this.ts,
 				},
@@ -773,7 +773,7 @@ ${commitXmlInfo}`
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: versionToRollback.content,
+					vlinder_content: versionToRollback.content,
 					approvalState: "pending",
 					ts: this.ts,
 				},
@@ -789,7 +789,7 @@ ${commitXmlInfo}`
 						tool: "file_editor",
 						path: relPath,
 						mode,
-						kodu_content: versionToRollback.content,
+						vlinder_content: versionToRollback.content,
 						approvalState: "rejected",
 						userFeedback: text,
 						ts: this.ts,
@@ -813,16 +813,16 @@ ${commitXmlInfo}`
 			await unlink(absolutePath)
 		} else {
 			// we want to add it to error paths if it's not empty and delete
-			this.koduDev.getStateManager().addErrorPath(relPath)
+			this.vlinders.getStateManager().addErrorPath(relPath)
 		}
 		let commitXmlInfo = ""
 		let commitResult: GitCommitResult | undefined
 		try {
-			commitResult = await this.koduDev.gitHandler.commitOnFileWrite(relPath, this.params.input.commit_message)
+			commitResult = await this.vlinders.gitHandler.commitOnFileWrite(relPath, this.params.input.commit_message)
 			commitXmlInfo = this.commitXMLGenerator(commitResult)
 		} catch {}
 
-		await this.koduDev.getStateManager().deleteFileVersion(versionToRollback)
+		await this.vlinders.getStateManager().deleteFileVersion(versionToRollback)
 
 		this.params.updateAsk(
 			"tool",
@@ -831,7 +831,7 @@ ${commitXmlInfo}`
 					tool: "file_editor",
 					path: relPath,
 					mode,
-					kodu_content: versionToRollback.content,
+					vlinder_content: versionToRollback.content,
 					approvalState: "approved",
 					ts: this.ts,
 					commitHash: commitResult?.commitHash,

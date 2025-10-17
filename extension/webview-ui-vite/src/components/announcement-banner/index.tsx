@@ -73,7 +73,7 @@ export default function AnnouncementBanner() {
 
 						<Button asChild variant="ghost" size="sm">
 							<a
-								href="https://marketplace.visualstudio.com/items/kodu-ai.claude-dev-experimental/changelog"
+								href="https://marketplace.visualstudio.com/items/QuickerStudio.vlinder/changelog"
 								target="_blank"
 								rel="noreferrer">
 								View full changelog
