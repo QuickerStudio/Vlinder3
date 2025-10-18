@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import { LoginView } from './login-view';
 import { TopBar } from './top-bar';
 import { RepositoryList } from './repository-list';
+import { RepositoryDetail } from './repository-detail';
 import { useGitHubAuth } from './use-github-auth';
 import { useRepositories } from './use-repositories';
 
@@ -52,7 +53,12 @@ export const GitHubTab: React.FC = () => {
     );
   }
 
-  // After login, show TopBar + Repository List
+  // Handler to go back to repository list
+  const handleBackToList = () => {
+    setSelectedRepo(null);
+  };
+
+  // After login, show TopBar + Repository List or Repository Detail
   return (
     <div className='flex items-start justify-center w-full h-full p-6'>
       {/* Rounded Container */}
@@ -60,19 +66,27 @@ export const GitHubTab: React.FC = () => {
         <TopBar
           account={account!}
           onLogout={handleLogout}
+          selectedRepo={selectedRepo}
+          onBack={handleBackToList}
         />
         
-        {/* Main Content Area: Repository List */}
+        {/* Main Content Area */}
         <div className='w-full' style={{ height: '550px' }}>
-          <RepositoryList
-            repositories={repositories}
-            selectedRepo={selectedRepo}
-            searchQuery={searchQuery}
-            isLoading={isLoadingRepos}
-            onSearchChange={setSearchQuery}
-            onRefresh={loadRepositories}
-            onSelectRepo={setSelectedRepo}
-          />
+          {selectedRepo ? (
+            // Show Repository Detail with tabs when a repo is selected
+            <RepositoryDetail selectedRepo={selectedRepo} />
+          ) : (
+            // Show Repository List when no repo is selected
+            <RepositoryList
+              repositories={repositories}
+              selectedRepo={selectedRepo}
+              searchQuery={searchQuery}
+              isLoading={isLoadingRepos}
+              onSearchChange={setSearchQuery}
+              onRefresh={loadRepositories}
+              onSelectRepo={setSelectedRepo}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -4,16 +4,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Github, LogOut } from 'lucide-react';
+import { Github, LogOut, ArrowLeft } from 'lucide-react';
 import { rpcClient } from '@/lib/rpc-client';
-import type { GitHubAccount } from './types';
+import type { GitHubAccount, GitHubRepository } from './types';
 
 interface TopBarProps {
   account: GitHubAccount;
   onLogout: () => void;
+  selectedRepo?: GitHubRepository | null;
+  onBack?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ account, onLogout }) => {
+export const TopBar: React.FC<TopBarProps> = ({ account, onLogout, selectedRepo, onBack }) => {
   const [avatarBase64, setAvatarBase64] = useState<string>('');
 
   // 通过RPC将头像URL转换为BASE64
@@ -42,8 +44,27 @@ export const TopBar: React.FC<TopBarProps> = ({ account, onLogout }) => {
   return (
     <div className='flex items-center justify-between px-6 py-4 border-b bg-muted/30'>
       <div className='flex items-center gap-3'>
-        <Github className='w-8 h-8' />
-        <h2 className='text-xl font-bold'>GitHub</h2>
+        {selectedRepo && onBack ? (
+          // Show back button and repo name when a repo is selected
+          <>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onBack}
+              className='h-8 w-8'
+              title='Back to repositories'
+            >
+              <ArrowLeft className='w-5 h-5' />
+            </Button>
+            <h2 className='text-xl font-bold'>{selectedRepo.name}</h2>
+          </>
+        ) : (
+          // Show GitHub icon and title when no repo is selected
+          <>
+            <Github className='w-8 h-8' />
+            <h2 className='text-xl font-bold'>GitHub</h2>
+          </>
+        )}
       </div>
       
       <div className='flex items-center gap-4'>
