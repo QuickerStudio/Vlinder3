@@ -128,6 +128,10 @@ export type OpenPromptEditorMessage = {
 	type: "openPromptEditor"
 }
 
+export type OpenSandboxRulesFileMessage = {
+	type: "openSandboxRulesFile"
+}
+
 export type PreviewPromptMessage = {
 	type: "previewPrompt"
 	content: string
@@ -150,6 +154,7 @@ export type PromptActions =
 	| PreviewPromptMessage
 	| DisableToolMessage
 	| OpenPromptEditorMessage
+	| OpenSandboxRulesFileMessage
 	| listPromptTemplatesMessage
 	| savePromptTemplateMessage
 	| loadPromptTemplateMessage

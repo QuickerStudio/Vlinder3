@@ -509,6 +509,20 @@ export class WebviewManager {
 						await this.provider.getSecretStateManager().resetState()
 						await this.postBaseStateToWebview()
 						break
+					case "openSandboxRulesFile":
+						{
+							const filePath = path.join(
+								this.provider.getContext().extensionPath,
+								"src",
+								"integrations",
+								"terminal",
+								"sandbox",
+								"policy.default.json"
+							)
+							const uri = vscode.Uri.file(filePath)
+							await vscode.window.showTextDocument(uri, { preview: false })
+						}
+						break
 					case "debug":
 						await this.handleDebugInstruction()
 						break

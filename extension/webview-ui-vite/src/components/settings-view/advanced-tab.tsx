@@ -413,7 +413,38 @@ const AdvancedTab: React.FC = () => {
 				<div className="space-y-4 mx-0">
 				{/* Terminal Security Policy JSON */}
 				<div className="space-y-2">
-					<Label className="text-xs font-medium">Terminal Security Policy (JSON)</Label>
+					<div className="flex items-center justify-between">
+						<Label className="text-xs font-medium">Terminal Security Policy (JSON)</Label>
+						<div className="flex gap-2">
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => {
+									vscode.postMessage({ type: "terminalSecurityPolicy", json: "" })
+								}}
+							>
+								Clear
+							</Button>
+							<Button
+								size="sm"
+								onClick={() => {
+									const sample = '{\n  "version": 1,\n  "common": {\n    "block": ["rm -rf /"],\n    "riskKeywords": ["/dev/"]\n  }\n}'
+									handleTerminalSecurityPolicyChange(sample)
+								}}
+							>
+								Restore Default
+							</Button>
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => {
+									vscode.postMessage({ type: "openSandboxRulesFile" } as any)
+								}}
+							>
+								Edit Sandbox Rules
+							</Button>
+						</div>
+					</div>
 					<p className="text-xs text-muted-foreground">
 						JSON-based sandbox rules for terminal commands. Invalid JSON will be ignored.
 					</p>
@@ -423,27 +454,6 @@ const AdvancedTab: React.FC = () => {
 						className="min-h-[180px] text-xs font-mono"
 						spellCheck={false}
 					/>
-					<div className="flex gap-2">
-						<Button
-							variant="secondary"
-							size="sm"
-							onClick={() => {
-								vscode.postMessage({ type: "terminalSecurityPolicy", json: "" })
-							}}
-						>
-							Clear
-						</Button>
-						<Button
-							size="sm"
-							onClick={() => {
-								// request default policy from extension side in future; now embed minimal default
-								const sample = '{\n  "version": 1,\n  "common": {\n    "block": ["rm -rf /"],\n    "riskKeywords": ["/dev/"]\n  }\n}'
-								handleTerminalSecurityPolicyChange(sample)
-							}}
-						>
-							Restore Default
-						</Button>
-					</div>
 				</div>
 
 					<ExperimentalFeatureItem
