@@ -22,5 +22,15 @@ export interface GitHubRepository {
   hasWiki?: boolean;
 }
 
+export interface WikiCommit {
+  id: string;
+  hash: string;
+  message: string;
+  date: string;
+  author: string;
+  email?: string;
+  refs?: string;
+}
+
 export type SortBy = 'created' | 'updated' | 'pushed' | 'full_name';
 

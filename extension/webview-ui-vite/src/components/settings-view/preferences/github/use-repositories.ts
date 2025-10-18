@@ -23,11 +23,7 @@ export const useRepositories = () => {
       });
       if (result.success) {
         setRepositories(result.repositories || []);
-        
-        // 自动选中第一个仓库
-        if (!selectedRepo && result.repositories && result.repositories.length > 0) {
-          setSelectedRepo(result.repositories[0]);
-        }
+        // Do NOT auto-select first repo - stay in list view
       }
     } catch (err: any) {
       console.error('Failed to load repositories:', err);

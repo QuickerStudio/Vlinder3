@@ -253,6 +253,7 @@
 		"rxjs": "^7.8.1",
 		"sanitize-html": "^2.14.0",
 		"serialize-error": "^11.0.3",
+		"simple-git": "^3.28.0",
 		"string-similarity-js": "^2.1.4",
 		"strip-ansi": "^7.1.0",
 		"tree-kill": "^1.2.2",

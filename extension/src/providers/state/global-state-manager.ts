@@ -76,6 +76,9 @@ export type GlobalState = {
 	isMigratedTaskCompleted: boolean | undefined
 	githubAccounts: Array<any> | undefined
 	githubSettings: { defaultCloneDirectory?: string } | undefined
+	codeCloneStatus: Record<string, { isCloned: boolean; localPath: string; clonedAt: string }> | undefined
+	wikiCloneStatus: Record<string, { isCloned: boolean; localPath: string; clonedAt: string }> | undefined
+	githubAgentSettings: { enabled: boolean; selectedModel: string | null; customPrompt: string } | undefined
 }
 
 export class GlobalStateManager {
