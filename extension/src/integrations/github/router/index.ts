@@ -13,5 +13,6 @@ export const githubRouter = router({
 	authenticateGitHub: auth.authenticateGitHub,
 	getGitHubAccount: auth.getGitHubAccount,
 	logoutGitHub: auth.logoutGitHub,
+	fetchGitHubAvatar: auth.fetchGitHubAvatar,
 });
 
