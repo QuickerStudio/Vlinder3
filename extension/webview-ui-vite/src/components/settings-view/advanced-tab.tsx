@@ -854,27 +854,30 @@ const AdvancedTab: React.FC = () => {
 			{/* Divider before Custom Instructions */}
 			<div className="border-t border-border my-4"></div>
 			
-			<div className="space-y-4">
-				<div className="space-y-2">
-					<Label htmlFor="custom-instructions" className="text-xs font-medium">
-						Custom Instructions
-					</Label>
-					<Textarea
-						id="custom-instructions"
-						placeholder="e.g. 'Run unit tests at the end', 'Use TypeScript with async/await'"
-						value={customInstructions}
-						onChange={handleTextAreaChange}
-						className="min-h-[120px] text-xs resize-y"
-						style={{
-							fontFamily: "var(--vscode-editor-font-family)",
-						}}
-						spellCheck={false}
-					/>
-					<p className="text-xs text-muted-foreground mt-1">
-						These instructions will be included in every task
-					</p>
-				</div>
+		<div className="space-y-4">
+			<div className="space-y-2">
+				<Label htmlFor="custom-instructions" className="text-xs font-medium">
+					Custom Instructions
+				</Label>
+				<p className={`${DESCRIPTION_TEXT_SIZE} text-muted-foreground mb-2`}>
+					Define your global preferences and coding habits in natural language. These instructions will be automatically included in every task and take priority over default behaviors.
+				</p>
+				<Textarea
+					id="custom-instructions"
+					placeholder={`Examples:\n• "Always run tests after making code changes"\n• "Use TypeScript with strict mode and async/await patterns"\n• "Follow clean code principles and add JSDoc comments for public functions"\n• "Prefer composition over inheritance"\n• "Ask for confirmation before making destructive changes"\n• "Write detailed commit messages explaining the why, not just the what"`}
+					value={customInstructions}
+					onChange={handleTextAreaChange}
+					className="min-h-[120px] text-xs resize-y"
+					style={{
+						fontFamily: "var(--vscode-editor-font-family)",
+					}}
+					spellCheck={false}
+				/>
+				<p className="text-xs text-muted-foreground mt-1">
+					💡 Tip: Write clear, specific preferences. You can use bullet points or paragraphs.
+				</p>
 			</div>
+		</div>
 			<div className="space-y-4">
 				{experimentalFeatures
 					.filter((feature) => feature.id !== "alwaysAllowWriteOnly" && feature.id !== "autoSummarize" && feature.id !== "taskHistory")
