@@ -21,18 +21,27 @@
         "^touch ",
         "^mv ",
         "^cp ",
+        "^rm ",
+        "^cd ",
+        "^pwd ",
         "^node ",
         "^python ",
         "^java ",
         "^cargo ",
         "^go ",
-        "^dotnet "
+        "^dotnet ",
+        "^which ",
+        "^type ",
+        "^chmod ",
+        "^chown "
       ],
       "block": [
         "rm -rf /",
         "rm -rf /*",
         "rm -rf ~",
-        ":\(\)\{ :\|:& \};:",
+        "rm -rf /$",
+        "rm -rf ~/$",
+        ":\\(\\)\\{ :\\|:& \\};:",
         "dd if=/dev/zero",
         "mkfs"
       ],
@@ -48,20 +57,53 @@
         "^npm ",
         "^yarn ",
         "^pnpm ",
-        "^git "
+        "^git ",
+        "^grep ",
+        "^find ",
+        "^sed ",
+        "^awk ",
+        "^curl ",
+        "^wget ",
+        "^ls ",
+        "^cat ",
+        "^echo ",
+        "^mkdir ",
+        "^touch ",
+        "^mv ",
+        "^cp ",
+        "^rm ",
+        "^cd ",
+        "^pwd ",
+        "^node ",
+        "^python ",
+        "^python3 ",
+        "^java ",
+        "^cargo ",
+        "^go ",
+        "^dotnet ",
+        "^which ",
+        "^type ",
+        "^chmod ",
+        "^chown ",
+        "^brew ",
+        "^xcode-select "
       ],
       "block": [
         "rm -rf /",
         "rm -rf /*",
         "rm -rf ~",
-        ":\(\)\{ :\|:& \};:",
+        "rm -rf /$",
+        "rm -rf ~/$",
+        ":\\(\\)\\{ :\\|:& \\};:",
         "dd if=/dev/zero",
-        "mkfs"
+        "mkfs",
+        "diskutil erase"
       ],
       "riskKeywords": [
         "/dev/",
         "> /dev/",
-        "format "
+        "format ",
+        "diskutil"
       ]
     },
     "linux": {
@@ -70,15 +112,50 @@
         "^npm ",
         "^yarn ",
         "^pnpm ",
-        "^git "
+        "^git ",
+        "^grep ",
+        "^find ",
+        "^sed ",
+        "^awk ",
+        "^curl ",
+        "^wget ",
+        "^ls ",
+        "^cat ",
+        "^echo ",
+        "^mkdir ",
+        "^touch ",
+        "^mv ",
+        "^cp ",
+        "^rm ",
+        "^cd ",
+        "^pwd ",
+        "^node ",
+        "^python ",
+        "^python3 ",
+        "^java ",
+        "^cargo ",
+        "^go ",
+        "^dotnet ",
+        "^which ",
+        "^type ",
+        "^chmod ",
+        "^chown ",
+        "^apt ",
+        "^yum ",
+        "^dnf ",
+        "^pacman "
       ],
       "block": [
         "rm -rf /",
         "rm -rf /*",
         "rm -rf ~",
-        ":\(\)\{ :\|:& \};:",
+        "rm -rf /$",
+        "rm -rf ~/$",
+        ":\\(\\)\\{ :\\|:& \\};:",
         "dd if=/dev/zero",
-        "mkfs"
+        "mkfs",
+        "fdisk",
+        "parted"
       ],
       "riskKeywords": [
         "/dev/",
@@ -90,12 +167,14 @@
   "common": {
     "block": [
       "rm -rf /*",
-      "rm -rf ~"
+      "rm -rf ~",
+      "rm -rf /$",
+      "rm -rf ~/$"
     ],
     "riskKeywords": [
       "sudo "
     ],
-    "notes": "allow 不命中不会直接阻止；block 命中直接拒绝；riskKeywords 命中提示二次确认"
+    "notes": "allow 不命中不会直接阻止；block 命中直接拒绝；riskKeywords 命中提示二次确认。已修复：macOS/Linux 现在包含完整的基本命令列表，AI可以正常工作了！"
   }
 }
 
