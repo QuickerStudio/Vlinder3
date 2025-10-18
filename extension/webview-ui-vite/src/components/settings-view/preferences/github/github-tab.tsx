@@ -63,20 +63,23 @@ export const GitHubTab: React.FC = () => {
     <div className='flex items-start justify-center w-full h-full p-6'>
       {/* Rounded Container */}
       <div className='w-full max-w-[680px] border rounded-lg overflow-hidden bg-background/50'>
-        <TopBar
-          account={account!}
-          onLogout={handleLogout}
-          selectedRepo={selectedRepo}
-          onBack={handleBackToList}
-        />
+        {/* Show TopBar only when in repository list view */}
+        {!selectedRepo && (
+          <TopBar
+            account={account!}
+            onLogout={handleLogout}
+            selectedRepo={selectedRepo}
+            onBack={handleBackToList}
+          />
+        )}
         
         {/* Main Content Area */}
-        <div className='w-full' style={{ height: '550px' }}>
+        <div className='w-full' style={{ height: selectedRepo ? '615px' : '550px' }}>
           {selectedRepo ? (
-            // Show Repository Detail with tabs when a repo is selected
-            <RepositoryDetail selectedRepo={selectedRepo} />
+            // Show Repository Detail with tabs when a repo is selected (615px = TopBar 65px + List 550px)
+            <RepositoryDetail selectedRepo={selectedRepo} onBack={handleBackToList} />
           ) : (
-            // Show Repository List when no repo is selected
+            // Show Repository List when no repo is selected (550px content + 65px TopBar above)
             <RepositoryList
               repositories={repositories}
               selectedRepo={selectedRepo}

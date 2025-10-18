@@ -49,9 +49,11 @@ export const Wiki: React.FC<WikiProps> = ({
   const [isCloning, setIsCloning] = useState(false);
   const [isGitHubAgentEnabled, setIsGitHubAgentEnabled] = useState(false);
 
-  // 获取Wiki克隆状态
+  // 获取Wiki克隆状态 - 定时刷新确保同步
   useEffect(() => {
-    if (selectedRepo) {
+    if (!selectedRepo) return;
+
+    const checkStatus = () => {
       console.log('[Wiki UI] Fetching clone status for:', selectedRepo.fullName);
       rpcClient.getWikiCloneStatus.use({ repoFullName: selectedRepo.fullName })
         .then((result) => {
@@ -63,7 +65,15 @@ export const Wiki: React.FC<WikiProps> = ({
         .catch((error) => {
           console.error('[Wiki UI] Failed to fetch clone status:', error);
         });
-    }
+    };
+
+    // Initial check
+    checkStatus();
+
+    // Poll every 3 seconds to catch external changes
+    const interval = setInterval(checkStatus, 3000);
+    
+    return () => clearInterval(interval);
   }, [selectedRepo]);
 
   // 获取 GitHub Agent 状态

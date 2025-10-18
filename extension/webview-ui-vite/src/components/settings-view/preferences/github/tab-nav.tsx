@@ -4,16 +4,31 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Code2, GitPullRequest, MessageSquare, BookOpen, Activity, GitCommit } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Code2, GitPullRequest, MessageSquare, BookOpen, Activity, GitCommit, ArrowLeft } from 'lucide-react';
 
 interface TabNavProps {
   activeTab: string;
   onTabChange: (value: string) => void;
+  onBack?: () => void;
 }
 
-export const TabNav: React.FC<TabNavProps> = ({ activeTab, onTabChange }) => {
+export const TabNav: React.FC<TabNavProps> = ({ activeTab, onTabChange, onBack }) => {
   return (
-    <TabsList className='w-full justify-start rounded-none border-b bg-transparent h-12 px-6 gap-1 flex-shrink-0'>
+    <TabsList className='w-full justify-start rounded-none border-b bg-muted/30 h-12 px-6 gap-1 flex-shrink-0'>
+      {/* Back Button - before Code tab */}
+      {onBack && (
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={onBack}
+          className='h-8 w-8 mr-2'
+          title='Back to repositories'
+        >
+          <ArrowLeft className='w-5 h-5' />
+        </Button>
+      )}
+      
       <TabsTrigger 
         value='code' 
         className='gap-2 transition-all duration-200 overflow-hidden data-[state=active]:w-auto w-auto'
@@ -90,4 +105,3 @@ export const TabNav: React.FC<TabNavProps> = ({ activeTab, onTabChange }) => {
 };
 
 export default TabNav;
-

@@ -122,6 +122,8 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
   // Close Issue
   const handleCloseIssue = async (issue: GitHubIssue) => {
     try {
+      console.log('[Issues] Closing issue #', issue.number);
+      
       const result = await rpcClient.updateGitHubIssue.use({
         repoFullName: selectedRepo.fullName,
         issueNumber: issue.number,
@@ -129,8 +131,21 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
       });
 
       if (result.success) {
-        await loadOpenIssues();
-        await loadClosedIssues();
+        console.log('[Issues] Issue closed successfully, refreshing lists...');
+        
+        // Immediately remove from open list
+        setOpenIssues(prev => prev.filter(i => i.id !== issue.id));
+        
+        // Add delay to ensure GitHub API is updated
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Reload both lists to get fresh data
+        await Promise.all([
+          loadOpenIssues(),
+          loadClosedIssues()
+        ]);
+        
+        console.log('[Issues] Lists refreshed');
       } else {
         alert(`Failed to close issue: ${result.error}`);
       }
@@ -143,6 +158,8 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
   // Reopen Issue
   const handleOpenIssue = async (issue: GitHubIssue) => {
     try {
+      console.log('[Issues] Reopening issue #', issue.number);
+      
       const result = await rpcClient.updateGitHubIssue.use({
         repoFullName: selectedRepo.fullName,
         issueNumber: issue.number,
@@ -150,8 +167,21 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
       });
 
       if (result.success) {
-        await loadOpenIssues();
-        await loadClosedIssues();
+        console.log('[Issues] Issue reopened successfully, refreshing lists...');
+        
+        // Immediately remove from closed list
+        setClosedIssues(prev => prev.filter(i => i.id !== issue.id));
+        
+        // Add delay to ensure GitHub API is updated
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Reload both lists to get fresh data
+        await Promise.all([
+          loadOpenIssues(),
+          loadClosedIssues()
+        ]);
+        
+        console.log('[Issues] Lists refreshed');
       } else {
         alert(`Failed to open issue: ${result.error}`);
       }

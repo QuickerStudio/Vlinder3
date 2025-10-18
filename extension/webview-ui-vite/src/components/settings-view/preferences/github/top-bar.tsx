@@ -4,8 +4,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Github, LogOut, ArrowLeft } from 'lucide-react';
+import { Github, LogOut, ArrowLeft, Settings } from 'lucide-react';
 import { rpcClient } from '@/lib/rpc-client';
+import { GitHubSettingsDialog } from './github-settings-dialog';
 import type { GitHubAccount, GitHubRepository } from './types';
 
 interface TopBarProps {
@@ -17,6 +18,7 @@ interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ account, onLogout, selectedRepo, onBack }) => {
   const [avatarBase64, setAvatarBase64] = useState<string>('');
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 
   // 通过RPC将头像URL转换为BASE64
   useEffect(() => {
@@ -94,8 +96,19 @@ export const TopBar: React.FC<TopBarProps> = ({ account, onLogout, selectedRepo,
                 variant='ghost'
                 size='icon'
                 className='h-5 w-5'
+                title='Logout'
               >
                 <LogOut className='w-3 h-3' />
+              </Button>
+              {/* 设置按钮 - 在退出按钮右边 */}
+              <Button
+                onClick={() => setShowSettingsDialog(true)}
+                variant='ghost'
+                size='icon'
+                className='h-5 w-5'
+                title='GitHub Settings'
+              >
+                <Settings className='w-3 h-3' />
               </Button>
             </div>
             {account.email && (
@@ -104,6 +117,12 @@ export const TopBar: React.FC<TopBarProps> = ({ account, onLogout, selectedRepo,
           </div>
         </div>
       </div>
+
+      {/* Settings Dialog */}
+      <GitHubSettingsDialog 
+        open={showSettingsDialog} 
+        onOpenChange={setShowSettingsDialog}
+      />
     </div>
   );
 };

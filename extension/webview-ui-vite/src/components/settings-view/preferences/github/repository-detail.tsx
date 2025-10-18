@@ -17,9 +17,10 @@ import type { GitHubRepository, WikiCommit } from './types';
 
 interface RepositoryDetailProps {
   selectedRepo: GitHubRepository;
+  onBack?: () => void;
 }
 
-export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo }) => {
+export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo, onBack }) => {
   const [activeTab, setActiveTab] = useState('code');
 
   // Code state
@@ -138,7 +139,7 @@ export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo
     <div className='h-full flex flex-col'>
       <Tabs value={activeTab} onValueChange={setActiveTab} className='flex-1 flex flex-col'>
         {/* Tab Navigation */}
-        <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <TabNav activeTab={activeTab} onTabChange={setActiveTab} onBack={onBack} />
         
         {/* Tab Content */}
         <div className='flex-1 overflow-y-auto'>

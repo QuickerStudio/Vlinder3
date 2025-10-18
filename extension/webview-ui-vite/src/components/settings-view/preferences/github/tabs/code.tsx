@@ -62,9 +62,11 @@ export const Code: React.FC<CodeProps> = ({
   const [deleteHoldTime, setDeleteHoldTime] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // 获取Code克隆状态
+  // 获取Code克隆状态 - 定时刷新确保同步
   useEffect(() => {
-    if (selectedRepo) {
+    if (!selectedRepo) return;
+
+    const checkStatus = () => {
       console.log('[Code UI] Fetching clone status for:', selectedRepo.fullName);
       rpcClient.getCodeCloneStatus.use({ repoFullName: selectedRepo.fullName })
         .then((result) => {
@@ -76,7 +78,15 @@ export const Code: React.FC<CodeProps> = ({
         .catch((error) => {
           console.error('[Code UI] Failed to fetch clone status:', error);
         });
-    }
+    };
+
+    // Initial check
+    checkStatus();
+
+    // Poll every 3 seconds to catch external changes
+    const interval = setInterval(checkStatus, 3000);
+    
+    return () => clearInterval(interval);
   }, [selectedRepo]);
 
   // 获取 GitHub Agent 状态
@@ -640,24 +650,26 @@ export const Code: React.FC<CodeProps> = ({
                 )}
               </div>
               
-              {/* 删除 Code 按钮 - 长按5秒 */}
-              <Button
-                size='sm'
-                variant='ghost'
-                onMouseDown={handleDeleteCodeMouseDown}
-                onMouseUp={handleDeleteCodeMouseUp}
-                onMouseLeave={handleDeleteCodeMouseUp}
-                className='h-6 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-500/10 relative'
-                title='Please Hold 5s to delete Codebase!'
-              >
-                <Trash2 className='w-3 h-3 mr-1' />
-                Delete Code
-                {isDeleting && (
-                  <span className='ml-2 text-[10px]'>
-                    {Math.ceil(5 - deleteHoldTime)}s
-                  </span>
-                )}
-              </Button>
+              {/* 删除 Code 按钮 - 长按5秒 - 只有在克隆后才显示 */}
+              {(((isCloned ?? false) || isCodeCloned)) && (
+                <Button
+                  size='sm'
+                  variant='ghost'
+                  onMouseDown={handleDeleteCodeMouseDown}
+                  onMouseUp={handleDeleteCodeMouseUp}
+                  onMouseLeave={handleDeleteCodeMouseUp}
+                  className='h-6 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-500/10 relative'
+                  title='Please Hold 5s to delete Codebase!'
+                >
+                  <Trash2 className='w-3 h-3 mr-1' />
+                  Delete Code
+                  {isDeleting && (
+                    <span className='ml-2 text-[10px]'>
+                      {Math.ceil(5 - deleteHoldTime)}s
+                    </span>
+                  )}
+                </Button>
+              )}
             </div>
       </div>
     </div>
