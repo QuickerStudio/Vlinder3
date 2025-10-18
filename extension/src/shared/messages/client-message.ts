@@ -90,6 +90,11 @@ export type setCommandTimeoutMessage = {
 	commandTimeout: number
 }
 
+export type setTerminalSecurityPolicyMessage = {
+    type: "terminalSecurityPolicy"
+    json: string
+}
+
 export type savePromptTemplateMessage = {
 	type: "savePromptTemplate"
 	templateName: string
@@ -198,7 +203,8 @@ export type WebviewMessage =
 	| toggleGitHandlerMessage
 	| setInlineEditModeMessage
 	| pauseTemporayAutoModeMessage
-	| terminalCompressionThresholdMessage
+    | terminalCompressionThresholdMessage
+    | setTerminalSecurityPolicyMessage
 	| setApiKeyDialogMessage
 	| pauseNextMessage
 	| autoSummarizeMessage

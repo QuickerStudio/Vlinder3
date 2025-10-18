@@ -5,10 +5,10 @@ import { ToolStatus } from "./messages/extension-message"
 export type { ToolStatus }
 
 /**
- * This is the input and output for execute_command tool
+ * This is the input and output for terminal tool
  */
-export type ExecuteCommandTool = {
-	tool: "execute_command"
+export type TerminalTool = {
+	tool: "terminal"
 	/**
 	 * the command to execute
 	 */
@@ -245,21 +245,6 @@ export type GrepSearchTool = {
 	content?: string
 }
 
-export type ReadProgressTool = {
-	tool: "read_progress"
-	terminalId?: number
-	terminalName?: string
-	includeFullOutput?: boolean
-	filterKeywords?: string[]
-	contextLines?: number
-	extractData?: boolean
-	smartSummary?: boolean
-	waitForCompletion?: boolean
-	maxWaitTime?: number
-	maxChars?: number
-	content?: string
-}
-
 export type RenameTool = {
 	tool: "rename"
 	path: string
@@ -336,42 +321,6 @@ export type FastEditorTool = {
 	failureCount?: number
 }
 
-export type GitBashTool = {
-	tool: "git_bash"
-	command: string
-	output?: string
-}
-
-export type TerminalTool = {
-	tool: "terminal"
-	command?: string
-	action?: string
-	terminalId?: number
-	terminalName?: string
-	output?: string
-	panelType?: string
-	shell?: string
-	expression?: string
-	channelName?: string
-	collectionName?: string
-	portNumber?: number
-	workingDirectory?: string
-	message?: string
-	executionTimeout?: number
-	terminalType?: string
-}
-
-export type KillBashTool = {
-	tool: "kill_bash"
-	terminalId?: number
-	terminalName?: string
-	output?: string
-	lastCommand?: string
-	isBusy?: boolean
-	force?: boolean
-	result?: string
-}
-
 export type ReadImageTool = {
 	tool: "read_image"
 	path: string
@@ -394,7 +343,7 @@ export type LocalTimeTool = {
 export type ChatTool = (
 	| ExitAgentTool
 	| SpawnAgentTool
-	| ExecuteCommandTool
+	| TerminalTool
 	| ListFilesTool
 	| ExploreRepoFolderTool
 	| SearchFilesTool
@@ -415,16 +364,13 @@ export type ChatTool = (
 	| ThinkTool
 	| PatternSearchTool
 	| GrepSearchTool
-	| ReadProgressTool
 	| RenameTool
 	| RemoveTool
 	| ReplaceStringTool
 	| MultiReplaceStringTool
 	| InsertEditTool
 	| FastEditorTool
-	| GitBashTool
 	| TerminalTool
-	| KillBashTool
 	| ReadImageTool
 	| VscodeApiTool
 	| LocalTimeTool

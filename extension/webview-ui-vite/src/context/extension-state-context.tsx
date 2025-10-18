@@ -20,6 +20,8 @@ const taskHistoryAtom = atom<HistoryItem[]>([])
 taskHistoryAtom.debugLabel = "taskHistory"
 const customInstructionsAtom = atom<string | undefined>(undefined)
 customInstructionsAtom.debugLabel = "customInstructions"
+const terminalSecurityPolicyAtom = atom<string | undefined>(undefined)
+terminalSecurityPolicyAtom.debugLabel = "terminalSecurityPolicy"
 const alwaysAllowReadOnlyAtom = atom(false)
 alwaysAllowReadOnlyAtom.debugLabel = "alwaysAllowReadOnly"
 const alwaysAllowApproveOnlyAtom = atom(false)
@@ -70,6 +72,7 @@ export const extensionStateAtom = atom((get) => ({
 	inlineEditModeType: get(inlineEditModeTypeAtom),
 	uriScheme: get(uriSchemeAtom),
 	customInstructions: get(customInstructionsAtom),
+	terminalSecurityPolicy: get(terminalSecurityPolicyAtom),
 	skipWriteAnimation: get(skipWriteAnimationAtom),
 	alwaysAllowReadOnly: get(alwaysAllowReadOnlyAtom),
 	autoCloseTerminal: get(autoCloseTerminalAtom),
@@ -162,6 +165,7 @@ export const ExtensionStateProvider: React.FC<{ children: React.ReactNode }> = (
 	const setGitCommitterType = useSetAtom(gitCommitterTypeAtom)
 	const setApiConfig = useSetAtom(apiConfigAtom)
 	const setCustomInstructions = useSetAtom(customInstructionsAtom)
+	const setTerminalSecurityPolicy = useSetAtom(terminalSecurityPolicyAtom)
 	const setAlwaysAllowReadOnly = useSetAtom(alwaysAllowReadOnlyAtom)
 	const setAutoSummarize = useSetAtom(autoSummarizeAtom)
 	const setUser = useSetAtom(userAtom)
@@ -202,6 +206,7 @@ export const ExtensionStateProvider: React.FC<{ children: React.ReactNode }> = (
 			setUser(message.state.user)
 			setExtensionName(message.state.extensionName)
 			setCustomInstructions(message.state.customInstructions)
+			setTerminalSecurityPolicy((message.state as any).terminalSecurityPolicy)
 			setAlwaysAllowReadOnly(!!message.state.alwaysAllowReadOnly)
 			setCurrentContextWindow(message.state.currentContextWindow)
 			setAutoCloseTerminal(!!message.state.autoCloseTerminal)

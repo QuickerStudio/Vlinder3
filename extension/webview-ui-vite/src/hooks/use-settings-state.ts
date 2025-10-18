@@ -18,6 +18,9 @@ export function useSettingsState() {
 	const [inlineEditingType, setInlineEditingType] = useState(extensionState.inlineEditModeType || "full")
 	const [customInstructions, setCustomInstructions] = useState(extensionState.customInstructions || "")
 	const [autoSkipWrite, setAutoSkipWrite] = useState(extensionState.skipWriteAnimation || false)
+	const [terminalSecurityPolicy, setTerminalSecurityPolicy] = useState<string>(
+		((extensionState as unknown) as { terminalSecurityPolicy?: string }).terminalSecurityPolicy || ""
+	)
 
 	const [terminalCompressionThreshold, setTerminalCompressionThreshold] = useState<number | undefined>(
 		extensionState.terminalCompressionThreshold
@@ -99,6 +102,11 @@ export function useSettingsState() {
 		vscode.postMessage({ type: "terminalCompressionThreshold", value: val })
 	}, [])
 
+	const handleTerminalSecurityPolicyChange = useCallback((val: string) => {
+		setTerminalSecurityPolicy(val)
+		vscode.postMessage({ type: "terminalSecurityPolicy", json: val })
+	}, [])
+
 	return {
 		readOnly,
 		autoCloseTerminal,
@@ -110,9 +118,11 @@ export function useSettingsState() {
 		terminalCompressionThreshold,
 		inlineEditingType,
 		commandTimeout,
+		terminalSecurityPolicy,
 		handleCommandTimeout,
 		handleInlineEditingTypeChange,
 		handleTerminalCompressionThresholdChange,
+		handleTerminalSecurityPolicyChange,
 		handleAutoSkipWriteChange,
 		handleExperimentalFeatureChange,
 		handleSetReadOnly,

@@ -30,6 +30,7 @@ export type GlobalState = {
 	terminalCompressionThreshold: number | undefined
 	lastShownAnnouncementId: string | undefined
 	customInstructions: string | undefined
+	terminalSecurityPolicy: string | undefined
 	apiConfig?: Partial<ApiConfiguration>
 	gitHandlerEnabled: boolean | undefined
 	gitCommitterType: "vlinder" | "user" | undefined

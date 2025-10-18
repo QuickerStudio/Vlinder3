@@ -2555,7 +2555,7 @@ export const ToolRenderer: React.FC<{
 	hasNextMessage?: boolean
 }> = ({ tool }) => {
 	switch (tool.tool) {
-		case "execute_command":
+		case "terminal":
 			return <ExecuteCommandBlock hasNextMessage {...tool} />
 		case "list_files":
 			return <ListFilesBlock {...tool} />

@@ -1,13 +1,16 @@
 import delay from "delay"
 import { serializeError } from "serialize-error"
 import { AdvancedTerminalManager } from "../../../../integrations/terminal"
+import { SandboxEngine } from "../../../../integrations/terminal/sandbox/sandbox-engine"
+import { TerminalSecurityState } from "../../../../integrations/terminal/security-state"
+import { detectGitBashPath } from "../../../../integrations/terminal/shell-detect"
 import { getCwd } from "../../utils"
 import { BaseAgentTool } from "../base-agent.tool"
 import { TerminalProcessResultPromise } from "../../../../integrations/terminal/terminal-manager"
 import { GlobalStateManager } from "../../../../providers/state/global-state-manager"
 import { ToolResponseV2 } from "../../types"
 import { GitCommitResult } from "../../handlers"
-import { ExecuteCommandToolParams } from "../schema/execute_command"
+import { TerminalToolParams } from "../schema/terminal"
 
 const COMMAND_TIMEOUT = 90 // 90 seconds
 const MAX_RETRIES = 3
@@ -33,7 +36,7 @@ export const shellIntegrationErrorOutput = `
 </command_execution_response>
 `
 
-export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> {
+export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 	private output: string = ""
 
 	async execute() {
@@ -43,7 +46,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 		if (!command?.trim()) {
 			await say(
 				"error",
-				"Vlinder tried to use execute_command without value for required parameter 'command'. Retrying..."
+				"Vlinder tried to use terminal without value for required parameter 'command'. Retrying..."
 			)
 			return this.toolResponse(
 				"error",
@@ -67,12 +70,41 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 		const { ask, updateAsk, say, returnEmptyStringOnSuccess } = this.params
 		const cwd = getCwd()
 
+		// Sandbox evaluation (retain original functionality; sandbox only warns/blocks based on policy)
+		const policy = TerminalSecurityState.getPolicy()
+		if (policy) {
+			const engine = new SandboxEngine(policy)
+			const evalRes = engine.evaluate(command)
+			if (evalRes.decision === "block") {
+				await say(
+					"error",
+					`<terminal_sandbox>
+<decision>blocked</decision>
+<reasons>${evalRes.reasons.join("; ")}</reasons>
+</terminal_sandbox>`
+				)
+				return this.toolResponse(
+					"error",
+					`Sandbox blocked command due to security policy: ${evalRes.reasons.join("; ")}`
+				)
+			}
+			if (evalRes.decision === "warn") {
+				await say(
+					"tool",
+					`<terminal_sandbox>
+<decision>warn</decision>
+<reasons>${evalRes.reasons.join("; ")}</reasons>
+</terminal_sandbox>`
+				)
+			}
+		}
+
 		// Initial approval request
 		const { response, text, images } = await ask(
 			"tool",
 			{
 				tool: {
-					tool: "execute_command",
+					tool: "terminal",
 					command,
 					approvalState: "pending",
 					ts: this.ts,
@@ -87,7 +119,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 				"tool",
 				{
 					tool: {
-						tool: "execute_command",
+						tool: "terminal",
 						command,
 						approvalState: "rejected",
 						ts: this.ts,
@@ -102,7 +134,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 					"tool",
 					{
 						tool: {
-							tool: "execute_command",
+							tool: "terminal",
 							command,
 							approvalState: "rejected",
 							ts: this.ts,
@@ -123,7 +155,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 			"tool",
 			{
 				tool: {
-					tool: "execute_command",
+					tool: "terminal",
 					command,
 					approvalState: "loading",
 					ts: this.ts,
@@ -135,7 +167,13 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 
 		let process: TerminalProcessResultPromise | null = null
 
-		const terminalInfo = await terminalManager.getOrCreateTerminal(this.cwd)
+		// Prefer Git Bash on Windows when available; preserve existing behavior otherwise
+		let shellPath: string | undefined
+		const gitBash = detectGitBashPath()
+		if (gitBash) {
+			shellPath = gitBash
+		}
+		const terminalInfo = await terminalManager.getOrCreateTerminal(this.cwd, undefined, shellPath)
 		terminalInfo.terminal.show()
 
 		let preCommandCommit = ""
@@ -176,7 +214,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 						"tool",
 						{
 							tool: {
-								tool: "execute_command",
+								tool: "terminal",
 								command,
 								output: this.output,
 								approvalState: "error",
@@ -196,7 +234,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 			})
 			process.on("line", async (line) => {
 				const cleanedLine = line
-				if (cleanedLine) {
+					if (cleanedLine) {
 					this.output += cleanedLine + "\n"
 					if (!didContinue || this.isApprovedState(earlyExit)) {
 						try {
@@ -204,7 +242,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 								"tool",
 								{
 									tool: {
-										tool: "execute_command",
+										tool: "terminal",
 										command,
 										output: this.output,
 										approvalState: "loading",
@@ -247,7 +285,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 				"tool",
 				{
 					tool: {
-						tool: "execute_command",
+						tool: "terminal",
 						command,
 						output: this.output,
 						approvalState: "approved",
@@ -264,7 +302,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 					"tool",
 					{
 						tool: {
-							tool: "execute_command",
+							tool: "terminal",
 							command,
 							output: this.output,
 							approvalState: "approved",
@@ -350,7 +388,7 @@ export class ExecuteCommandTool extends BaseAgentTool<ExecuteCommandToolParams> 
 				"tool",
 				{
 					tool: {
-						tool: "execute_command",
+						tool: "terminal",
 						command,
 						output: errorMessage,
 						approvalState: "error",

@@ -412,7 +412,7 @@ export class MainAgent {
 		let details = ""
 		const lastTwoMsgs = this.stateManager.state.apiConversationHistory.slice(-2)
 		const awaitRequierdTools: (ToolName | "edit_file_blocks")[] = [
-			"execute_command",
+			"terminal",
 			"write_to_file",
 			"edit_file_blocks",
 			"file_editor",

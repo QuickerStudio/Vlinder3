@@ -4,7 +4,7 @@ import { ServerRunnerToolParams } from "../schema/dev_server"
 import { TerminalManager, TerminalRegistry } from "../../../../integrations/terminal/terminal-manager"
 import delay from "delay"
 import { ChatTool, ServerRunnerTool } from "../../../../shared/new-tools"
-import { shellIntegrationErrorOutput } from "./execute-command.tool"
+import { shellIntegrationErrorOutput } from "./terminal.tool"
 import { AgentToolOptions, AgentToolParams } from "../types"
 import { serverRunnerPrompt } from "../../prompts/tools/server-runner"
 

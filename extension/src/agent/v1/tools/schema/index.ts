@@ -1,5 +1,5 @@
 // schema/index.ts
-import { executeCommandTool } from "./execute_command"
+import { terminalTool } from "./terminal"
 import { listFilesTool } from "./list_files"
 import { ExploreRepoFolderTool } from "./explore-repo-folder.schema"
 import { searchFilesTool } from "./search_files"
@@ -19,7 +19,6 @@ import { moveTool } from "./move"
 import { removeTool } from "./remove"
 import { renameTool } from "./rename"
 import { thinkTool } from "./think"
-import { gitBashTool } from "./git-bash"
 import { readImageTool } from "./read-image"
 import { grepSearchTool } from "./grep-search"
 import { patternSearchTool } from "./pattern-search"
@@ -27,14 +26,12 @@ import { fastEditorTool } from "./fast-editor"
 import { replaceStringTool } from "./replace-string"
 import { multiReplaceStringTool } from "./multi-replace-string"
 import { insertEditTool } from "./insert-edit"
-import { killBashTool } from "./kill-bash"
-import { readProgressTool } from "./read-progress"
 import { timerTool } from "./timer"
 import { vscodeApiTool } from "./vscode-api"
 
 export const tools = [
 	thinkTool,
-	executeCommandTool,
+	terminalTool,
 	listFilesTool,
 	ExploreRepoFolderTool,
 	searchFilesTool,
@@ -55,9 +52,6 @@ export const tools = [
 	moveTool,
 	removeTool,
 	renameTool,
-	gitBashTool,
-	killBashTool,
-	readProgressTool,
 	grepSearchTool,
 	patternSearchTool,
 	vscodeApiTool,
@@ -68,7 +62,7 @@ export const tools = [
 
 export type Tool = (typeof tools)[number]
 export {
-	executeCommandTool,
+	terminalTool,
 	listFilesTool,
 	ExploreRepoFolderTool,
 	searchFilesTool,
@@ -89,9 +83,6 @@ export {
 	moveTool,
 	removeTool,
 	renameTool,
-	gitBashTool,
-	killBashTool,
-	readProgressTool,
 	grepSearchTool,
 	patternSearchTool,
 	vscodeApiTool,

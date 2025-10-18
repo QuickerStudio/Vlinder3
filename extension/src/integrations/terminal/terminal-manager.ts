@@ -70,12 +70,13 @@ export class TerminalRegistry {
 	private static terminalOutputMap: Map<number, string[]> = new Map()
 	private static outputBuffers: Map<number, string> = new Map()
 
-	static createTerminal(cwd?: string | vscode.Uri | undefined, name?: string): TerminalInfo {
-		const terminal = vscode.window.createTerminal({
-			cwd,
-			name: name || "Vlinder AI",
-			isTransient: true,
-			env: {
+    static createTerminal(cwd?: string | vscode.Uri | undefined, name?: string, shellPath?: string): TerminalInfo {
+        const terminal = vscode.window.createTerminal({
+            cwd,
+            name: name || "Vlinder AI",
+            shellPath,
+            isTransient: true,
+            env: {
 				PAGER: "cat",
 
 				// VSCode bug#237208: Command output can be lost due to a race between completion
@@ -369,7 +370,7 @@ export class TerminalManager {
 		return mergePromise(process, promise)
 	}
 
-	async getOrCreateTerminal(cwd: string, name?: string): Promise<TerminalInfo> {
+    async getOrCreateTerminal(cwd: string, name?: string, shellPath?: string): Promise<TerminalInfo> {
 		// Find available terminal from our pool first (created for this task)
 		const availableTerminal = TerminalRegistry.getAllTerminals().find((t) => {
 			if (t.busy) {
@@ -390,7 +391,7 @@ export class TerminalManager {
 			return availableTerminal
 		}
 
-		const newTerminalInfo = TerminalRegistry.createTerminal(cwd, name)
+        const newTerminalInfo = TerminalRegistry.createTerminal(cwd, name, shellPath)
 		this.terminalIds.add(newTerminalInfo.id)
 		return newTerminalInfo
 	}

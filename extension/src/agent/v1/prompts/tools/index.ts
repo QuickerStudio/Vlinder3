@@ -4,6 +4,7 @@ import { searchFilesPrompt } from './search-files';
 import { searchSymbolPrompt } from './search-symbol';
 import { listFilesPrompt } from './list-files';
 import { readFilePrompt } from './read-file';
+import { terminalPrompt } from './terminal';
 import { serverRunnerPrompt } from './server-runner';
 import { urlScreenshotPrompt } from './url-screenshot';
 import { attemptCompletionPrompt } from './attempt-complete';
@@ -12,9 +13,6 @@ import { spawnAgentPrompt } from './spawn-agent';
 import { movePrompt } from './move';
 import { removePrompt } from './remove';
 import { renamePrompt } from './rename';
-import { gitBashToolPrompt } from './git-bash';
-import { killBashToolPrompt } from './kill-bash';
-import { readProgressPrompt } from './read-progress';
 import { replaceStringPrompt } from './replace-string';
 import { multiReplaceStringPrompt } from './multi-replace-string';
 import { insertEditPrompt } from './insert-edit';
@@ -33,7 +31,7 @@ export const toolPrompts = [
 	attemptCompletionPrompt,
 	
 	// Terminal execution
-	gitBashToolPrompt,
+	terminalPrompt,
 	serverRunnerPrompt,
 	
 	// File system - Browse & Read
@@ -59,10 +57,6 @@ export const toolPrompts = [
 	movePrompt,
 	removePrompt,
 	renamePrompt,
-	
-	// Terminal utilities
-	killBashToolPrompt,
-	readProgressPrompt,
 	
 	// Network
 	urlScreenshotPrompt,

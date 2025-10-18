@@ -126,7 +126,7 @@ You accomplish a given task iteratively, breaking it down into clear steps and w
 		b.cwd
 	}', so be sure to pass in the correct 'path' parameter when using tools that require a path.
 - Do not use the ~ character or $HOME to refer to the home directory.
-- Before using the execute_command tool, you must first think about the SYSTEM INFORMATION context provided to understand the user's environment and tailor your commands to ensure they are compatible with their system. You must also consider if the command you need to run should be executed in a specific directory outside of the current working directory '${
+- Before using the terminal tool, you must first think about the SYSTEM INFORMATION context provided to understand the user's environment and tailor your commands to ensure they are compatible with their system. You must also consider if the command you need to run should be executed in a specific directory outside of the current working directory '${
 		b.cwd
 	}', and if so prepend with \`cd\`'ing into that directory && then executing the command (as one command since you are stuck operating from '${
 		b.cwd
@@ -226,14 +226,14 @@ the file content will be updated to your file_editor tool call, you should not r
 before writing to a file, you should always read the file if you haven't read it before or you forgot the content.
 When reading a file you might find intresting content or symbols you can use search_symbol to search for the symbol in the codebase and see where it's used and how it's used.
 </read_file_reminders>
-<execute_command_reminders>
+<terminal_reminders>
 When running a command, you must prepend with a cd to the directory where the command should be executed, if the command should be executed in a specific directory outside of the current working directory.
 example:
 we are working in the current working directory /home/user/project, and we were working on a project at /home/user/project/frontend, and we need to run a command in the frontend directory, we should prepend the command with a cd to the frontend directory.
 so the command should be: cd frontend && command to execute resulting in the following tool call:
-<execute_command>
+<terminal>
 <command>cd frontend && command to execute</command>
-</execute_command_reminders>
+</terminal_reminders>
 <file_editor_reminders>
 When proposing file changes, you should always think about the impact of the changes and how they will help you to accomplish the user's task.
 You should always propose changes that are correct and will help you make progress towards accomplishing the user's task.

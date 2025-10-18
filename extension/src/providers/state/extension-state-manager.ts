@@ -36,6 +36,7 @@ export class ExtensionStateManager {
 			apiConfig,
 			vlinderApiKey,
 			gitCommitterType,
+			terminalSecurityPolicy,
 		] = await Promise.all([
 			this.globalStateManager.getGlobalState("user"),
 			this.globalStateManager.getGlobalState("lastShownAnnouncementId"),
@@ -54,6 +55,7 @@ export class ExtensionStateManager {
 			this.globalStateManager.getGlobalState("apiConfig"),
 			this.secretStateManager.getSecretState("vlinderApiKey"),
 			this.globalStateManager.getGlobalState("gitCommitterType"),
+			this.globalStateManager.getGlobalState("terminalSecurityPolicy"),
 		])
 
 		const currentTaskId = this.context.getVlinders()?.getStateManager()?.state.taskId
@@ -111,6 +113,7 @@ export class ExtensionStateManager {
 			observerSettings,
 			apiConfig,
 			gitCommitterType,
+			terminalSecurityPolicy,
 		} satisfies ExtensionState
 	}
 

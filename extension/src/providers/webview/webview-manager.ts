@@ -475,6 +475,13 @@ export class WebviewManager {
 						)
 						await this.postBaseStateToWebview()
 						break
+					case "terminalSecurityPolicy":
+						await GlobalStateManager.getInstance().updateGlobalState(
+							"terminalSecurityPolicy" as any,
+							message.json
+						)
+						await this.postBaseStateToWebview()
+						break
 					case "fetchVlinderCredits":
 						await this.provider.getApiManager().fetchVlinderCredits()
 						await this.postMessageToWebview({

@@ -161,16 +161,16 @@ export const useChatMessageHandling = (
 					},
 					write_to_file: {
 						...baseState,
-						primaryButtonText: "Save",
-						secondaryButtonText: "Cancel",
-					},
-					execute_command: {
-						...baseState,
-						primaryButtonText: "Run Command",
-						secondaryButtonText: "Cancel",
-					},
-					ask_followup_question: {
-						...baseState,
+					primaryButtonText: "Save",
+					secondaryButtonText: "Cancel",
+				},
+				terminal: {
+					...baseState,
+					primaryButtonText: "Run Command",
+					secondaryButtonText: "Cancel",
+				},
+				ask_followup_question: {
+					...baseState,
 						textAreaDisabled: false,
 						enableButtons: false,
 						primaryButtonText: undefined,
@@ -390,12 +390,12 @@ export const useChatMessageHandling = (
 		const lastAskMessage = msgs.find((msg) => msg.type === "ask")
 		const secondToLastAskMessage = msgs.find((msg) => msg.ask === "tool" && msg.ts !== lastAskMessage?.ts)
 
-		// Special case: execute_command after attempt_completion
+		// Special case: terminal after attempt_completion
 		if (lastAskMessage?.ask === "tool" && secondToLastAskMessage?.ask === "tool" && !lastMessage.say) {
 			const lastTool = JSON.parse(lastAskMessage.text || "{}") as ChatTool
 			const secondToLastTool = JSON.parse(secondToLastAskMessage.text || "{}") as ChatTool
 
-			if (lastTool.tool === "execute_command" && secondToLastTool.tool === "attempt_completion") {
+			if (lastTool.tool === "terminal" && secondToLastTool.tool === "attempt_completion") {
 				const updates =
 					lastTool.approvalState === "pending"
 						? {

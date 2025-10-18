@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "platforms": {
+    "win32": {
+      "preferredShell": "git-bash",
+      "allow": [
+        "^npm ",
+        "^yarn ",
+        "^pnpm ",
+        "^git ",
+        "^grep ",
+        "^find ",
+        "^sed ",
+        "^awk ",
+        "^curl ",
+        "^wget ",
+        "^ls ",
+        "^cat ",
+        "^echo ",
+        "^mkdir ",
+        "^touch ",
+        "^mv ",
+        "^cp ",
+        "^node ",
+        "^python ",
+        "^java ",
+        "^cargo ",
+        "^go ",
+        "^dotnet "
+      ],
+      "block": [
+        "rm -rf /",
+        "rm -rf /*",
+        "rm -rf ~",
+        ":\(\)\{ :\|:& \};:",
+        "dd if=/dev/zero",
+        "mkfs"
+      ],
+      "riskKeywords": [
+        "/dev/",
+        "> /dev/",
+        "format "
+      ]
+    },
+    "darwin": {
+      "preferredShell": "default",
+      "allow": [
+        "^npm ",
+        "^yarn ",
+        "^pnpm ",
+        "^git "
+      ],
+      "block": [
+        "rm -rf /",
+        "rm -rf /*",
+        "rm -rf ~",
+        ":\(\)\{ :\|:& \};:",
+        "dd if=/dev/zero",
+        "mkfs"
+      ],
+      "riskKeywords": [
+        "/dev/",
+        "> /dev/",
+        "format "
+      ]
+    },
+    "linux": {
+      "preferredShell": "default",
+      "allow": [
+        "^npm ",
+        "^yarn ",
+        "^pnpm ",
+        "^git "
+      ],
+      "block": [
+        "rm -rf /",
+        "rm -rf /*",
+        "rm -rf ~",
+        ":\(\)\{ :\|:& \};:",
+        "dd if=/dev/zero",
+        "mkfs"
+      ],
+      "riskKeywords": [
+        "/dev/",
+        "> /dev/",
+        "format "
+      ]
+    }
+  },
+  "common": {
+    "block": [
+      "rm -rf /*",
+      "rm -rf ~"
+    ],
+    "riskKeywords": [
+      "sudo "
+    ],
+    "notes": "allow 不命中不会直接阻止；block 命中直接拒绝；riskKeywords 命中提示二次确认"
+  }
+}
+

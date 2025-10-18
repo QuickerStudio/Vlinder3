@@ -3,7 +3,7 @@ import { TerminalManager as AdvancedTerminalManager } from "./terminal-manager"
 
 export interface ITerminalManager {
 	runCommand(terminalInfo: TerminalInfo, command: string): TerminalProcessResultPromise
-	getOrCreateTerminal(cwd: string): Promise<TerminalInfo>
+    getOrCreateTerminal(cwd: string, name?: string, shellPath?: string): Promise<TerminalInfo>
 	getTerminals(busy: boolean): { id: number; lastCommand: string }[]
 	getUnretrievedOutput(terminalId: number): string
 	isProcessHot(terminalId: number): boolean

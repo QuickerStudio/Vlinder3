@@ -89,6 +89,7 @@ const AdvancedTab: React.FC = () => {
 		customInstructions,
 		terminalCompressionThreshold,
 		commandTimeout,
+		terminalSecurityPolicy,
 		gitHandlerEnabled,
 		gitCommitterType,
 		experimentalFeatureStates,
@@ -97,6 +98,7 @@ const AdvancedTab: React.FC = () => {
 		handleSetGitCommitterType,
 		handleCommandTimeout,
 		handleTerminalCompressionThresholdChange,
+		handleTerminalSecurityPolicyChange,
 		handleSetReadOnly,
 		handleSetAutoCloseTerminal,
 		handleAutoSkipWriteChange,
@@ -409,6 +411,41 @@ const AdvancedTab: React.FC = () => {
 				/>
 
 				<div className="space-y-4 mx-0">
+				{/* Terminal Security Policy JSON */}
+				<div className="space-y-2">
+					<Label className="text-xs font-medium">Terminal Security Policy (JSON)</Label>
+					<p className="text-xs text-muted-foreground">
+						JSON-based sandbox rules for terminal commands. Invalid JSON will be ignored.
+					</p>
+					<Textarea
+						value={terminalSecurityPolicy}
+						onChange={(e) => handleTerminalSecurityPolicyChange(e.target.value)}
+						className="min-h-[180px] text-xs font-mono"
+						spellCheck={false}
+					/>
+					<div className="flex gap-2">
+						<Button
+							variant="secondary"
+							size="sm"
+							onClick={() => {
+								vscode.postMessage({ type: "terminalSecurityPolicy", json: "" })
+							}}
+						>
+							Clear
+						</Button>
+						<Button
+							size="sm"
+							onClick={() => {
+								// request default policy from extension side in future; now embed minimal default
+								const sample = '{\n  "version": 1,\n  "common": {\n    "block": ["rm -rf /"],\n    "riskKeywords": ["/dev/"]\n  }\n}'
+								handleTerminalSecurityPolicyChange(sample)
+							}}
+						>
+							Restore Default
+						</Button>
+					</div>
+				</div>
+
 					<ExperimentalFeatureItem
 						feature={{
 							id: "terminalCompressionThreshold",

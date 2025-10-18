@@ -7,7 +7,7 @@ import { AddInterestedFileToolParams } from "../schema/add_interested_file"
 import { AskFollowupQuestionToolParams } from "../schema/ask_followup_question"
 import { AttemptCompletionToolParams } from "../schema/attempt_completion"
 import { ServerRunnerToolParams } from "../schema/dev_server"
-import { ExecuteCommandToolParams } from "../schema/execute_command"
+import { TerminalToolParams } from "../schema/terminal"
 import { ExploreRepoFolderToolParams } from "../schema/explore-repo-folder.schema"
 import { ListFilesToolParams } from "../schema/list_files"
 import { ReadFileToolParams } from "../schema/read_file"
@@ -26,7 +26,6 @@ import { MoveToolParams } from "../schema/move"
 import { RemoveToolParams } from "../schema/remove"
 import { RenameToolParams } from "../schema/rename"
 import { ThinkToolParams } from "../schema/think"
-import { GitBashToolParams } from "../schema/git-bash"
 import { ReadImageToolParams } from "../schema/read-image"
 import { GrepSearchToolParams } from "../schema/grep-search"
 import { PatternSearchToolParams } from "../schema/pattern-search"
@@ -34,8 +33,6 @@ import { FastEditorToolParams } from "../schema/fast-editor"
 import { ReplaceStringToolParams } from "../schema/replace-string"
 import { MultiReplaceStringToolParams } from "../schema/multi-replace-string"
 import { InsertEditToolParams } from "../schema/insert-edit"
-import { KillBashToolParams } from "../schema/kill-bash"
-import { ReadProgressToolParams } from "../schema/read-progress"
 import { TimerToolParams } from "../schema/timer"
 import { VscodeApiToolParams } from "../schema/vscode-api"
 
@@ -50,7 +47,7 @@ export type ToolParams =
 	| AskFollowupQuestionToolParams
 	| AttemptCompletionToolParams
 	| ServerRunnerToolParams
-	| ExecuteCommandToolParams
+	| TerminalToolParams
 	| ExploreRepoFolderToolParams
 	| ListFilesToolParams
 	| ReadFileToolParams
@@ -75,9 +72,6 @@ export type ToolParams =
 	| RemoveToolParams
 	| RenameToolParams
 	| ThinkToolParams
-	| GitBashToolParams
-	| KillBashToolParams
-	| ReadProgressToolParams
 	| GrepSearchToolParams
 	| PatternSearchToolParams
 	| VscodeApiToolParams

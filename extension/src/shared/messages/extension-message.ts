@@ -216,6 +216,7 @@ export interface BaseExtensionState {
 	shouldShowAnnouncement: boolean
 	autoCloseTerminal: boolean
 	apiConfig?: GlobalState["apiConfig"]
+	terminalSecurityPolicy?: string
 }
 
 export interface ExtensionState extends BaseExtensionState {

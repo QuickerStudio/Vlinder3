@@ -277,7 +277,7 @@ const processContentBlock = async (
 	)
 	const isToolResponse = content.text.includes("<toolResponse>") && content.text.includes("</toolResponse>")
 
-	// Handle execute_command blocks
+	// Handle terminal blocks
 	if (!isToolResponse && content.text.includes("<command>") && content.text.includes("</command>")) {
 		const indexOfStartTag = content.text.indexOf("<command>")
 		const indexOfEndTag = content.text.indexOf("</command>")
@@ -380,9 +380,9 @@ const processContentBlock = async (
 				return content
 			}
 
-			if (toolResponse.toolName === "execute_command") {
+			if (toolResponse.toolName === "terminal") {
 				if (toolResponse.toolResult.includes("<compressedToolResult>")) {
-					logger(`Skipping compression for already compressed execute_command`, "info")
+					logger(`Skipping compression for already compressed terminal`, "info")
 					return content
 				}
 				if (
@@ -390,7 +390,7 @@ const processContentBlock = async (
 					toolResponse.toolStatus === "success"
 				) {
 					const output = await executionCompressor.compress(currentCommandString, toolResponse.toolResult)
-					logger(`Compressed execute_command output ${currentCommandString}`, "info")
+					logger(`Compressed terminal output ${currentCommandString}`, "info")
 					return {
 						type: "text",
 						text: `<toolResponse><toolName>${toolResponse.toolName}</toolName><toolStatus>${toolResponse.toolStatus}</toolStatus>
@@ -401,7 +401,7 @@ const processContentBlock = async (
 						</toolResult></toolResponse>`,
 					}
 				} else {
-					logger(`Skipping compression for rejected/pending execute_command`, "info")
+					logger(`Skipping compression for rejected/pending terminal`, "info")
 					return content
 				}
 			}
@@ -428,7 +428,7 @@ const processContentBlock = async (
 
 export const compressedTools: ToolName[] = [
 	"read_file",
-	"execute_command",
+	"terminal",
 	"write_to_file",
 	"edit_file_blocks",
 	"file_editor",
