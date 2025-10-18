@@ -6,15 +6,14 @@ export function detectGitBashPath(): string | null {
     if (os.platform() !== "win32") {return null}
 
     const commonPaths = [
-        "C\\\\Program Files\\\\Git\\\\bin\\\\bash.exe",
-        "C\\\\Program Files (x86)\\\\Git\\\\bin\\\\bash.exe",
-        "C\\\\Program Files\\\\Git\\\\usr\\\\bin\\\\bash.exe",
-        "C\\\\Program Files (x86)\\\\Git\\\\usr\\\\bin\\\\bash.exe",
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "C:\\Program Files (x86)\\Git\\bin\\bash.exe",
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        "C:\\Program Files (x86)\\Git\\usr\\bin\\bash.exe",
     ]
 
     for (const p of commonPaths) {
-        const fixed = p.replace(/\\\\/g, "\\")
-        if (fs.existsSync(fixed)) {return fixed}
+        if (fs.existsSync(p)) {return p}
     }
 
     try {
