@@ -134,6 +134,19 @@ export function activate(context: vscode.ExtensionContext) {
 			) {
 				await lastActiveDoc.save()
 			}
+			// mark open/dirty state transitions for policy.json
+			try {
+				const isOpen = !!vscode.window.visibleTextEditors.find((e) => e.document.uri.fsPath === policyFsPath)
+				await GlobalStateManager.getInstance(context).updateGlobalState("terminalPolicyOpen" as any, isOpen)
+				const activeDoc = editor?.document
+				if (activeDoc?.uri.fsPath === policyFsPath) {
+					await GlobalStateManager.getInstance(context).updateGlobalState(
+						"terminalPolicyDirty" as any,
+						activeDoc.isDirty
+					)
+				}
+				await sidebarProvider.getWebviewManager().postBaseStateToWebview()
+			} catch {}
 			lastActiveDoc = editor?.document
 		})
 	)
@@ -155,6 +168,10 @@ export function activate(context: vscode.ExtensionContext) {
 			try {
 				if (doc.uri.fsPath === policyFsPath) {
 					await TerminalSecurityState.syncFromFileToState(context)
+					await GlobalStateManager.getInstance(context).updateGlobalState(
+						"terminalPolicyDirty" as any,
+						false
+					)
 					await sidebarProvider.getWebviewManager().postBaseStateToWebview()
 				}
 			} catch {}

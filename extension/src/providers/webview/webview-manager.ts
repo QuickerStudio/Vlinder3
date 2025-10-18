@@ -526,10 +526,44 @@ export class WebviewManager {
 							const userPolicyPath = await TerminalSecurityState.ensureUserPolicy(ctx)
 							const uri = vscode.Uri.file(userPolicyPath)
 							await vscode.window.showTextDocument(uri, { preview: false })
+						// mark as open in state
+						await GlobalStateManager.getInstance().updateGlobalState("terminalPolicyOpen" as any, true)
+						await GlobalStateManager.getInstance().updateGlobalState(
+							"terminalPolicyDirty" as any,
+							false
+						)
 							await this.postBaseStateToWebview()
 						} catch (err) {
 							vscode.window.showErrorMessage(
 								"Could not open sandbox rules file: " + ((err as Error)?.message || String(err))
+							)
+						}
+					}
+					break
+				case "saveSandboxRulesFile":
+					{
+						try {
+							const ctx = this.provider.getContext()
+							const policyPath = TerminalSecurityState.getUserPolicyPath(ctx)
+							const doc = vscode.workspace.textDocuments.find((d) => d.uri.fsPath === policyPath)
+							if (doc) {
+								if (doc.isDirty) {
+									await doc.save()
+								}
+								// close the editor showing this doc
+								const editor = vscode.window.visibleTextEditors.find((e) => e.document === doc)
+								if (editor) {
+									await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: false })
+									await vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+								}
+
+								await GlobalStateManager.getInstance().updateGlobalState("terminalPolicyOpen" as any, false)
+								await GlobalStateManager.getInstance().updateGlobalState("terminalPolicyDirty" as any, false)
+								await this.postBaseStateToWebview()
+							}
+						} catch (err) {
+							vscode.window.showErrorMessage(
+								"Could not save sandbox rules file: " + ((err as Error)?.message || String(err))
 							)
 						}
 					}
