@@ -132,14 +132,7 @@
 		border-radius: 100px;
 		border: none;
 		transition: background-color 0.3s ease;
-
-		&[data-state="unchecked"] {
-			background-color: var(--switch-unchecked-bg, #fcebeb);
-		}
-
-		&[data-state="checked"] {
-			background-color: var(--switch-checked-bg, #e8f5e9);
-		}
+		background-color: #3A3D41;
 
 		&:disabled {
 			opacity: 0.5;
@@ -153,22 +146,22 @@
 			width: 21px;
 			height: 21px;
 			border-radius: 50%;
+			background-color: #181818;
 			transition: all 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15);
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			color: #fff;
 			font-size: 7.5px;
 			font-weight: bold;
 
 			&[data-state="unchecked"] {
 				left: 3px;
-				background-color: var(--switch-unchecked-color, #f44336);
+				color: #ff6b6b;
 			}
 
 			&[data-state="checked"] {
 				left: 31.5px;
-				background-color: var(--switch-checked-color, #4caf50);
+				color: #51cf66;
 			}
 		}
 
