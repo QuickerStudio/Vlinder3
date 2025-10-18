@@ -295,11 +295,6 @@ export const useChatMessageHandling = (
 				primaryButtonText: "Execute",
 				secondaryButtonText: "Cancel",
 			},
-			terminal: {
-				...baseState,
-				primaryButtonText: "Execute",
-				secondaryButtonText: "Cancel",
-			},
 			kill_bash: {
 				...baseState,
 				primaryButtonText: "Kill Terminal",

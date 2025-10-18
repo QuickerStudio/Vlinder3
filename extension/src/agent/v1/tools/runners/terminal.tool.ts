@@ -18,10 +18,10 @@ const MAX_RETRIES = 3
 type EarlyExitState = "approved" | "rejected" | "pending"
 
 export const shellIntegrationErrorOutput = `
-<command_execution_response>
+<terminal_response>
 	<status>
 		<result>error</result>
-		<operation>command_execution</operation>
+		<operation>command</operation>
 		<timestamp>${new Date().toISOString()}</timestamp>
 		<error_type>shell_integration_unavailable</error_type>
 	</status>
@@ -33,7 +33,7 @@ export const shellIntegrationErrorOutput = `
 			<resolution>Enable shell integration to capture command output</resolution>
 		</limitations>
 	</error_details>
-</command_execution_response>
+</terminal_response>
 `
 
 export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
@@ -324,10 +324,10 @@ export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 				// }
 
 				const toolRes = `
-					<command_execution_response>
+					<terminal_response>
 						<status>
 							<result>success</result>
-							<operation>command_execution</operation>
+							<operation>command</operation>
 							<timestamp>${new Date().toISOString()}</timestamp>
 						</status>
 						<execution_details>
@@ -342,7 +342,7 @@ export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 								<message>${userFeedback?.text || ""}</message>
 							</user_feedback>
 						</execution_details>
-					</command_execution_response>`
+					</terminal_response>`
 
 				if (returnEmptyStringOnSuccess) {
 					return this.toolResponse("success", "No output", undefined)
@@ -351,10 +351,10 @@ export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 				return this.toolResponse("success", toolRes, userFeedback?.images)
 			} else {
 				const toolRes = `
-			<command_execution_response>
+			<terminal_response>
 				<status>
-					<result>${completed ? "executed sucessfully" : "execution in progress"}</result>
-					<operation>command_execution</operation>
+					<result>${completed ? "executed successfully" : "execution in progress"}</result>
+					<operation>command</operation>
 					<timestamp>${new Date().toISOString()}</timestamp>
 				</status>
 				<execution_details>
@@ -365,20 +365,19 @@ export class TerminalTool extends BaseAgentTool<TerminalToolParams> {
 					<output>
 						<content>${this.output || "No output"}</content>
 						${
-							shellIntegrationErrorOutput
-								? `<shell_integration_error>${shellIntegrationErrorOutput}</shell_integration_error>`
+							shellIntegrationWarningShown
+								? `<shell_integration_error>Shell integration is not available</shell_integration_error>`
 								: ""
 						}
 						${earlyExit === "pending" ? `<early_exit>pending</early_exit>` : `<early_exit>${earlyExit}</early_exit>`}
 						<note>${
 							completed
 								? "Command executed successfully"
-								: "Command execution in progress partial output may be available you can continue with task if you think it's good to go"
+								: "Command execution in progress, partial output may be available. You can continue with task if you think it's good to go"
 						}</note>
-						}
 					</output>
 				</execution_details>
-			</command_execution_response>`
+			</terminal_response>`
 
 				return this.toolResponse("success", toolRes, userFeedback?.images)
 			}

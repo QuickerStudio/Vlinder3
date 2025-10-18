@@ -50,20 +50,46 @@ const PreferencesTabNew: React.FC = () => {
 
 	if (!data) return null
 	return (
-		<div className="w-full flex justify-center items-center">
-			{/* Outer Gradient Wrapper - 防止渐变被裁剪 */}
-			<div 
-				className="relative cursor-pointer group mx-auto"
-				style={{
-					position: 'relative',
-					width: '400px', // 4:6 宽度
-					height: '600px', // 4:6 高度
-					overflow: 'visible'
-				}}
-			>
+		<>
+			<style>
+				{`
+					@keyframes gradient-border-transform {
+						from {
+							transform: translateX(-3px);
+						}
+						to {
+							transform: translateX(-5px) rotate(-90deg) scaleX(1.452) scaleY(0.661);
+						}
+					}
+					.gradient-border-layer {
+						transition: all 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+						transform: translateX(-3px);
+					}
+					.gradient-wrapper-container:hover .gradient-border-layer {
+						transform: translateX(-5px) rotate(-90deg) scaleX(1.452) scaleY(0.661);
+					}
+					.glow-layer {
+						transition: all 600ms;
+					}
+					.gradient-wrapper-container:hover .glow-layer {
+						filter: blur(30px) !important;
+					}
+				`}
+			</style>
+			<div className="w-full flex justify-center items-center">
+				{/* Outer Gradient Wrapper - 防止渐变被裁剪 */}
+				<div 
+					className="relative cursor-pointer gradient-wrapper-container mx-auto"
+					style={{
+						position: 'relative',
+						width: '400px', // 4:6 宽度
+						height: '600px', // 4:6 高度
+						overflow: 'visible'
+					}}
+				>
 				{/* Gradient border layer - 保持旋转前样式，调整旋转后的scale和位置 */}
 				<div 
-					className="absolute pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] translate-x-[-3px] group-hover:rotate-[-90deg] group-hover:scale-x-[1.452] group-hover:scale-y-[0.661] group-hover:translate-x-[-5px]"
+					className="absolute pointer-events-none gradient-border-layer"
 					style={{
 						content: '',
 						position: 'absolute',
@@ -78,10 +104,10 @@ const PreferencesTabNew: React.FC = () => {
 						pointerEvents: 'none'
 					}}
 				/>
-				
+					
 				{/* Blurred glow layer */}
 				<div 
-					className="absolute transition-all duration-[600ms] group-hover:blur-[30px]"
+					className="absolute glow-layer"
 					style={{
 						content: '',
 						zIndex: -1,
@@ -170,7 +196,8 @@ const PreferencesTabNew: React.FC = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+			</div>
+		</>
 	)
 }
 
