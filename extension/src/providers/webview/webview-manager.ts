@@ -509,20 +509,35 @@ export class WebviewManager {
 						await this.provider.getSecretStateManager().resetState()
 						await this.postBaseStateToWebview()
 						break
-					case "openSandboxRulesFile":
-						{
-							const filePath = path.join(
-								this.provider.getContext().extensionPath,
-								"src",
-								"integrations",
-								"terminal",
-								"sandbox",
-								"policy.default.json"
-							)
+				case "openSandboxRulesFile":
+					{
+						// Try source path first (development), then dist path (production)
+						const extensionPath = this.provider.getContext().extensionPath
+						const possiblePaths = [
+							path.join(extensionPath, "src", "integrations", "terminal", "sandbox", "policy.default.json"),
+							path.join(extensionPath, "dist", "integrations", "terminal", "sandbox", "policy.default.json"),
+							path.join(extensionPath, "integrations", "terminal", "sandbox", "policy.default.json"),
+						]
+						
+						let filePath: string | undefined
+						for (const p of possiblePaths) {
+							try {
+								await fs.access(p)
+								filePath = p
+								break
+							} catch {
+								// File doesn't exist, try next path
+							}
+						}
+						
+						if (filePath) {
 							const uri = vscode.Uri.file(filePath)
 							await vscode.window.showTextDocument(uri, { preview: false })
+						} else {
+							vscode.window.showErrorMessage("Could not find sandbox rules file")
 						}
-						break
+					}
+					break
 					case "debug":
 						await this.handleDebugInstruction()
 						break

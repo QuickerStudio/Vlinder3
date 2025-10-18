@@ -6,23 +6,180 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Switch } from "@/components/ui/switch"
-import React, { useCallback } from "react"
+import React, { useCallback, useState, useMemo } from "react"
 import { useSettingsState } from "../../hooks/use-settings-state"
 import { Slider } from "../ui/slider"
 import { vscode } from "@/utils/vscode"
 import { experimentalFeatures } from "./constants"
 import { ModelSelector } from "./preferences/model-picker"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, ChevronUp, Edit2, Unlock, Trash2, Plus } from "lucide-react"
 import { rpcClient } from "@/lib/rpc-client"
 import { useSwitchToProviderManager } from "./preferences/atoms"
 import { cn } from "@/lib/utils"
 import { ExperimentalFeature } from "./types"
-import { useTerminalPolicyParser } from "../../hooks/use-terminal-policy-parser"
-import { TerminalPolicyTagList } from "./terminal-policy-tag-list"
+import { parsePolicy, ParsedCommand } from "extension/integrations/terminal/sandbox/policy-parser"
 
 // Unified description text size - modify this to adjust all description font sizes
 // Available options: text-[10px], text-[11px], text-xs (12px), text-sm (14px), text-base (16px)
 const DESCRIPTION_TEXT_SIZE = "text-xs" as const
+
+// PolicyTagList component (integrated)
+interface PolicyTagListProps {
+	title: string
+	commands: ParsedCommand[]
+	onCommandEdit: (id: string, newCommand: string) => void
+	onCommandUnblock: (id: string) => void
+	onCommandDelete: (id: string) => void
+	onCommandAdd: (command: string) => void
+}
+
+const PolicyTagList: React.FC<PolicyTagListProps> = ({ title, commands, onCommandEdit, onCommandUnblock, onCommandDelete, onCommandAdd }) => {
+	const [isExpanded, setIsExpanded] = useState(false)
+	const [editingId, setEditingId] = useState<string | null>(null)
+	const [editValue, setEditValue] = useState("")
+	const [isAdding, setIsAdding] = useState(false)
+	const [addValue, setAddValue] = useState("")
+
+	return (
+		<div className="space-y-2">
+			<div className="flex items-center gap-2">
+				<span className="text-xs font-medium text-muted-foreground">{title}</span>
+				<div className="flex-1 h-px bg-border" />
+				<Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setIsAdding(true)}>
+					<Plus className="h-3 w-3" />
+				</Button>
+				<Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setIsExpanded(!isExpanded)}>
+					{isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+				</Button>
+			</div>
+
+		{isExpanded && (
+			<div className="flex flex-col gap-1 max-h-[240px] overflow-y-auto scrollbar-hide">
+				{isAdding && (
+					<div className="flex items-center h-5 min-h-[20px] bg-primary/10 rounded border border-primary overflow-hidden w-full flex-shrink-0">
+						<Input
+							value={addValue}
+							onChange={(e) => setAddValue(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" && addValue.trim()) {
+									onCommandAdd(addValue.trim())
+									setIsAdding(false)
+									setAddValue("")
+								} else if (e.key === "Escape") {
+									setIsAdding(false)
+									setAddValue("")
+								}
+							}}
+							placeholder="Enter command..."
+							className="h-5 text-xs border-0 bg-transparent px-2 py-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+							autoFocus
+						/>
+						<div className="flex items-center border-l border-primary flex-shrink-0">
+							<button
+								onClick={() => {
+									if (addValue.trim()) onCommandAdd(addValue.trim())
+									setIsAdding(false)
+									setAddValue("")
+								}}
+								className="h-5 px-1.5 hover:bg-accent text-xs"
+							>
+								✓
+							</button>
+							<button
+								onClick={() => {
+									setIsAdding(false)
+									setAddValue("")
+								}}
+								className="h-5 px-1.5 hover:bg-accent text-xs border-l border-primary"
+							>
+								✕
+							</button>
+						</div>
+					</div>
+				)}
+				{commands.map((cmd) => (
+					<div
+						key={cmd.id}
+						className="flex items-center h-5 min-h-[20px] bg-secondary/50 rounded border border-border overflow-hidden w-full flex-shrink-0"
+					>
+						{editingId === cmd.id ? (
+							<>
+								<Input
+									value={editValue}
+									onChange={(e) => setEditValue(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" && editValue.trim()) {
+											onCommandEdit(cmd.id, editValue.trim())
+											setEditingId(null)
+											setEditValue("")
+										} else if (e.key === "Escape") {
+											setEditingId(null)
+											setEditValue("")
+										}
+									}}
+									className="h-5 text-xs border-0 bg-transparent px-2 py-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+									autoFocus
+								/>
+								<div className="flex items-center border-l border-border flex-shrink-0">
+									<button
+										onClick={() => {
+											if (editValue.trim()) onCommandEdit(cmd.id, editValue.trim())
+											setEditingId(null)
+											setEditValue("")
+										}}
+										className="h-5 px-1.5 hover:bg-accent text-xs"
+									>
+										✓
+									</button>
+									<button
+										onClick={() => {
+											setEditingId(null)
+											setEditValue("")
+										}}
+										className="h-5 px-1.5 hover:bg-accent text-xs border-l border-border"
+									>
+										✕
+									</button>
+								</div>
+							</>
+						) : (
+							<>
+								<span className="text-xs px-2 font-mono flex-1 truncate">{cmd.command}</span>
+								<div className="flex items-center border-l border-border flex-shrink-0">
+									<button
+										onClick={() => {
+											setEditingId(cmd.id)
+											setEditValue(cmd.command)
+										}}
+										className="h-5 px-1.5 hover:bg-accent"
+									>
+										<Edit2 className="h-3 w-3" />
+									</button>
+									<button onClick={() => onCommandUnblock(cmd.id)} className="h-5 px-1.5 hover:bg-accent border-l border-border">
+										<Unlock className="h-3 w-3" />
+									</button>
+									<button
+										onClick={() => onCommandDelete(cmd.id)}
+										className="h-5 px-1.5 hover:bg-destructive hover:text-destructive-foreground border-l border-border"
+									>
+										<Trash2 className="h-3 w-3" />
+									</button>
+								</div>
+							</>
+						)}
+					</div>
+				))}
+				</div>
+			)}
+
+		<p className="text-[11px] text-muted-foreground mt-1">
+			{title === "Blocked Commands"
+				? "Commands that will be blocked and cannot be executed."
+				: "Keywords that trigger warnings before execution."}
+		</p>
+		</div>
+	)
+}
 
 // ExperimentalFeatureItem component (integrated)
 interface ExperimentalFeatureItemProps {
@@ -191,7 +348,7 @@ const AdvancedTab: React.FC = () => {
 	}
 
 	// Terminal policy parser
-	const parsedPolicy = useTerminalPolicyParser(terminalSecurityPolicy)
+	const parsedPolicy = useMemo(() => parsePolicy(terminalSecurityPolicy), [terminalSecurityPolicy])
 
 	// Handle command operations
 	const updatePolicyJson = useCallback((updater: (policy: any) => any) => {
@@ -504,24 +661,111 @@ const AdvancedTab: React.FC = () => {
 									)}
 								</div>
 							</div>
-						</div>
-					)}
-				</div>
-				
-				{/* Divider after Observer Agent */}
-				<div className="border-t border-border my-4"></div>
-				
-				<ExperimentalFeatureItem
-					feature={{
-						id: "autoCloseTerminal",
-						label: "Automatically close terminal",
-						description: "Automatically close the terminal after executing a command",
-					}}
-					checked={autoCloseTerminal}
-					onCheckedChange={handleSetAutoCloseTerminal}
-				/>
+					</div>
+				)}
+			</div>
+			
+			{/* Divider after Observer Agent */}
+			<div className="border-t border-border my-4"></div>
+			
+			<ExperimentalFeatureItem
+				feature={{
+					id: "autoCloseTerminal",
+					label: "Automatically close terminal",
+					description: "Automatically close the terminal after executing a command",
+				}}
+				checked={autoCloseTerminal}
+				onCheckedChange={handleSetAutoCloseTerminal}
+			/>
 
-				<div className="space-y-4 mx-0">
+			<ExperimentalFeatureItem
+				feature={{
+					id: "terminalCompressionThreshold",
+					label: "Enable Terminal Compression",
+					description:
+						"Compress terminal output to reduce token usage when the output exceeds the threshold at the end of context window",
+				}}
+				checked={terminalCompressionThreshold !== undefined}
+				onCheckedChange={(checked) =>
+					handleTerminalCompressionThresholdChange(checked ? 10000 : undefined)
+				}
+			/>
+			{terminalCompressionThreshold !== undefined && (
+				<div className="pl-0 grid gap-4">
+					<div className="grid gap-2">
+						<Label htmlFor="range">Compression Threshold</Label>
+						<div className="grid gap-4">
+							<div className="flex items-center gap-4">
+								<Input
+									id="range"
+									type="number"
+									value={terminalCompressionThreshold}
+									onChange={(e) => {
+										const value = parseInt(e.target.value)
+										if (!isNaN(value)) {
+											handleTerminalCompressionThresholdChange(
+												Math.min(Math.max(value, 2000), 200000)
+											)
+										}
+									}}
+									min={2000}
+									max={200000}
+									step={1000}
+									className="w-24"
+								/>
+								<span className="text-sm text-muted-foreground">(2,000 - 200,000)</span>
+							</div>
+							<Slider
+								min={2000}
+								max={200000}
+								step={1000}
+								value={[terminalCompressionThreshold]}
+								onValueChange={(value) => handleTerminalCompressionThresholdChange(value[0])}
+								className="w-full"
+							/>
+						</div>
+						<p className="text-sm text-muted-foreground">
+							Adjust the token threshold at which terminal output will be compressed
+						</p>
+					</div>
+				</div>
+			)}
+
+			{/* Command Timeout - One line layout */}
+			<div className="space-y-2">
+				<div className="flex items-center gap-2">
+					<Label htmlFor="command-timeout" className="text-xs font-medium whitespace-nowrap">Command Timeout :</Label>
+					<Input
+						id="command-timeout"
+						type="number"
+						value={commandTimeout ?? 120}
+						onChange={(e) => {
+							const value = parseInt(e.target.value)
+							if (!isNaN(value)) {
+								handleCommandTimeout(value)
+							}
+						}}
+						min={60}
+						max={600}
+						step={10}
+						className="w-24"
+					/>
+					<span className="text-sm text-muted-foreground whitespace-nowrap">(60 - 600)</span>
+				</div>
+				<Slider
+					min={60}
+					max={600}
+					step={10}
+					value={[commandTimeout ?? 120]}
+					onValueChange={(value) => handleCommandTimeout(value[0])}
+					className="w-full"
+				/>
+				<p className="text-sm text-muted-foreground">
+					Set the maximum time in seconds that a command can run before being terminated
+				</p>
+			</div>
+
+			<div className="space-y-4 mx-0">
 				{/* Terminal Security Policy JSON */}
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
@@ -557,129 +801,46 @@ const AdvancedTab: React.FC = () => {
 						</div>
 					</div>
 					
-					{/* Tag lists for blocked and risk commands */}
-					<div className="space-y-3">
-						<TerminalPolicyTagList
-							title="Blocked Commands"
-							commands={parsedPolicy.blockCommands}
-							onCommandEdit={handleCommandEdit}
-							onCommandUnblock={handleCommandUnblock}
-							onCommandDelete={handleCommandDelete}
-							onCommandAdd={handleBlockCommandAdd}
-						/>
-						<TerminalPolicyTagList
-							title="Risk Keywords"
-							commands={parsedPolicy.riskCommands}
-							onCommandEdit={handleCommandEdit}
-							onCommandUnblock={handleCommandUnblock}
-							onCommandDelete={handleCommandDelete}
-							onCommandAdd={handleRiskCommandAdd}
-						/>
-					</div>
-
-					<p className="text-xs text-muted-foreground">
-						JSON-based sandbox rules for terminal commands. Invalid JSON will be ignored.
-					</p>
-					<Textarea
-						value={terminalSecurityPolicy}
-						onChange={(e) => handleTerminalSecurityPolicyChange(e.target.value)}
-						className="min-h-[180px] text-xs font-mono"
-						spellCheck={false}
-					/>
-				</div>
-
-					<ExperimentalFeatureItem
-						feature={{
-							id: "terminalCompressionThreshold",
-							label: "Enable Terminal Compression",
-							description:
-								"Compress terminal output to reduce token usage when the output exceeds the threshold at the end of context window",
-						}}
-						checked={terminalCompressionThreshold !== undefined}
-						onCheckedChange={(checked) =>
-							handleTerminalCompressionThresholdChange(checked ? 10000 : undefined)
-						}
-					/>
-					{terminalCompressionThreshold !== undefined && (
-						<div className="pl-0 grid gap-4">
-							<div className="grid gap-2">
-								<Label htmlFor="range">Compression Threshold</Label>
-								<div className="grid gap-4">
-									<div className="flex items-center gap-4">
-										<Input
-											id="range"
-											type="number"
-											value={terminalCompressionThreshold}
-											onChange={(e) => {
-												const value = parseInt(e.target.value)
-												if (!isNaN(value)) {
-													handleTerminalCompressionThresholdChange(
-														Math.min(Math.max(value, 2000), 200000)
-													)
-												}
-											}}
-											min={2000}
-											max={200000}
-											step={1000}
-											className="w-24"
-										/>
-										<span className="text-sm text-muted-foreground">(2,000 - 200,000)</span>
-									</div>
-									<Slider
-										min={2000}
-										max={200000}
-										step={1000}
-										value={[terminalCompressionThreshold]}
-										onValueChange={(value) => handleTerminalCompressionThresholdChange(value[0])}
-										className="w-full"
-									/>
-								</div>
-								<p className="text-sm text-muted-foreground">
-									Adjust the token threshold at which terminal output will be compressed
-								</p>
-							</div>
-						</div>
-					)}
-				</div>
+			{/* Tag lists for blocked and risk commands */}
+			<div className="space-y-3">
+				<PolicyTagList
+					title="Blocked Commands"
+					commands={parsedPolicy.blockCommands}
+					onCommandEdit={handleCommandEdit}
+					onCommandUnblock={handleCommandUnblock}
+					onCommandDelete={handleCommandDelete}
+					onCommandAdd={handleBlockCommandAdd}
+				/>
+				<PolicyTagList
+					title="Risk Keywords"
+					commands={parsedPolicy.riskCommands}
+					onCommandEdit={handleCommandEdit}
+					onCommandUnblock={handleCommandUnblock}
+					onCommandDelete={handleCommandDelete}
+					onCommandAdd={handleRiskCommandAdd}
+				/>
 			</div>
-			<div className="space-y-4 mx-0">
-				<div className="pl-0 grid gap-4">
-					<div className="grid gap-2">
-						<Label htmlFor="range">Command Timeout</Label>
-						<div className="grid gap-4">
-							<div className="flex items-center gap-4">
-								<Input
-									id="command-timeout"
-									type="number"
-									value={commandTimeout ?? 120}
-									onChange={(e) => {
-										const value = parseInt(e.target.value)
-										if (!isNaN(value)) {
-											handleCommandTimeout(value)
-										}
-									}}
-									min={60}
-									max={600}
-									step={10}
-									className="w-24"
-								/>
-								<span className="text-sm text-muted-foreground">(60 - 600)</span>
-							</div>
-							<Slider
-								min={60}
-								max={600}
-								step={10}
-								value={[commandTimeout ?? 120]}
-								onValueChange={(value) => handleCommandTimeout(value[0])}
-								className="w-full"
-							/>
-						</div>
-						<p className="text-sm text-muted-foreground">
-							Set the maximum time in seconds that a command can run before being terminated
+
+					{/* Sandbox Rules JSON Editor */}
+					<div className="space-y-2 mt-4">
+						<Label className="text-xs font-medium">Sandbox Rules</Label>
+						<p className="text-xs text-muted-foreground">
+							JSON-based sandbox rules for terminal commands. Invalid JSON will be ignored.
 						</p>
+						<textarea
+							value={terminalSecurityPolicy}
+							onChange={(e) => handleTerminalSecurityPolicyChange(e.target.value)}
+							className="w-full min-h-[180px] px-3 py-2 text-xs font-mono bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-y"
+							spellCheck={false}
+							placeholder='{"version": 1, "common": {"block": [], "riskKeywords": []}}'
+						/>
 					</div>
 				</div>
 			</div>
+			
+			{/* Divider before Custom Instructions */}
+			<div className="border-t border-border my-4"></div>
+			
 			<div className="space-y-4">
 				<div className="space-y-2">
 					<Label htmlFor="custom-instructions" className="text-xs font-medium">
@@ -734,6 +895,7 @@ const AdvancedTab: React.FC = () => {
 					}}>
 					Open Editor
 				</Button>
+			</div>
 			</div>
 		</div>
 	)
