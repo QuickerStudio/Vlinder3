@@ -75,6 +75,7 @@ export type GlobalState = {
 	disabledTools: ToolName[] | undefined
 	isMigratedTaskCompleted: boolean | undefined
 	githubAccounts: Array<any> | undefined
+	githubSettings: { defaultCloneDirectory?: string } | undefined
 }
 
 export class GlobalStateManager {

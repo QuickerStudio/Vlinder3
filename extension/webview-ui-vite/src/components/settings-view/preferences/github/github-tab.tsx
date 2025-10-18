@@ -5,7 +5,9 @@
 import React, { useEffect } from 'react';
 import { LoginView } from './login-view';
 import { TopBar } from './top-bar';
+import { RepositoryList } from './repository-list';
 import { useGitHubAuth } from './use-github-auth';
+import { useRepositories } from './use-repositories';
 
 export const GitHubTab: React.FC = () => {
   const {
@@ -18,9 +20,25 @@ export const GitHubTab: React.FC = () => {
     handleLogout,
   } = useGitHubAuth();
 
+  const {
+    repositories,
+    selectedRepo,
+    setSelectedRepo,
+    isLoadingRepos,
+    searchQuery,
+    setSearchQuery,
+    loadRepositories,
+  } = useRepositories();
+
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadRepositories();
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
@@ -34,21 +52,27 @@ export const GitHubTab: React.FC = () => {
     );
   }
 
-  // After login, show TopBar + empty content area
+  // After login, show TopBar + Repository List
   return (
-    <div className='flex flex-col w-full h-full'>
-      <TopBar
-        account={account!}
-        onLogout={handleLogout}
-      />
-      
-      {/* Empty content area - placeholder for future features */}
-      <div className='flex-1 flex items-center justify-center p-8'>
-        <div className='text-center space-y-2'>
-          <p className='text-lg font-medium'>Welcome to GitHub Integration</p>
-          <p className='text-sm text-muted-foreground'>
-            More features coming soon...
-          </p>
+    <div className='flex items-start justify-center w-full h-full p-6'>
+      {/* Rounded Container */}
+      <div className='w-full max-w-[680px] border rounded-lg overflow-hidden bg-background/50'>
+        <TopBar
+          account={account!}
+          onLogout={handleLogout}
+        />
+        
+        {/* Main Content Area: Repository List */}
+        <div className='w-full' style={{ height: '550px' }}>
+          <RepositoryList
+            repositories={repositories}
+            selectedRepo={selectedRepo}
+            searchQuery={searchQuery}
+            isLoading={isLoadingRepos}
+            onSearchChange={setSearchQuery}
+            onRefresh={loadRepositories}
+            onSelectRepo={setSelectedRepo}
+          />
         </div>
       </div>
     </div>
