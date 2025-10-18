@@ -11,6 +11,7 @@ import { SettingsFooter } from "./settings-footer"
 import { Label } from "../ui/label"
 import { Separator } from "../ui/separator"
 import PreferencesTabNew from "./preferences/preferences-tab"
+import { GitHubTab } from "./preferences/github/github-tab"
 import { useAtom } from "jotai"
 import { PreferencesTab, preferencesTabAtom, tabItems } from "./preferences/atoms"
 
@@ -34,6 +35,7 @@ const SettingsPage: React.FC = () => {
 			<>
 				{activeTab === "preferences" && <PreferencesTabNew />}
 				{activeTab === "advanced" && <AdvancedTab />}
+				{activeTab === "github" && <GitHubTab />}
 			</>
 		),
 		[activeTab]

@@ -6,6 +6,7 @@ type SecretState = {
 	vlinderApiKey: string
 	fp: string
 	providers?: string
+	[key: string]: string | undefined  // Allow dynamic keys for GitHub tokens
 }
 
 export class SecretStateManager {
@@ -27,15 +28,15 @@ export class SecretStateManager {
 	}
 
 	async updateSecretState<K extends keyof SecretState>(key: K, value: SecretState[K]): Promise<void> {
-		await this.context.secrets.store(key, value!)
+		await this.context.secrets.store(key as string, value!)
 	}
 
 	async deleteSecretState<K extends keyof SecretState>(key: K): Promise<void> {
-		await this.context.secrets.delete(key)
+		await this.context.secrets.delete(key as string)
 	}
 
 	getSecretState<K extends keyof SecretState>(key: K): Promise<SecretState[K]> {
-		return this.context.secrets.get(key) as Promise<SecretState[K]>
+		return this.context.secrets.get(key as string) as Promise<SecretState[K]>
 	}
 
 	async resetState(): Promise<void> {

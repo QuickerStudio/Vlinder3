@@ -74,6 +74,7 @@ export type GlobalState = {
 		| undefined
 	disabledTools: ToolName[] | undefined
 	isMigratedTaskCompleted: boolean | undefined
+	githubAccounts: Array<any> | undefined
 }
 
 export class GlobalStateManager {

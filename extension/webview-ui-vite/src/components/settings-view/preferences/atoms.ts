@@ -26,6 +26,7 @@ export const useSwitchView = () => {
 export const tabItems = [
 	{ value: "preferences", label: "Preferences" },
 	{ value: "advanced", label: "Advanced" },
+	{ value: "github", label: "GitHub" },
 ] as const
 
 export type PreferencesTab = (typeof tabItems)[number]["value"]

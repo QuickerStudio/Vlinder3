@@ -7,9 +7,10 @@ import gitRouter from "./routes/git-router"
 import taskRouter from "./routes/task-router"
 import providerRouter from "./routes/provider-router"
 import agentRouter from "./routes/agent-router"
+import { githubRouter } from "../integrations/github"
 
 // 3) Merge them into an appRouter
-export const appRouter = mergeRouters(taskRouter, gitRouter, providerRouter, agentRouter)
+export const appRouter = mergeRouters(taskRouter, gitRouter, providerRouter, agentRouter, githubRouter)
 
 // 4) Export the appRouter type
 export type AppRouter = typeof appRouter
