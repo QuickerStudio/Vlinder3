@@ -8,6 +8,8 @@ import { vscode } from "@/utils/vscode"
 import { ModelDisplay } from "./model-display"
 import { DragHandle } from "../ui/drag-handle"
 import { CircularProgress } from "../ui/circular-progress"
+import { Switch } from "@/components/ui/switch"
+import { useExtensionState } from "@/context/extension-state-context"
 
 interface InputAreaProps {
 	inputRef: React.RefObject<HTMLTextAreaElement>
@@ -67,6 +69,14 @@ const InputArea: React.FC<InputAreaProps> = ({
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [textareaHeight, setTextareaHeight] = useState(120) // Control textarea height
 	const [isDragHandleHovered, setIsDragHandleHovered] = useState(false) // Shared hover state for drag handle and circular progress
+	
+	// Automatic Mode toggle state
+	const { alwaysAllowWriteOnly, setAlwaysAllowWriteOnly } = useExtensionState()
+	
+	const handleAutoModeToggle = (checked: boolean) => {
+		setAlwaysAllowWriteOnly(checked)
+		vscode.postMessage({ type: "alwaysAllowWriteOnly", bool: checked })
+	}
 
 	return (
 		<>
@@ -190,6 +200,13 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onClick={selectImages}>
 							<ImagePlus size={16} />
 						</Button>
+						<Switch
+							checked={!!alwaysAllowWriteOnly}
+							onCheckedChange={handleAutoModeToggle}
+							checkedLabel="Auto"
+							uncheckedLabel="Off"
+							aria-label="Toggle Automatic Mode"
+						/>
 					</div>
 				</div>
 			</div>
