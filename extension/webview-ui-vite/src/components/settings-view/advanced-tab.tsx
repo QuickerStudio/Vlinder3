@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Switch } from "@/components/ui/switch"
-import React from "react"
+import React, { useCallback } from "react"
 import { useSettingsState } from "../../hooks/use-settings-state"
 import { Slider } from "../ui/slider"
 import { vscode } from "@/utils/vscode"
@@ -17,6 +17,8 @@ import { rpcClient } from "@/lib/rpc-client"
 import { useSwitchToProviderManager } from "./preferences/atoms"
 import { cn } from "@/lib/utils"
 import { ExperimentalFeature } from "./types"
+import { useTerminalPolicyParser } from "../../hooks/use-terminal-policy-parser"
+import { TerminalPolicyTagList } from "./terminal-policy-tag-list"
 
 // Unified description text size - modify this to adjust all description font sizes
 // Available options: text-[10px], text-[11px], text-xs (12px), text-sm (14px), text-base (16px)
@@ -187,6 +189,115 @@ const AdvancedTab: React.FC = () => {
 			textarea.selectionEnd = cursorPosition
 		})
 	}
+
+	// Terminal policy parser
+	const parsedPolicy = useTerminalPolicyParser(terminalSecurityPolicy)
+
+	// Handle command operations
+	const updatePolicyJson = useCallback((updater: (policy: any) => any) => {
+		try {
+			const policy = terminalSecurityPolicy ? JSON.parse(terminalSecurityPolicy) : { version: 1 }
+			const updated = updater(policy)
+			handleTerminalSecurityPolicyChange(JSON.stringify(updated, null, 2))
+		} catch (error) {
+			console.error("Failed to update policy:", error)
+		}
+	}, [terminalSecurityPolicy, handleTerminalSecurityPolicyChange])
+
+	const handleCommandEdit = useCallback((id: string, newCommand: string) => {
+		updatePolicyJson((policy) => {
+			const [platform, type, indexStr] = id.split("-")
+			const index = parseInt(indexStr, 10)
+			
+			if (platform === "common") {
+				if (type === "block" && policy.common?.block) {
+					policy.common.block[index] = newCommand
+				} else if (type === "risk" && policy.common?.riskKeywords) {
+					policy.common.riskKeywords[index] = newCommand
+				}
+			} else if (policy.platforms?.[platform]) {
+				if (type === "block" && policy.platforms[platform].block) {
+					policy.platforms[platform].block[index] = newCommand
+				} else if (type === "risk" && policy.platforms[platform].riskKeywords) {
+					policy.platforms[platform].riskKeywords[index] = newCommand
+				}
+			}
+			
+			return policy
+		})
+	}, [updatePolicyJson])
+
+	const handleCommandUnblock = useCallback((id: string) => {
+		updatePolicyJson((policy) => {
+			const [platform, type, indexStr] = id.split("-")
+			const index = parseInt(indexStr, 10)
+			
+			if (platform === "common") {
+				if (type === "block" && policy.common?.block) {
+					policy.common.block.splice(index, 1)
+				} else if (type === "risk" && policy.common?.riskKeywords) {
+					policy.common.riskKeywords.splice(index, 1)
+				}
+			} else if (policy.platforms?.[platform]) {
+				if (type === "block" && policy.platforms[platform].block) {
+					policy.platforms[platform].block.splice(index, 1)
+				} else if (type === "risk" && policy.platforms[platform].riskKeywords) {
+					policy.platforms[platform].riskKeywords.splice(index, 1)
+				}
+			}
+			
+			return policy
+		})
+	}, [updatePolicyJson])
+
+	const handleCommandDelete = useCallback((id: string) => {
+		updatePolicyJson((policy) => {
+			const [platform, type, indexStr] = id.split("-")
+			const index = parseInt(indexStr, 10)
+			
+			if (platform === "common") {
+				if (type === "block" && policy.common?.block) {
+					policy.common.block.splice(index, 1)
+				} else if (type === "risk" && policy.common?.riskKeywords) {
+					policy.common.riskKeywords.splice(index, 1)
+				}
+			} else if (policy.platforms?.[platform]) {
+				if (type === "block" && policy.platforms[platform].block) {
+					policy.platforms[platform].block.splice(index, 1)
+				} else if (type === "risk" && policy.platforms[platform].riskKeywords) {
+					policy.platforms[platform].riskKeywords.splice(index, 1)
+				}
+			}
+			
+			return policy
+		})
+	}, [updatePolicyJson])
+
+	const handleBlockCommandAdd = useCallback((command: string) => {
+		updatePolicyJson((policy) => {
+			if (!policy.common) {
+				policy.common = {}
+			}
+			if (!policy.common.block) {
+				policy.common.block = []
+			}
+			policy.common.block.push(command)
+			return policy
+		})
+	}, [updatePolicyJson])
+
+	const handleRiskCommandAdd = useCallback((command: string) => {
+		updatePolicyJson((policy) => {
+			if (!policy.common) {
+				policy.common = {}
+			}
+			if (!policy.common.riskKeywords) {
+				policy.common.riskKeywords = []
+			}
+			policy.common.riskKeywords.push(command)
+			return policy
+		})
+	}, [updatePolicyJson])
 
 	return (
 		<div className="space-y-6">
@@ -445,6 +556,27 @@ const AdvancedTab: React.FC = () => {
 							</Button>
 						</div>
 					</div>
+					
+					{/* Tag lists for blocked and risk commands */}
+					<div className="space-y-3">
+						<TerminalPolicyTagList
+							title="Blocked Commands"
+							commands={parsedPolicy.blockCommands}
+							onCommandEdit={handleCommandEdit}
+							onCommandUnblock={handleCommandUnblock}
+							onCommandDelete={handleCommandDelete}
+							onCommandAdd={handleBlockCommandAdd}
+						/>
+						<TerminalPolicyTagList
+							title="Risk Keywords"
+							commands={parsedPolicy.riskCommands}
+							onCommandEdit={handleCommandEdit}
+							onCommandUnblock={handleCommandUnblock}
+							onCommandDelete={handleCommandDelete}
+							onCommandAdd={handleRiskCommandAdd}
+						/>
+					</div>
+
 					<p className="text-xs text-muted-foreground">
 						JSON-based sandbox rules for terminal commands. Invalid JSON will be ignored.
 					</p>
