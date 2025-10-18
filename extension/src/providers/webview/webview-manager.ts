@@ -13,6 +13,7 @@ import {
 import { WebviewMessage, ActionMessage } from "../../shared/messages/client-message"
 import { getNonce, getUri } from "../../utils"
 import { AmplitudeWebviewManager } from "../../utils/amplitude/manager"
+import { TerminalSecurityState } from "../../integrations/terminal/security-state"
 import { ExtensionProvider } from "../extension-provider"
 import { GlobalStateManager } from "../state/global-state-manager"
 import { PromptStateManager } from "../state/prompt-state-manager"
@@ -476,10 +477,19 @@ export class WebviewManager {
 						await this.postBaseStateToWebview()
 						break
 					case "terminalSecurityPolicy":
-						await GlobalStateManager.getInstance().updateGlobalState(
-							"terminalSecurityPolicy" as any,
-							message.json
-						)
+						{
+							const jsonText = message.json ?? ""
+							let isValid = false
+							try {
+								const parsed = JSON.parse(jsonText)
+								isValid = typeof parsed?.version === "number"
+							} catch {}
+							if (!isValid) {
+								// Invalid JSON is ignored per UI contract
+								break
+							}
+							await TerminalSecurityState.writePolicy(this.provider.getContext(), jsonText)
+						}
 						await this.postBaseStateToWebview()
 						break
 					case "fetchVlinderCredits":
@@ -512,53 +522,11 @@ export class WebviewManager {
 				case "openSandboxRulesFile":
 					{
 						try {
-							// Ensure a persistent user-local policy exists under globalStorage
 							const ctx = this.provider.getContext()
-							const storageRoot = ctx.globalStorageUri.fsPath
-							const userDir = path.join(storageRoot, "integrations", "terminal", "sandbox")
-							await fs.mkdir(userDir, { recursive: true })
-
-							const userPolicyPath = path.join(userDir, "policy.json")
-							let userPolicyExists = true
-							try {
-								await fs.access(userPolicyPath)
-							} catch {
-								userPolicyExists = false
-							}
-
-							if (!userPolicyExists) {
-								// Create from default template if available, otherwise write minimal default
-								const extensionPath = ctx.extensionPath
-								const possibleTemplates = [
-									path.join(extensionPath, "src", "integrations", "terminal", "sandbox", "policy.default.json"),
-									path.join(extensionPath, "dist", "integrations", "terminal", "sandbox", "policy.default.json"),
-									path.join(extensionPath, "integrations", "terminal", "sandbox", "policy.default.json"),
-								]
-
-								let templatePath: string | undefined
-								for (const p of possibleTemplates) {
-									try {
-										await fs.access(p)
-										templatePath = p
-										break
-									} catch {}
-								}
-
-								if (templatePath) {
-									const content = await fs.readFile(templatePath, "utf8")
-									await fs.writeFile(userPolicyPath, content, "utf8")
-								} else {
-									const minimal = JSON.stringify(
-										{ version: 1, common: { block: [], riskKeywords: [] } },
-										null,
-										2
-									)
-									await fs.writeFile(userPolicyPath, minimal, "utf8")
-								}
-							}
-
+							const userPolicyPath = await TerminalSecurityState.ensureUserPolicy(ctx)
 							const uri = vscode.Uri.file(userPolicyPath)
 							await vscode.window.showTextDocument(uri, { preview: false })
+							await this.postBaseStateToWebview()
 						} catch (err) {
 							vscode.window.showErrorMessage(
 								"Could not open sandbox rules file: " + ((err as Error)?.message || String(err))

@@ -350,6 +350,18 @@ const AdvancedTab: React.FC = () => {
 	// Terminal policy parser
 	const parsedPolicy = useMemo(() => parsePolicy(terminalSecurityPolicy), [terminalSecurityPolicy])
 
+	// JSON validity for Sandbox Rules
+	const isPolicyJsonValid = useMemo(() => {
+		const text = terminalSecurityPolicy?.trim()
+		if (!text) return true
+		try {
+			const data = JSON.parse(text)
+			return typeof data?.version === "number"
+		} catch {
+			return false
+		}
+	}, [terminalSecurityPolicy])
+
 	// Handle command operations
 	const updatePolicyJson = useCallback((updater: (policy: any) => any) => {
 		try {
@@ -771,17 +783,18 @@ const AdvancedTab: React.FC = () => {
 					<div className="flex items-center justify-between">
 						<Label className="text-xs font-medium">Terminal Security Policy (JSON)</Label>
 						<div className="flex gap-2">
+						<Button
+							variant="secondary"
+							size="sm"
+							onClick={() => {
+								const minimal = '{\n  "version": 1,\n  "common": {\n    "block": [],\n    "riskKeywords": []\n  }\n}'
+								handleTerminalSecurityPolicyChange(minimal)
+							}}
+						>
+							Clear
+						</Button>
 							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									vscode.postMessage({ type: "terminalSecurityPolicy", json: "" })
-								}}
-							>
-								Clear
-							</Button>
-							<Button
-								size="sm"
+							size="sm"
 								onClick={() => {
 									const sample = '{\n  "version": 1,\n  "common": {\n    "block": ["rm -rf /"],\n    "riskKeywords": ["/dev/"]\n  }\n}'
 									handleTerminalSecurityPolicyChange(sample)
@@ -790,13 +803,13 @@ const AdvancedTab: React.FC = () => {
 								Restore Default
 							</Button>
 							<Button
-								variant="secondary"
+							variant={isPolicyJsonValid ? "secondary" : "destructive"}
 								size="sm"
 								onClick={() => {
 									vscode.postMessage({ type: "openSandboxRulesFile" } as any)
 								}}
 							>
-								Edit Sandbox Rules
+							{isPolicyJsonValid ? "Edit Sandbox Rules" : "Invalid JSON - Edit"}
 							</Button>
 						</div>
 					</div>

@@ -16,6 +16,7 @@ import { OpenRouterModelCache } from "./api/providers/config/openrouter-cache"
 import { SecretStateManager } from "./providers/state/secret-state-manager"
 import { fetchVlinderUser } from "./api/providers/vlinder"
 import { GlobalStateManager } from "./providers/state/global-state-manager"
+import { TerminalSecurityState } from "./integrations/terminal/security-state"
 
 /*
 Built using https://github.com/microsoft/vscode-webview-ui-toolkit
@@ -111,6 +112,52 @@ export function activate(context: vscode.ExtensionContext) {
 			} else {
 				stopCreditFetch()
 			}
+		})
+	)
+
+	// Auto-save sandbox policy on blur (loss of focus or editor switch)
+	const policyFsPath = path.join(
+		context.globalStorageUri.fsPath,
+		"integrations",
+		"terminal",
+		"sandbox",
+		"policy.json"
+	)
+	let lastActiveDoc: vscode.TextDocument | undefined = vscode.window.activeTextEditor?.document
+
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+			if (
+				lastActiveDoc &&
+				lastActiveDoc.isDirty &&
+				lastActiveDoc.uri.fsPath === policyFsPath
+			) {
+				await lastActiveDoc.save()
+			}
+			lastActiveDoc = editor?.document
+		})
+	)
+
+	context.subscriptions.push(
+		vscode.window.onDidChangeWindowState(async (state) => {
+			if (!state.focused) {
+				const doc = vscode.window.activeTextEditor?.document
+				if (doc && doc.isDirty && doc.uri.fsPath === policyFsPath) {
+					await doc.save()
+				}
+			}
+		})
+	)
+
+	// When user saves policy.json, reflect changes back to webview state
+	context.subscriptions.push(
+		vscode.workspace.onDidSaveTextDocument(async (doc) => {
+			try {
+				if (doc.uri.fsPath === policyFsPath) {
+					await TerminalSecurityState.syncFromFileToState(context)
+					await sidebarProvider.getWebviewManager().postBaseStateToWebview()
+				}
+			} catch {}
 		})
 	)
 
