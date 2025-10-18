@@ -511,30 +511,58 @@ export class WebviewManager {
 						break
 				case "openSandboxRulesFile":
 					{
-						// Try source path first (development), then dist path (production)
-						const extensionPath = this.provider.getContext().extensionPath
-						const possiblePaths = [
-							path.join(extensionPath, "src", "integrations", "terminal", "sandbox", "policy.default.json"),
-							path.join(extensionPath, "dist", "integrations", "terminal", "sandbox", "policy.default.json"),
-							path.join(extensionPath, "integrations", "terminal", "sandbox", "policy.default.json"),
-						]
-						
-						let filePath: string | undefined
-						for (const p of possiblePaths) {
+						try {
+							// Ensure a persistent user-local policy exists under globalStorage
+							const ctx = this.provider.getContext()
+							const storageRoot = ctx.globalStorageUri.fsPath
+							const userDir = path.join(storageRoot, "integrations", "terminal", "sandbox")
+							await fs.mkdir(userDir, { recursive: true })
+
+							const userPolicyPath = path.join(userDir, "policy.json")
+							let userPolicyExists = true
 							try {
-								await fs.access(p)
-								filePath = p
-								break
+								await fs.access(userPolicyPath)
 							} catch {
-								// File doesn't exist, try next path
+								userPolicyExists = false
 							}
-						}
-						
-						if (filePath) {
-							const uri = vscode.Uri.file(filePath)
+
+							if (!userPolicyExists) {
+								// Create from default template if available, otherwise write minimal default
+								const extensionPath = ctx.extensionPath
+								const possibleTemplates = [
+									path.join(extensionPath, "src", "integrations", "terminal", "sandbox", "policy.default.json"),
+									path.join(extensionPath, "dist", "integrations", "terminal", "sandbox", "policy.default.json"),
+									path.join(extensionPath, "integrations", "terminal", "sandbox", "policy.default.json"),
+								]
+
+								let templatePath: string | undefined
+								for (const p of possibleTemplates) {
+									try {
+										await fs.access(p)
+										templatePath = p
+										break
+									} catch {}
+								}
+
+								if (templatePath) {
+									const content = await fs.readFile(templatePath, "utf8")
+									await fs.writeFile(userPolicyPath, content, "utf8")
+								} else {
+									const minimal = JSON.stringify(
+										{ version: 1, common: { block: [], riskKeywords: [] } },
+										null,
+										2
+									)
+									await fs.writeFile(userPolicyPath, minimal, "utf8")
+								}
+							}
+
+							const uri = vscode.Uri.file(userPolicyPath)
 							await vscode.window.showTextDocument(uri, { preview: false })
-						} else {
-							vscode.window.showErrorMessage("Could not find sandbox rules file")
+						} catch (err) {
+							vscode.window.showErrorMessage(
+								"Could not open sandbox rules file: " + ((err as Error)?.message || String(err))
+							)
 						}
 					}
 					break
