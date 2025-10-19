@@ -2,7 +2,7 @@ import React, { KeyboardEvent, useCallback, useEffect, useState, useRef } from "
 import Thumbnails from "../thumbnails/thumbnails"
 import { Button } from "../ui/button"
 import InputV1 from "./input-v1"
-import { AtSign, ImagePlus, SendHorizonal } from "lucide-react"
+import { SendHorizonal } from "lucide-react"
 import { AbortButton } from "./abort-button"
 import { vscode } from "@/utils/vscode"
 import { ModelDisplay } from "./model-display"
@@ -188,20 +188,10 @@ const InputArea: React.FC<InputAreaProps> = ({
 						{/* Tabbar Component with file-add functionality */}
 						<Tabbar 
 							onFileTypeSelect={handleFileTypeSelect}
+							onCameraClick={selectImages}
+							cameraDisabled={shouldDisableImages}
 							className="scale-75 origin-center"
 						/>
-						
-						{/* Image Picker Button */}
-						<Button
-							tabIndex={0}
-							disabled={shouldDisableImages}
-							variant="ghost"
-							className="!p-1 h-6 w-6"
-							size="icon"
-							aria-label="Attach Images"
-							onClick={selectImages}>
-							<ImagePlus size={16} />
-						</Button>
 						
 						{/* Automatic Mode Switch */}
 						<Switch

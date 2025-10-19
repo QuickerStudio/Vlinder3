@@ -3,10 +3,12 @@ import { cn } from "@/lib/utils"
 
 export interface TabbarProps extends React.HTMLAttributes<HTMLUListElement> {
 	onFileTypeSelect?: (fileType: 'word' | 'powerpoint' | 'excel') => void
+	onCameraClick?: () => void
+	cameraDisabled?: boolean
 }
 
 const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
-	({ className, onFileTypeSelect, ...props }, ref) => {
+	({ className, onFileTypeSelect, onCameraClick, cameraDisabled, ...props }, ref) => {
 		const [isOpen, setIsOpen] = React.useState(false)
 
 		const handleToggle = () => {
@@ -55,8 +57,15 @@ const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
 					</div>
 				</li>
 				
-				{/* 4. 📷 相机图标 (Camera) */}
-				<li title="Camera">
+				{/* 4. 📷 相机图标 (Camera) - 选择图片 */}
+				<li 
+					title="Attach Images" 
+					onClick={cameraDisabled ? undefined : onCameraClick}
+					style={{ 
+						cursor: cameraDisabled ? 'not-allowed' : 'pointer',
+						opacity: cameraDisabled ? 0.5 : 1
+					}}
+				>
 					<svg viewBox="0 0 24 24" width="14" height="14">
 						<g stroke="none" fill="currentColor">
 							<rect x="3" y="1" width="6" height="2"></rect>
