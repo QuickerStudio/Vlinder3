@@ -1081,9 +1081,9 @@ button.settings-tab-gradient[data-value="github"][data-state="active"] {
 }
 
 .fileAdd ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none !important;
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -1102,6 +1102,7 @@ button.settings-tab-gradient[data-value="github"][data-state="active"] {
 	height: 26px;
 	transition: transform 0.45s ease;
 	transform: translateY(var(--translateY)) translateX(var(--translateX)) scaleX(var(--scale));
+	list-style: none !important;
 }
 
 .fileAdd ul li:before,
@@ -1245,6 +1246,25 @@ button.settings-tab-gradient[data-value="github"][data-state="active"] {
 	margin: 0 8px !important;
 	list-style: none !important;
 	padding: 0 !important;
+}
+
+.tabbar > li::marker,
+.tabbar li::marker {
+	display: none !important;
+	content: none !important;
+}
+
+.fileAdd ul li::marker,
+.fileAdd li::marker,
+.fileAdd::marker {
+	display: none !important;
+	content: none !important;
+}
+
+/* Additional override for any nested lists */
+.tabbar *,
+.fileAdd * {
+	list-style: none !important;
 }
 
 .tabbar > li > svg {
