@@ -258,9 +258,8 @@ const ChatScreen: React.FC<{
 	// State machine: send signals based on interface state and time
 	// Only show starry background when on welcome screen (showing history) AND it's late night
 	useEffect(() => {
-		// 🌙 临时测试：注释掉时间限制，白天也能看星空
-		// if (showHistory && isLateNight) {
-		if (showHistory) {  // 🔥 测试模式：任何时间都显示星空
+		// Only show starry background when on welcome screen AND it's late night
+		if (showHistory && isLateNight) {
 			// Send signal to start starry animation
 			startStarryBackground()
 		} else {
