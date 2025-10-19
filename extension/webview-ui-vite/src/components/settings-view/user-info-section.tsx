@@ -14,7 +14,7 @@ const UserInfoSection: React.FC = () => {
 		return (
 			<div className="flex flex-col gap-2">
 				<Button
-					className="w-fit"
+					className="signin-button"
 					onClick={() => {
 						setIsClicked(true)
 						vscode.postTrackingEvent("AuthStart")
@@ -26,7 +26,7 @@ const UserInfoSection: React.FC = () => {
 				</Button>
 				{isClicked && (
 					<Button
-						className="w-fit"
+						className="btn-shine"
 						onClick={() => {
 							vscode.postMessage({ type: "setApiKeyDialog" })
 						}}
