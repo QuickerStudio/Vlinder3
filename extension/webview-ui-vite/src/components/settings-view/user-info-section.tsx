@@ -12,9 +12,9 @@ const UserInfoSection: React.FC = () => {
 
 	if (extensionState.user === undefined) {
 		return (
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-2 self-center">
 				<Button
-					className="signin-button mt-[5px]"
+					className="signin-button mt-[5px] -ml-[20px]"
 					onClick={() => {
 						setIsClicked(true)
 						vscode.postTrackingEvent("AuthStart")
