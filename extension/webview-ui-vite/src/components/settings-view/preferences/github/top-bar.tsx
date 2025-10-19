@@ -63,7 +63,15 @@ export const TopBar: React.FC<TopBarProps> = ({ account, onLogout, selectedRepo,
         ) : (
           // Show GitHub icon and title when no repo is selected
           <>
-            <Github className='w-8 h-8' />
+            <a
+              href='https://github.com/'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='cursor-pointer hover:opacity-70 transition-opacity focus:outline-none'
+              title='Open GitHub'
+            >
+              <Github className='w-8 h-8' />
+            </a>
             <h2 className='text-xl font-bold'>GitHub</h2>
           </>
         )}
