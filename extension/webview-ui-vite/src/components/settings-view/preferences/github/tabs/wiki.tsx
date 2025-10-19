@@ -321,7 +321,7 @@ export const Wiki: React.FC<WikiProps> = ({
   console.log('[Wiki UI] Render - isWikiCloned:', isWikiCloned, 'hasWiki:', selectedRepo.hasWiki);
 
   return (
-    <div className='h-full overflow-y-auto p-6'>
+    <div className='h-full p-6'>
       <div className='space-y-4'>
         {/* 顶部：Wiki 信息 */}
         <div className='border rounded-lg p-4'>

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SquareButton } from '@/components/ui/square-button';
 import { Textarea } from '@/components/ui/textarea';
-import { Code2, ExternalLink, Plus, RefreshCw, Play, Square, Pause, Trash2, Star, GitFork } from 'lucide-react';
+import { Code2, ExternalLink, Plus, RefreshCw, Play, Square, Pause, Trash2, Star, GitFork, FolderOpen, FolderPlus } from 'lucide-react';
 import { rpcClient } from '@/lib/rpc-client';
 import type { GitHubRepository, WikiCommit } from '../types';
 
@@ -400,50 +400,30 @@ export const Code: React.FC<CodeProps> = ({
   console.log('[Code UI] Render - isCodeCloned:', isCodeCloned);
 
   return (
-    <div className='h-full overflow-y-auto p-6'>
+    <div className='h-full p-6'>
       <div className='space-y-4'>
-        {/* 顶部：Code 信息 */}
-        <div className='border rounded-lg p-4'>
-          {/* 第一行：图标 + 名字 + 打开链接 + 统计信息 */}
-          <div className='flex items-center justify-between mb-3'>
-            <div className='flex items-center gap-2'>
-              {(((isCloned ?? false) || isCodeCloned)) ? (
-                <button 
-                  className='hover:bg-accent rounded p-1 transition-colors cursor-pointer'
-                  onClick={handleIconClick}
-                  onContextMenu={handleIconContextMenu}
-                  title='左键: 在 VSCode 中打开 | 右键: 添加到工作区'
-                  disabled={!(((isCloned ?? false) || isCodeCloned))}
-                >
-                  <Code2 className='w-5 h-5 text-primary' />
-                </button>
-              ) : (
+        {/* 顶部：Code 信息 - 重新设计 */}
+        <div className='border rounded-lg p-4 space-y-3'>
+          {/* 第一行：仓库标题 + 基本信息 */}
+          <div className='flex items-start justify-between'>
+            <div className='flex items-center gap-2.5'>
+              <div className='flex items-center gap-2'>
                 <Code2 className='w-5 h-5 text-primary flex-shrink-0' />
-              )}
-              
-              {(((isCloned ?? false) || isCodeCloned)) ? (
-                <button
-                  onClick={handleOpenLocalFolder}
-                  className='font-semibold hover:text-primary hover:underline cursor-pointer transition-colors'
-                  title='点击打开本地文件夹'
-                >
-                  {selectedRepo.name}
-                </button>
-              ) : (
-                <h3 className='font-semibold'>{selectedRepo.name}</h3>
-              )}
+                <h3 className='font-semibold text-base'>{selectedRepo.name}</h3>
+              </div>
               <a
                 href={selectedRepo.url}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='text-primary hover:text-primary/80 transition-colors'
-                title='Open Repository'
+                title='Open on GitHub'
               >
                 <ExternalLink className='w-4 h-4' />
               </a>
             </div>
             
-            <div className='flex items-center gap-4 text-xs text-muted-foreground'>
+            {/* 统计信息 */}
+            <div className='flex items-center gap-3 text-xs text-muted-foreground'>
               <div className='flex items-center gap-1'>
                 <Star className='w-3 h-3' />
                 <span>{selectedRepo.stargazersCount || 0}</span>
@@ -452,7 +432,7 @@ export const Code: React.FC<CodeProps> = ({
                 <GitFork className='w-3 h-3' />
                 <span>{selectedRepo.forksCount || 0}</span>
               </div>
-              <span className={`px-2 py-0.5 rounded font-medium ${
+              <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                 selectedRepo.private 
                   ? 'bg-amber-500/10 text-amber-600' 
                   : 'bg-green-500/10 text-green-600'
@@ -462,7 +442,57 @@ export const Code: React.FC<CodeProps> = ({
             </div>
           </div>
 
-          {/* 第二行：简介 + Clone Code 按钮 */}
+          {/* 第二行：仓库描述 */}
+          {selectedRepo.description && (
+            <p className='text-xs text-muted-foreground leading-relaxed'>
+              {selectedRepo.description}
+            </p>
+          )}
+
+          {/* 第三行：本地路径显示 + Open Folder 按钮（仅已克隆时） */}
+          {(((isCloned ?? false) || isCodeCloned)) && codeLocalPath && (
+            <div className='flex items-center justify-between gap-2 px-3 py-2 bg-muted/30 rounded text-xs'>
+              <div className='flex items-center gap-2 flex-1 min-w-0'>
+                <FolderOpen className='w-3.5 h-3.5 text-primary flex-shrink-0' />
+                <span className='text-muted-foreground truncate' title={codeLocalPath}>
+                  {codeLocalPath}
+                </span>
+              </div>
+              <Button
+                size='sm'
+                variant='ghost'
+                onClick={handleOpenLocalFolder}
+                className='h-7 px-2 text-xs flex-shrink-0'
+              >
+                <FolderOpen className='w-3.5 h-3.5 mr-1' />
+                Open
+              </Button>
+            </div>
+          )}
+
+          {/* 第四行：操作按钮区（仅已克隆时） */}
+          {(((isCloned ?? false) || isCodeCloned)) && (
+            <div className='flex items-center gap-2 pt-2 border-t'>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={handleOpenInVSCode}
+                className='h-8 text-xs flex-1'
+              >
+                <Code2 className='w-3.5 h-3.5 mr-1.5' />
+                Open in VSCode
+              </Button>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={handleAddToWorkspace}
+                className='h-8 text-xs flex-1'
+              >
+                <FolderPlus className='w-3.5 h-3.5 mr-1.5' />
+                Add to Workspace
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Code 历史修改列表 */}
@@ -480,7 +510,7 @@ export const Code: React.FC<CodeProps> = ({
                 </Button>
               </div>
                 {/* Code 历史面板高度 */}
-              <div className='min-h-[200px] max-h-[260px] overflow-y-auto'>
+              <div className='min-h-[200px] max-h-[260px] overflow-y-auto scrollbar-hide'>
                 {codeHistory.length > 0 ? (
                   codeHistory.map((commit) => (
                     <div key={commit.id} className='border-b last:border-b-0'>
@@ -527,89 +557,6 @@ export const Code: React.FC<CodeProps> = ({
                 )}
               </div>
             </div>
-
-            {/* Agent Action Flow - 仅在 GitHub Agent 启用时显示 */}
-            {isGitHubAgentEnabled && (
-              <div className='border rounded-lg p-3'>
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-xs font-semibold'>Agent Action Flow</span>
-                    {/* 状态圆点 */}
-                    <div className={`w-2 h-2 rounded-full ${getStatusDotColor()}`} title={agentStatus} />
-                  </div>
-                  
-                  {/* 控制按钮组 */}
-                  <div className='flex items-center gap-1'>
-                    {agentStatus === 'idle' || agentStatus === 'completed' || agentStatus === 'error' ? (
-                      <Button
-                        size='icon'
-                        variant='ghost'
-                        onClick={handleAgentExecute}
-                        disabled={!agentPrompt.trim()}
-                        className='h-6 w-6'
-                        title='Execute'
-                      >
-                        <Play className='w-3 h-3' />
-                      </Button>
-                    ) : null}
-                    
-                    {agentStatus === 'running' ? (
-                      <>
-                        <Button
-                          size='icon'
-                          variant='ghost'
-                          onClick={handleAgentPause}
-                          className='h-6 w-6'
-                          title='Pause'
-                        >
-                          <Pause className='w-3 h-3' />
-                        </Button>
-                        <Button
-                          size='icon'
-                          variant='ghost'
-                          onClick={handleAgentStop}
-                          className='h-6 w-6'
-                          title='Stop'
-                        >
-                          <Square className='w-3 h-3' />
-                        </Button>
-                      </>
-                    ) : null}
-                    
-                    {agentStatus === 'paused' ? (
-                      <>
-                        <Button
-                          size='icon'
-                          variant='ghost'
-                          onClick={handleAgentContinue}
-                          className='h-6 w-6'
-                          title='Continue'
-                        >
-                          <Play className='w-3 h-3' />
-                        </Button>
-                        <Button
-                          size='icon'
-                          variant='ghost'
-                          onClick={handleAgentStop}
-                          className='h-6 w-6'
-                          title='Stop'
-                        >
-                          <Square className='w-3 h-3' />
-                        </Button>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-                
-                <Textarea
-                  placeholder='Enter prompt for AI agent to work on code...'
-                  value={agentPrompt}
-                  onChange={(e) => onAgentPromptChange(e.target.value)}
-                  className='min-h-[80px] text-xs'
-                  disabled={agentStatus === 'running'}
-                />
-              </div>
-            )}
 
             {/* Quick Access */}
             <div className='border rounded-lg p-3'>

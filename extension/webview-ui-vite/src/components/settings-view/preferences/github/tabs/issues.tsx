@@ -385,8 +385,8 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
   const filteredClosedIssues = filterIssues(closedIssues);
 
   return (
-    <div className='h-full flex flex-col'>
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'open' | 'closed')} className='h-full flex flex-col'>
+    <div className='h-full flex flex-col min-h-0'>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'open' | 'closed')} className='h-full flex flex-col min-h-0'>
         <TabsList className='w-full grid grid-cols-2 rounded-none h-10 flex-shrink-0'>
           <TabsTrigger value='open' className='gap-2 rounded-none'>
             <Circle className='w-3.5 h-3.5 text-green-500' />
@@ -438,7 +438,7 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
         </div>
 
         {/* Open Issues List */}
-        <TabsContent value='open' className='flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-2 mt-0'>
+        <TabsContent value='open' className='flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-2 mt-0 scrollbar-hide'>
           {isLoadingOpen ? (
             <div className='flex items-center justify-center py-12'>
               <RefreshCw className='w-6 h-6 animate-spin text-muted-foreground' />
@@ -468,7 +468,7 @@ export const Issues: React.FC<IssuesProps> = ({ selectedRepo }) => {
         </TabsContent>
 
         {/* Closed Issues List */}
-        <TabsContent value='closed' className='flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-2 mt-0'>
+        <TabsContent value='closed' className='flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-2 mt-0 scrollbar-hide'>
           {isLoadingClosed ? (
             <div className='flex items-center justify-center py-12'>
               <RefreshCw className='w-6 h-6 animate-spin text-muted-foreground' />

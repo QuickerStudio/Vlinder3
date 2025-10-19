@@ -136,14 +136,14 @@ export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo
   };
 
   return (
-    <div className='h-full flex flex-col'>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className='flex-1 flex flex-col'>
+    <div className='h-full flex flex-col min-h-0'>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className='flex-1 flex flex-col min-h-0'>
         {/* Tab Navigation */}
         <TabNav activeTab={activeTab} onTabChange={setActiveTab} onBack={onBack} />
         
         {/* Tab Content */}
-        <div className='flex-1 overflow-y-auto'>
-          <TabsContent value='code' className='h-full m-0 overflow-y-auto'>
+        <div className={`flex-1 overflow-y-auto min-h-0 ${activeTab === 'code' ? 'scrollbar-hide' : ''}`}>
+          <TabsContent value='code' className='h-full m-0'>
             <Code 
               selectedRepo={selectedRepo}
               codeHistory={codeHistory}

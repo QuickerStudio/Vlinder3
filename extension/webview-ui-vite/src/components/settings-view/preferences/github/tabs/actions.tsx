@@ -202,7 +202,7 @@ export const Actions: React.FC<ActionsProps> = ({ selectedRepo }) => {
 	};
 
 	return (
-		<div className='h-full flex flex-col'>
+		<div className='h-full flex flex-col min-h-0'>
 			{/* Header */}
 			<div className='px-4 py-3 border-b flex items-center gap-2 flex-shrink-0'>
 				<div className='relative flex-1'>
@@ -241,7 +241,7 @@ export const Actions: React.FC<ActionsProps> = ({ selectedRepo }) => {
 			</div>
 
 			{/* Workflows List */}
-			<div className='flex-1 overflow-y-auto px-4 py-4'>
+			<div className='flex-1 overflow-y-auto px-4 py-4 scrollbar-hide'>
 				{isLoading && workflows.length === 0 ? (
 					<div className='flex items-center justify-center py-12'>
 						<RefreshCw className='w-6 h-6 animate-spin text-muted-foreground' />
