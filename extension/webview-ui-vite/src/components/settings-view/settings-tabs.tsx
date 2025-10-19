@@ -4,7 +4,6 @@ import React, { useState, useEffect, memo, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import UserInfoSection from "./user-info-section"
 import AdvancedTab from "./advanced-tab"
 import ClosePageButton from "./close-page-button"
 import { SettingsFooter } from "./settings-footer"
@@ -91,9 +90,7 @@ const SettingsPage: React.FC = () => {
 			</div>
 			<p className="text-xs text-muted-foreground mb-4">Manage your extension preferences</p>
 
-			<div className="mb-4 space-y-3">
-				<UserInfoSection />
-			</div>
+			{/* UserInfoSection moved to SettingsFooter */}
 
 			{tabPicker}
 			<div className="mt-4">{activeContent}</div>

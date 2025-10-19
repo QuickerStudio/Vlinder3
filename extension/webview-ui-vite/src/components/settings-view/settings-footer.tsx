@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DiscordLogoIcon, GitHubLogoIcon, StarIcon } from "@radix-ui/react-icons"
 import { useExtensionState } from "@/context/extension-state-context"
+import UserInfoSection from "./user-info-section"
 
 export const SettingsFooter = () => {
 	const { version, user } = useExtensionState()
 	return (
-		<div className="mt-8 pt-4 border-t border-border flex flex-wrap w-full flex-1">
+		<div className="mt-8 pt-4 border-t border-border flex flex-wrap w-full flex-1 items-start justify-between">
 			<div className="flex flex-col space-y-2">
 				<div className="flex items-center flex-wrap gap-2 max-w-[90vw] overflow-hidden justify-between text-xs text-muted-foreground">
 					<span>Version: {version}</span>
@@ -57,6 +58,9 @@ export const SettingsFooter = () => {
 						</a>
 					</Button>
 				</div>
+			</div>
+			<div className="ml-auto">
+				<UserInfoSection />
 			</div>
 		</div>
 	)

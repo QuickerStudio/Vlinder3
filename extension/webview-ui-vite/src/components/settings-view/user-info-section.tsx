@@ -4,7 +4,7 @@ import { useExtensionState } from "../../context/extension-state-context"
 import { vscode } from "@/utils/vscode"
 import { formatPrice } from "./utils"
 import { getVlinderAddCreditsUrl, getVlinderOfferUrl, getVlinderSignInUrl } from "extension/shared/vlinder"
-import { GiftIcon, KeyIcon } from "lucide-react"
+import { GiftIcon } from "lucide-react"
 
 const UserInfoSection: React.FC = () => {
 	const extensionState = useExtensionState()
@@ -12,7 +12,7 @@ const UserInfoSection: React.FC = () => {
 
 	if (extensionState.user === undefined) {
 		return (
-			<div className="flex flex-col gap-2 min-w-[90vw]">
+			<div className="flex flex-col gap-2">
 				<Button
 					className="w-fit"
 					onClick={() => {
