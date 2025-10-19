@@ -24,20 +24,25 @@ const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
 				className={cn("tabbar", isOpen && "open", className)} 
 				{...props}
 			>
-				<li>
+				{/* 1. 👤 用户图标 (User) */}
+				<li title="User">
+					<svg viewBox="0 0 24 24" width="14" height="14">
+						<g stroke="none" fill="currentColor">
+							<path d="M12,13c3.309,0,6-2.691,6-6V6c0-3.309-2.691-6-6-6S6,2.691,6,6v1C6,10.309,8.691,13,12,13z"></path>
+							<path d="M19.322,15.981c-4.704-1.303-9.939-1.303-14.644,0C2.513,16.581,1,18.564,1,20.805V24h22 v-3.195C23,18.564,21.487,16.581,19.322,15.981z"></path>
+						</g>
+					</svg>
+				</li>
+				
+				{/* 2. 📊 仪表盘图标 (Dashboard) */}
+				<li title="Dashboard">
 					<svg viewBox="0 0 24 24" width="14" height="14">
 						<path stroke="none" fill="currentColor" d="M12,0C5.383,0,0,5.383,0,12s5.383,12,12,12s12-5.383,12-12S18.617,0,12,0z M5,12c0,0.552-0.447,1-1,1 s-1-0.448-1-1c0-1.387,0.325-2.696,0.887-3.871l1.526,1.526C5.15,10.389,5,11.177,5,12z M12,15c-1.654,0-3-1.346-3-3 c0-0.462,0.113-0.894,0.3-1.285L5.086,6.5L6.5,5.086l4.214,4.215C11.106,9.114,11.538,9,12,9c1.654,0,3,1.346,3,3S13.654,15,12,15z M20,13c-0.553,0-1-0.448-1-1c0-3.86-3.141-7-7-7c-0.823,0-1.61,0.15-2.345,0.413L8.13,3.887C9.304,3.324,10.613,3,12,3 c4.963,0,9,4.038,9,9C21,12.552,20.553,13,20,13z"></path>
 					</svg>
 				</li>
-				<li>
-					<svg viewBox="0 0 24 24" width="14" height="14">
-						<g stroke="none" fill="currentColor">
-							<rect x="3" y="1" width="6" height="2"></rect>
-							<path d="M23,4H1C0.447,4,0,4.448,0,5v17c0,0.552,0.447,1,1,1h22c0.553,0,1-0.448,1-1V5C24,4.448,23.553,4,23,4z M6,11c-0.552,0-1-0.448-1-1c0-0.552,0.448-1,1-1s1,0.448,1,1C7,10.552,6.552,11,6,11z M15,19c-2.761,0-5-2.239-5-5s2.239-5,5-5 s5,2.239,5,5S17.761,19,15,19z"></path>
-						</g>
-					</svg>
-				</li>
-				<li>
+				
+				{/* 3. ➕ 文件添加按钮 (File Add) */}
+				<li title="Add File">
 					<div className={cn("fileAdd", isOpen && "open")} onClick={handleToggle}>
 						<ul>
 							<li className="word" onClick={(e) => { e.stopPropagation(); handleFileSelect('word') }}></li>
@@ -49,19 +54,23 @@ const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
 						</div>
 					</div>
 				</li>
-				<li>
+				
+				{/* 4. 📷 相机图标 (Camera) */}
+				<li title="Camera">
+					<svg viewBox="0 0 24 24" width="14" height="14">
+						<g stroke="none" fill="currentColor">
+							<rect x="3" y="1" width="6" height="2"></rect>
+							<path d="M23,4H1C0.447,4,0,4.448,0,5v17c0,0.552,0.447,1,1,1h22c0.553,0,1-0.448,1-1V5C24,4.448,23.553,4,23,4z M6,11c-0.552,0-1-0.448-1-1c0-0.552,0.448-1,1-1s1,0.448,1,1C7,10.552,6.552,11,6,11z M15,19c-2.761,0-5-2.239-5-5s2.239-5,5-5 s5,2.239,5,5S17.761,19,15,19z"></path>
+						</g>
+					</svg>
+				</li>
+				
+				{/* 5. 📁 文件图标 (Files) */}
+				<li title="Files">
 					<svg viewBox="0 0 24 24" width="14" height="14">
 						<g transform="translate(1,0)" fill="currentColor">
 							<polygon points="22.414 18 17 18 17 23.414 22.414 18" stroke="none"></polygon>
 							<path d="M22,0H2A1,1,0,0,0,1,1V23a1,1,0,0,0,1,1H15V17a1,1,0,0,1,1-1h7V1A1,1,0,0,0,22,0ZM6,6H9V8H6Zm0,5H9v2H6Zm5,7H6V16h5Zm7-5H11V11h7Zm0-5H11V6h7Z" stroke="none"></path>
-						</g>
-					</svg>
-				</li>
-				<li>
-					<svg viewBox="0 0 24 24" width="14" height="14">
-						<g stroke="none" fill="currentColor">
-							<path d="M12,13c3.309,0,6-2.691,6-6V6c0-3.309-2.691-6-6-6S6,2.691,6,6v1C6,10.309,8.691,13,12,13z"></path>
-							<path d="M19.322,15.981c-4.704-1.303-9.939-1.303-14.644,0C2.513,16.581,1,18.564,1,20.805V24h22 v-3.195C23,18.564,21.487,16.581,19.322,15.981z"></path>
 						</g>
 					</svg>
 				</li>
