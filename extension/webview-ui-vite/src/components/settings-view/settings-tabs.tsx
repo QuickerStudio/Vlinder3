@@ -67,10 +67,14 @@ const SettingsPage: React.FC = () => {
 							if (tab === activeTab) return
 							handleTabChange(tab as PreferencesTab)
 						}}
-						className="space-y-4 mx-auto">
-						<TabsList>
+						className="settings-tabs-styled mx-auto">
+						<TabsList className="settings-tabs-list">
 							{tabItems.map((item) => (
-								<TabsTrigger className="p-1.5 text-xs" key={item.value} value={item.value}>
+								<TabsTrigger 
+									className="settings-tab-trigger" 
+									key={item.value} 
+									value={item.value}
+									data-tab={item.value}>
 									{item.label}
 								</TabsTrigger>
 							))}

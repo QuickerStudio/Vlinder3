@@ -7,8 +7,13 @@ import { showSettingsAtom } from "../../context/extension-state-context"
 const ClosePageButton: React.FC = () => {
 	const setIsOpen = useSetAtom(showSettingsAtom)
 	return (
-		<Button variant="ghost" size="icon" className="ml-auto" onClick={() => setIsOpen(false)}>
-			<X className="size-4" />
+		<Button 
+			variant="ghost" 
+			size="icon" 
+			className="ml-auto settings-close-button" 
+			onClick={() => setIsOpen(false)}
+		>
+			<X className="size-6" />
 		</Button>
 	)
 }
