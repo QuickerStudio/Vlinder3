@@ -7,7 +7,7 @@ import UserInfoSection from "./user-info-section"
 
 export const SettingsFooter = () => {
 	const { version, user } = useExtensionState()
-	const isLoggedIn = true // 临时强制设为登录状态用于预览
+	const isLoggedIn = user !== undefined
 	
 	return (
 		<div className="mt-8 pt-4 border-t border-border flex flex-wrap w-full flex-1 items-start justify-between">
