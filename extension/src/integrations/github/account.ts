@@ -6,9 +6,9 @@
 
 import { z } from 'zod';
 import * as vscode from 'vscode';
-import { procedure } from '../../../router/utils';
-import { SecretStateManager } from '../../../providers/state/secret-state-manager';
-import { GlobalStateManager } from '../../../providers/state/global-state-manager';
+import { procedure } from '../../router/utils';
+import { SecretStateManager } from '../../providers/state/secret-state-manager';
+import { GlobalStateManager } from '../../providers/state/global-state-manager';
 
 export interface IAPIEmail {
 	readonly email: string;
@@ -552,6 +552,52 @@ export const fetchGitHubAvatar = procedure
 				success: false,
 				error: error.message,
 			};
+		}
+	});
+
+/**
+ * GitHub Settings Routes
+ * Manages GitHub integration settings like default clone directory
+ */
+
+export const getGitHubSettings = procedure
+	.input(z.object({}))
+	.resolve(async (ctx, input) => {
+		try {
+			const globalState = GlobalStateManager.getInstance();
+			const githubSettings = globalState.getGlobalState('githubSettings') || {};
+			
+			return { success: true, settings: githubSettings };
+		} catch (error: any) {
+			return { success: false, error: error.message };
+		}
+	});
+
+export const updateGitHubSettings = procedure
+	.input(
+		z.object({
+			settings: z.object({
+				defaultCloneDirectory: z.string().optional(),
+			}).optional(),
+		})
+	)
+	.resolve(async (ctx, input) => {
+		try {
+			const globalState = GlobalStateManager.getInstance();
+			
+			// Update GitHub settings (like defaultCloneDirectory)
+			if (input.settings) {
+				const currentGitHubSettings = globalState.getGlobalState('githubSettings') || {};
+				const newGitHubSettings = {
+					...currentGitHubSettings,
+					...input.settings,
+				};
+				await globalState.updateGlobalState('githubSettings', newGitHubSettings);
+			}
+
+			return { success: true, settings: globalState.getGlobalState('githubSettings') };
+		} catch (error: any) {
+			return { success: false, error: error.message };
 		}
 	});
 
