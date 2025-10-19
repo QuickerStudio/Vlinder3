@@ -7,6 +7,8 @@ import UserInfoSection from "./user-info-section"
 
 export const SettingsFooter = () => {
 	const { version, user } = useExtensionState()
+	const isLoggedIn = true // 临时强制设为登录状态用于预览
+	
 	return (
 		<div className="mt-8 pt-4 border-t border-border flex flex-wrap w-full flex-1 items-start justify-between">
 			<div className="flex flex-col space-y-2">
@@ -14,7 +16,7 @@ export const SettingsFooter = () => {
 					<span>Version: {version}</span>
 					{user?.id && <span className="truncate inline">User ID: {user.id}</span>}
 				</div>
-				<div className="flex flex-wrap  items-center gap-2">
+				<div className={`flex flex-wrap items-center gap-2 ${isLoggedIn ? 'flex-col items-start' : ''}`}>
 					<div className="flex space-x-2">
 						<TooltipProvider>
 							<Tooltip>
@@ -59,6 +61,9 @@ export const SettingsFooter = () => {
 					</Button>
 				</div>
 			</div>
+			{isLoggedIn && (
+				<div className="border-l border-border mx-4 min-h-[80px]"></div>
+			)}
 			<div className="ml-auto">
 				<UserInfoSection />
 			</div>
