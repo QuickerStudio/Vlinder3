@@ -927,6 +927,88 @@ vscode-dropdown::part(listbox) {
 }
 
 /* ============================== */
+/* Settings Tabs Frosted Glass & Gradient Text Styles */
+/* ============================== */
+
+/* TabsList - Enhanced Frosted Glass Effect for Dark Theme */
+.settings-tabs-frosted {
+	background: rgba(255, 255, 255, 0.08) !important;
+	backdrop-filter: blur(16px) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Tab Trigger - Bold Gradient Text */
+button.settings-tab-gradient {
+	font-weight: 700 !important;
+	color: transparent !important;
+	transition: all 0.2s ease !important;
+	position: relative !important;
+}
+
+button.settings-tab-gradient:hover {
+	transform: translateY(-1px) !important;
+	filter: brightness(1.2) !important;
+}
+
+button.settings-tab-gradient:active {
+	transform: translateY(0px) scale(0.98) !important;
+	filter: brightness(0.9) !important;
+}
+
+/* Preferences Tab - Blue Purple Gradient */
+button.settings-tab-gradient[data-value="preferences"] {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+	background-clip: text !important;
+	-webkit-background-clip: text !important;
+	-webkit-text-fill-color: transparent !important;
+}
+
+button.settings-tab-gradient[data-value="preferences"][data-state="active"] {
+	background-color: #551669 !important;
+	color: #fff !important;
+	background-clip: unset !important;
+	-webkit-background-clip: unset !important;
+	-webkit-text-fill-color: unset !important;
+	box-shadow: 0 0 20px rgba(85, 22, 105, 0.6) !important;
+}
+
+/* Advanced Tab - Pink Red Gradient */
+button.settings-tab-gradient[data-value="advanced"] {
+	background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+	background-clip: text !important;
+	-webkit-background-clip: text !important;
+	-webkit-text-fill-color: transparent !important;
+}
+
+button.settings-tab-gradient[data-value="advanced"][data-state="active"] {
+	background-color: #551669 !important;
+	color: #fff !important;
+	background-clip: unset !important;
+	-webkit-background-clip: unset !important;
+	-webkit-text-fill-color: unset !important;
+	box-shadow: 0 0 20px rgba(85, 22, 105, 0.6) !important;
+}
+
+/* GitHub Tab - Cyan Blue Gradient */
+button.settings-tab-gradient[data-value="github"] {
+	background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+	background-clip: text !important;
+	-webkit-background-clip: text !important;
+	-webkit-text-fill-color: transparent !important;
+}
+
+button.settings-tab-gradient[data-value="github"][data-state="active"] {
+	background-color: #551669 !important;
+	color: #fff !important;
+	background-clip: unset !important;
+	-webkit-background-clip: unset !important;
+	-webkit-text-fill-color: unset !important;
+	box-shadow: 0 0 20px rgba(85, 22, 105, 0.6) !important;
+}
+
+/* ============================== */
 /* Tabbar & File Add Component Styles */
 /* ============================== */
 

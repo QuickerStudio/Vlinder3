@@ -68,12 +68,16 @@ const SettingsPage: React.FC = () => {
 							handleTabChange(tab as PreferencesTab)
 						}}
 						className="space-y-4 mx-auto">
-						<TabsList>
-							{tabItems.map((item) => (
-								<TabsTrigger className="p-1.5 text-xs" key={item.value} value={item.value}>
-									{item.label}
-								</TabsTrigger>
-							))}
+					<TabsList className="settings-tabs-frosted">
+						{tabItems.map((item) => (
+							<TabsTrigger 
+								className="p-1.5 text-xs settings-tab-gradient" 
+								key={item.value} 
+								value={item.value}
+								data-value={item.value}>
+								{item.label}
+							</TabsTrigger>
+						))}
 						</TabsList>
 					</Tabs>
 				)}
