@@ -74,7 +74,7 @@ export const GitHubTab: React.FC = () => {
         )}
         
         {/* Main Content Area */}
-        <div className='w-full' style={{ height: selectedRepo ? '591px' : '527px' }}>
+        <div className='w-full' style={{ height: selectedRepo ? '568px' : '507px' }}>
           {selectedRepo ? (
             // Show Repository Detail with tabs when a repo is selected (615px = TopBar 65px + List 550px)
             <RepositoryDetail selectedRepo={selectedRepo} onBack={handleBackToList} />

@@ -84,7 +84,7 @@ const SettingsPage: React.FC = () => {
 	)
 
 	return (
-		<div className="container mx-auto px-4 max-[280px]:px-2 py-4 max-w-[500px] flex flex-col h-full">
+		<div className="container mx-auto px-4 max-[280px]:px-2 py-4 max-w-[500px] flex flex-col h-full overflow-x-hidden">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-bold mb-2">Settings</h1>
 				<ClosePageButton />
