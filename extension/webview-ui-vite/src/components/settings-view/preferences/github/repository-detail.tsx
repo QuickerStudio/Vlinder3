@@ -18,9 +18,10 @@ import type { GitHubRepository, WikiCommit } from './types';
 interface RepositoryDetailProps {
   selectedRepo: GitHubRepository;
   onBack?: () => void;
+  onStatusChange?: (codeStatus: string, wikiStatus: string) => void;
 }
 
-export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo, onBack }) => {
+export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo, onBack, onStatusChange }) => {
   const [activeTab, setActiveTab] = useState('code');
 
   // Code state
@@ -45,6 +46,13 @@ export const RepositoryDetail: React.FC<RepositoryDetailProps> = ({ selectedRepo
     setWikiUpdateStatus('');
     setActiveTab('code');
   }, [selectedRepo.id]);
+
+  // Notify parent of status changes
+  useEffect(() => {
+    if (onStatusChange) {
+      onStatusChange(codeUpdateStatus, wikiUpdateStatus);
+    }
+  }, [codeUpdateStatus, wikiUpdateStatus, onStatusChange]);
 
   // Code handlers
   const handleLoadCodeHistory = async () => {

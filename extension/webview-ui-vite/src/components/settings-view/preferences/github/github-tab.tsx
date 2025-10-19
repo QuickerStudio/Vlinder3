@@ -31,6 +31,15 @@ export const GitHubTab: React.FC = () => {
     loadRepositories,
   } = useRepositories();
 
+  // Status from Code and Wiki tabs
+  const [codeStatus, setCodeStatus] = React.useState('');
+  const [wikiStatus, setWikiStatus] = React.useState('');
+
+  const handleStatusChange = (codeUpdateStatus: string, wikiUpdateStatus: string) => {
+    setCodeStatus(codeUpdateStatus);
+    setWikiStatus(wikiUpdateStatus);
+  };
+
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -61,36 +70,58 @@ export const GitHubTab: React.FC = () => {
   // After login, show TopBar + Repository List or Repository Detail
   return (
     <div className='flex items-start justify-center w-full h-full p-6'>
-      {/* Rounded Container */}
-      <div className='w-full max-w-[680px] border rounded-lg overflow-hidden bg-background/50'>
-        {/* Show TopBar only when in repository list view */}
-        {!selectedRepo && (
-          <TopBar
-            account={account!}
-            onLogout={handleLogout}
-            selectedRepo={selectedRepo}
-            onBack={handleBackToList}
-          />
-        )}
-        
-        {/* Main Content Area */}
-        <div className='w-full' style={{ height: selectedRepo ? '568px' : '507px' }}>
-          {selectedRepo ? (
-            // Show Repository Detail with tabs when a repo is selected (615px = TopBar 65px + List 550px)
-            <RepositoryDetail selectedRepo={selectedRepo} onBack={handleBackToList} />
-          ) : (
-            // Show Repository List when no repo is selected (550px content + 65px TopBar above)
-            <RepositoryList
-              repositories={repositories}
+      <div className='w-full max-w-[680px] flex flex-col'>
+        {/* Rounded Container */}
+        <div className='border rounded-lg overflow-hidden bg-background/50'>
+          {/* Show TopBar only when in repository list view */}
+          {!selectedRepo && (
+            <TopBar
+              account={account!}
+              onLogout={handleLogout}
               selectedRepo={selectedRepo}
-              searchQuery={searchQuery}
-              isLoading={isLoadingRepos}
-              onSearchChange={setSearchQuery}
-              onRefresh={loadRepositories}
-              onSelectRepo={setSelectedRepo}
+              onBack={handleBackToList}
             />
           )}
+          
+          {/* Main Content Area */}
+          <div className='w-full' style={{ height: selectedRepo ? '568px' : '507px' }}>
+            {selectedRepo ? (
+              // Show Repository Detail with tabs when a repo is selected (615px = TopBar 65px + List 550px)
+              <RepositoryDetail 
+                selectedRepo={selectedRepo} 
+                onBack={handleBackToList}
+                onStatusChange={handleStatusChange}
+              />
+            ) : (
+              // Show Repository List when no repo is selected (550px content + 65px TopBar above)
+              <RepositoryList
+                repositories={repositories}
+                selectedRepo={selectedRepo}
+                searchQuery={searchQuery}
+                isLoading={isLoadingRepos}
+                onSearchChange={setSearchQuery}
+                onRefresh={loadRepositories}
+                onSelectRepo={setSelectedRepo}
+              />
+            )}
+          </div>
         </div>
+        
+        {/* Status Bar - Only show when repository is selected and there's a status to display */}
+        {selectedRepo && (codeStatus || wikiStatus) && (
+          <div className='px-4 py-2 text-xs border-t mt-2 flex items-center gap-3'>
+            {codeStatus && (
+              <span className='text-green-600 font-medium'>
+                ✓ Code: {codeStatus}
+              </span>
+            )}
+            {wikiStatus && (
+              <span className='text-green-600 font-medium'>
+                ✓ Wiki: {wikiStatus}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

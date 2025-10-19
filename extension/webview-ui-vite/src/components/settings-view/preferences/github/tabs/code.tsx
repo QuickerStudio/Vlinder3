@@ -584,18 +584,11 @@ export const Code: React.FC<CodeProps> = ({
               </div>
             </div>
 
-            {/* 底部：更新日期 + 状态提示 + 删除按钮 */}
+            {/* 底部：更新日期 + 删除按钮 */}
             <div className='flex items-center justify-between text-xs'>
-              <div className='flex items-center gap-3'>
-                <span className='text-muted-foreground'>
-                  Last Updated: {selectedRepo.updatedAt ? new Date(selectedRepo.updatedAt).toLocaleDateString() : 'N/A'}
-                </span>
-                {codeUpdateStatus && (
-                  <span className='text-green-600 font-medium'>
-                    ✓ {codeUpdateStatus}
-                  </span>
-                )}
-              </div>
+              <span className='text-muted-foreground'>
+                Last Updated: {selectedRepo.updatedAt ? new Date(selectedRepo.updatedAt).toLocaleDateString() : 'N/A'}
+              </span>
               
               {/* 删除 Code 按钮 - 长按5秒 - 只有在克隆后才显示 */}
               {(((isCloned ?? false) || isCodeCloned)) && (

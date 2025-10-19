@@ -568,18 +568,11 @@ export const Wiki: React.FC<WikiProps> = ({
               </div>
             </div>
 
-            {/* Bottom: Status + Delete Button */}
+            {/* Bottom: Last Updated + Delete Button */}
             <div className='flex items-center justify-between text-xs'>
-              <div className='flex items-center gap-3'>
-                <span className='text-muted-foreground'>
-                  Last Updated: {selectedRepo.updatedAt ? new Date(selectedRepo.updatedAt).toLocaleDateString() : 'N/A'}
-                </span>
-                {wikiUpdateStatus && (
-                  <span className='text-green-600 font-medium'>
-                    ✓ {wikiUpdateStatus}
-                  </span>
-                )}
-              </div>
+              <span className='text-muted-foreground'>
+                Last Updated: {selectedRepo.updatedAt ? new Date(selectedRepo.updatedAt).toLocaleDateString() : 'N/A'}
+              </span>
               
               <Button
                 size='sm'
