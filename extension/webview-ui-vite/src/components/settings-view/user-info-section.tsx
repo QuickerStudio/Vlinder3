@@ -14,7 +14,7 @@ const UserInfoSection: React.FC = () => {
 		return (
 			<div className="flex flex-col gap-2">
 				<Button
-					className="signin-button"
+					className="signin-button mt-[5px]"
 					onClick={() => {
 						setIsClicked(true)
 						vscode.postTrackingEvent("AuthStart")

@@ -64,7 +64,7 @@ export const SettingsFooter = () => {
 			{isLoggedIn && (
 				<div className="border-l border-border mx-4 min-h-[80px]"></div>
 			)}
-			<div className="ml-auto">
+			<div className={`ml-auto ${!isLoggedIn ? 'mr-[20px]' : ''}`}>
 				<UserInfoSection />
 			</div>
 		</div>
