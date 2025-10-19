@@ -11,9 +11,6 @@ import { Code2, ExternalLink, Plus, RefreshCw, Play, Square, Pause, Trash2, Star
 import { rpcClient } from '@/lib/rpc-client';
 import type { GitHubRepository, WikiCommit } from '../types';
 
-// Agent Action状态类型
-type AgentStatus = 'idle' | 'running' | 'paused' | 'completed' | 'error';
-
 // 复用 WikiCommit 类型作为 CodeCommit
 type CodeCommit = WikiCommit;
 
@@ -53,12 +50,10 @@ export const Code: React.FC<CodeProps> = ({
   onDeleteSuccess,
   isCloned,
 }) => {
-  // 克隆状态和Agent状态
+  // 克隆状态
   const [isCodeCloned, setIsCodeCloned] = useState(false);
   const [codeLocalPath, setCodeLocalPath] = useState<string | undefined>();
-  const [agentStatus, setAgentStatus] = useState<AgentStatus>('idle');
   const [isCloning, setIsCloning] = useState(false);
-  const [isGitHubAgentEnabled, setIsGitHubAgentEnabled] = useState(false);
   const [deleteHoldTime, setDeleteHoldTime] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -88,15 +83,6 @@ export const Code: React.FC<CodeProps> = ({
     
     return () => clearInterval(interval);
   }, [selectedRepo]);
-
-  // 获取 GitHub Agent 状态
-  useEffect(() => {
-    rpcClient.getGitHubAgentSettings.use({})
-      .then((result) => {
-        setIsGitHubAgentEnabled(result.settings?.enabled || false);
-      })
-      .catch(console.error);
-  }, []);
 
   // 与上层指示灯状态同步：指示灯变为克隆时，拉取路径并展开
   useEffect(() => {
@@ -181,24 +167,6 @@ export const Code: React.FC<CodeProps> = ({
       setIsCloning(false);
       console.log('[Code UI] Clone process ended');
     }
-  };
-
-  // Agent控制按钮
-  const handleAgentExecute = () => {
-    setAgentStatus('running');
-    onExecuteAgent();
-  };
-
-  const handleAgentStop = () => {
-    setAgentStatus('idle');
-  };
-
-  const handleAgentPause = () => {
-    setAgentStatus('paused');
-  };
-
-  const handleAgentContinue = () => {
-    setAgentStatus('running');
   };
 
   // 处理删除 Code - 长按5秒删除
@@ -382,18 +350,6 @@ export const Code: React.FC<CodeProps> = ({
     e.preventDefault();
     // 右键点击 - 添加到工作区
     handleAddToWorkspace();
-  };
-
-  // 获取状态圆点颜色
-  const getStatusDotColor = () => {
-    switch (agentStatus) {
-      case 'idle': return 'bg-gray-400';
-      case 'running': return 'bg-green-500 animate-pulse';
-      case 'paused': return 'bg-yellow-500';
-      case 'completed': return 'bg-blue-500';
-      case 'error': return 'bg-red-500';
-      default: return 'bg-gray-400';
-    }
   };
 
   // 诊断渲染状态

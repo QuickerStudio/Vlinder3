@@ -72,7 +72,7 @@ export const githubRouter = router({
 	disableGitHubWorkflow: actions.disableGitHubWorkflow,
 	
 	// Settings
-	getGitHubAgentSettings: settings.getGitHubAgentSettings,
-	updateGitHubAgentSettings: settings.updateGitHubAgentSettings,
+	getGitHubSettings: settings.getGitHubSettings,
+	updateGitHubSettings: settings.updateGitHubSettings,
 });
 

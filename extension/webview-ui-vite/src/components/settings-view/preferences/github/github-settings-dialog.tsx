@@ -32,7 +32,7 @@ export const GitHubSettingsDialog: React.FC<GitHubSettingsDialogProps> = ({ open
     setIsLoading(true);
     try {
       // Get default clone directory from backend
-      const result = await rpcClient.getGitHubAgentSettings.use({});
+      const result = await rpcClient.getGitHubSettings.use({});
       if (result.success && result.settings?.defaultCloneDirectory) {
         setDefaultCloneDirectory(result.settings.defaultCloneDirectory);
       }
@@ -46,7 +46,7 @@ export const GitHubSettingsDialog: React.FC<GitHubSettingsDialogProps> = ({ open
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const result = await rpcClient.updateGitHubAgentSettings.use({
+      const result = await rpcClient.updateGitHubSettings.use({
         settings: {
           defaultCloneDirectory: defaultCloneDirectory || undefined,
         },

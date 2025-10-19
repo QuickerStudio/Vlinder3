@@ -2,5 +2,5 @@
  * Settings Module Exports
  */
 
-export { getGitHubAgentSettings, updateGitHubAgentSettings } from './agent-settings';
+export { getGitHubSettings, updateGitHubSettings } from './github-settings';
 
