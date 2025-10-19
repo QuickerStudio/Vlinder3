@@ -16,6 +16,7 @@ import SettingsPage from "./components/settings-view/settings-tabs"
 import { useAtom } from "jotai"
 import { rpcClient, RPCClientProvider } from "./lib/rpc-client"
 import { useRequiredProviderHandler } from "./components/settings-view/preferences/atoms"
+import { TabbarSvgSymbols } from "./components/ui/tabbar"
 const queryClient = new QueryClient()
 
 const useModelInfo = () => {
@@ -95,6 +96,9 @@ const App = () => {
 	return (
 		<>
 			{/* <DevTools /> */}
+			
+			{/* SVG Symbols for Tabbar component */}
+			<TabbarSvgSymbols />
 
 			<RPCClientProvider>
 				<ExtensionStateProvider>

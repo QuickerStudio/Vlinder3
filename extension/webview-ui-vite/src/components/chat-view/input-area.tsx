@@ -10,6 +10,7 @@ import { DragHandle } from "../ui/drag-handle"
 import { CircularProgress } from "../ui/circular-progress"
 import { Switch } from "@/components/ui/switch"
 import { useExtensionState } from "@/context/extension-state-context"
+import { Tabbar } from "../ui/tabbar"
 
 interface InputAreaProps {
 	inputRef: React.RefObject<HTMLTextAreaElement>
@@ -77,6 +78,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 		setAlwaysAllowWriteOnly(checked)
 		vscode.postMessage({ type: "alwaysAllowWriteOnly", bool: checked })
 	}
+
+	const handleFileTypeSelect = useCallback((fileType: 'word' | 'powerpoint' | 'excel') => {
+		console.log('Selected file type:', fileType)
+		// You can add custom logic here to handle file creation
+		// For example: create a new document, open a file dialog, etc.
+	}, [])
 
 	return (
 		<>
@@ -178,18 +185,13 @@ const InputArea: React.FC<InputAreaProps> = ({
 				<div className="flex justify-between items-center px-1 pt-1">
 					<ModelDisplay />
 					<div className="flex items-center gap-2">
-						{/* <Button
-							tabIndex={0}
-							variant="ghost"
-							className="!p-1 h-6 w-6"
-							size="icon"
-							aria-label="Insert @"
-							onClick={() => {
-								const newText = inputValue + "@"
-								setInputValue(newText)
-							}}>
-							<AtSign size={16} />
-						</Button> */}
+						{/* Tabbar Component with file-add functionality */}
+						<Tabbar 
+							onFileTypeSelect={handleFileTypeSelect}
+							className="scale-75 origin-center"
+						/>
+						
+						{/* Image Picker Button */}
 						<Button
 							tabIndex={0}
 							disabled={shouldDisableImages}
@@ -200,6 +202,8 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onClick={selectImages}>
 							<ImagePlus size={16} />
 						</Button>
+						
+						{/* Automatic Mode Switch */}
 						<Switch
 							checked={!!alwaysAllowWriteOnly}
 							onCheckedChange={handleAutoModeToggle}
