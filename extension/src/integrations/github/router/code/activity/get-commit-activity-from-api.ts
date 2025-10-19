@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { procedure } from '../../../../../router/utils';
-import { githubApiRequest } from '../../../api/github-api';
+import { githubApiRequest } from '../../../api/api';
 
 interface GitHubWeeklyActivity {
 	days: number[]; // 7 days, Sunday to Saturday

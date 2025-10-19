@@ -2,9 +2,11 @@
  * GitHub Router - Main Entry Point
  */
 
+import { z } from 'zod';
+import * as os from 'os';
+import * as path from 'path';
 import { router } from '../../../router/utils/router';
 import * as auth from './auth';
-import * as legacy from './legacy';
 import * as code from './code';
 import * as wiki from './wiki';
 import * as issues from './issues';
@@ -12,6 +14,41 @@ import * as pullRequests from './pull-requests';
 import * as commitActivity from './code/activity';
 import * as actions from './actions';
 import * as settings from './settings';
+
+/**
+ * GitHub Repository Schema
+ */
+export const githubRepositorySchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	fullName: z.string(),
+	description: z.string().nullable(),
+	url: z.string(),
+	cloneUrl: z.string(),
+	private: z.boolean(),
+	updatedAt: z.string(),
+	stargazersCount: z.number().optional(),
+	forksCount: z.number().optional(),
+	hasWiki: z.boolean().optional(),
+});
+
+export type GitHubRepository = z.infer<typeof githubRepositorySchema>;
+
+/**
+ * Utility Functions
+ */
+export function getDefaultCloneDirectory(): string {
+	return path.join(os.homedir(), 'Documents', 'GitHub');
+}
+
+/**
+ * Diagnostic logging helper
+ */
+export function createDiagnosticLogger(prefix: string) {
+	return (message: string, data?: any) => {
+		console.log(`[${prefix}] ${message}`, data || '');
+	};
+}
 
 /**
  * GitHub Router
@@ -22,10 +59,6 @@ export const githubRouter = router({
 	getGitHubAccount: auth.getGitHubAccount,
 	logoutGitHub: auth.logoutGitHub,
 	fetchGitHubAvatar: auth.fetchGitHubAvatar,
-	
-	// Legacy
-	listGitHubRepositories: legacy.listGitHubRepositories,
-	cloneGitHubRepository: legacy.cloneGitHubRepository,
 	
 	// Code
 	cloneCodeAndInitialize: code.cloneCodeAndInitialize,

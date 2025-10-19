@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 import { procedure } from '../../../../router/utils';
-import { githubApiRequest } from '../../api/github-api';
+import { githubApiRequest } from '../../api/api';
 
 export const listGitHubPullRequests = procedure
 	.input(

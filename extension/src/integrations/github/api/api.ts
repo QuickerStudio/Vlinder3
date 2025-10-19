@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
-import { GitHubAccountsStore } from '../stores/accounts-store';
+import { GitHubAccountsStore } from '../models/account';
 
 /**
  * Get current account token

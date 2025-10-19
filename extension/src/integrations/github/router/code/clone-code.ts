@@ -5,11 +5,11 @@
 import { z } from 'zod';
 import { procedure } from '../../../../router/utils';
 import { GlobalStateManager } from '../../../../providers/state/global-state-manager';
-import { getCurrentAccountToken } from '../../api/github-api';
+import { getCurrentAccountToken } from '../../api/api';
 import * as path from 'path';
 import * as os from 'os';
 import simpleGit from 'simple-git';
-import { createDiagnosticLogger } from '../utils';
+import { createDiagnosticLogger } from '..';
 
 export const cloneCodeAndInitialize = procedure
 	.input(

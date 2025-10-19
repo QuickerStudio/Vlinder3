@@ -1,9 +1,11 @@
 /**
  * GitHub Authentication Routes
+ * Re-exports from models/account
  */
 
-export { authenticateGitHub } from './authenticate';
-export { getGitHubAccount } from './get-account';
-export { logoutGitHub } from './logout';
-export { fetchGitHubAvatar } from './fetch-avatar';
-
+export { 
+	authenticateGitHub, 
+	getGitHubAccount, 
+	logoutGitHub, 
+	fetchGitHubAvatar 
+} from '../../models/account';
