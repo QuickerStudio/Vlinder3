@@ -4,6 +4,7 @@ import React, { useState, useEffect, memo, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import UserInfoSection from "./user-info-section"
 import AdvancedTab from "./advanced-tab"
 import ClosePageButton from "./close-page-button"
 import { SettingsFooter } from "./settings-footer"
@@ -67,14 +68,10 @@ const SettingsPage: React.FC = () => {
 							if (tab === activeTab) return
 							handleTabChange(tab as PreferencesTab)
 						}}
-						className="settings-tabs-styled mx-auto">
-						<TabsList className="settings-tabs-list">
+						className="space-y-4 mx-auto">
+						<TabsList>
 							{tabItems.map((item) => (
-								<TabsTrigger 
-									className="settings-tab-trigger" 
-									key={item.value} 
-									value={item.value}
-									data-tab={item.value}>
+								<TabsTrigger className="p-1.5 text-xs" key={item.value} value={item.value}>
 									{item.label}
 								</TabsTrigger>
 							))}
@@ -92,11 +89,13 @@ const SettingsPage: React.FC = () => {
 				<h1 className="text-xl font-bold mb-2">Settings</h1>
 				<ClosePageButton />
 			</div>
-			<p className="text-xs text-muted-foreground mb-4">Manage your extension preferences</p>
+		<p className="text-xs text-muted-foreground mb-4">Manage your extension preferences</p>
 
-			{/* UserInfoSection moved to SettingsFooter */}
+		<div className="mb-4 space-y-3">
+			<UserInfoSection />
+		</div>
 
-			{tabPicker}
+		{tabPicker}
 			<div className="mt-4">{activeContent}</div>
 
 			<div className="mt-auto mb-2 flex w-full">
