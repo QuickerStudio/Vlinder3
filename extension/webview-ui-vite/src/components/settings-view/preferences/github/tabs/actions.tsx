@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChevronDown, ChevronRight, ExternalLink, Power, PowerOff, PlayCircle, RefreshCw, Activity, CheckCircle2, XCircle, Circle } from 'lucide-react';
-import type { GitHubRepository } from '../types';
+import type { GitHubRepository } from '../shared';
 import { rpcClient } from '@/lib/rpc-client';
 
 interface GitHubWorkflow {

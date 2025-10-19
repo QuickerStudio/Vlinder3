@@ -9,7 +9,7 @@ import { SquareButton } from '@/components/ui/square-button';
 import { Textarea } from '@/components/ui/textarea';
 import { Code2, ExternalLink, Plus, RefreshCw, Play, Square, Pause, Trash2, Star, GitFork, FolderOpen, FolderPlus } from 'lucide-react';
 import { rpcClient } from '@/lib/rpc-client';
-import type { GitHubRepository, WikiCommit } from '../types';
+import type { GitHubRepository, WikiCommit } from '../shared';
 
 // 复用 WikiCommit 类型作为 CodeCommit
 type CodeCommit = WikiCommit;

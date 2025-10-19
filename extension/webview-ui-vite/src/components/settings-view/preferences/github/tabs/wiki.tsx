@@ -8,7 +8,7 @@ import { SquareButton } from '@/components/ui/square-button';
 import { Textarea } from '@/components/ui/textarea';
 import { BookOpen, ExternalLink, Plus, RefreshCw, Play, Square, Pause, Trash2, FolderOpen, FolderPlus } from 'lucide-react';
 import { rpcClient } from '@/lib/rpc-client';
-import type { GitHubRepository, WikiCommit } from '../types';
+import type { GitHubRepository, WikiCommit } from '../shared';
 
 interface WikiProps {
   selectedRepo: GitHubRepository;

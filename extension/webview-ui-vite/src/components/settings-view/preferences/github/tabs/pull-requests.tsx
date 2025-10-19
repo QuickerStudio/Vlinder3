@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDown, ChevronRight, ExternalLink, CheckCircle2, Search, RefreshCw, GitPullRequest, Download, GitBranch, CheckCheck } from 'lucide-react';
-import type { GitHubRepository } from '../types';
+import type { GitHubRepository } from '../shared';
 import { rpcClient } from '@/lib/rpc-client';
 
 interface GitHubPullRequest {

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import type { GitHubRepository } from '../types';
+import type { GitHubRepository } from '../shared';
 import { rpcClient } from '@/lib/rpc-client';
 import {
 	BarChart,
