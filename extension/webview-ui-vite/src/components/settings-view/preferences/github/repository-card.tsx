@@ -130,7 +130,7 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
 
   return (
     <div
-      className={`w-full flex items-stretch gap-3 p-2.5 rounded-lg border transition-all ${
+      className={`w-full h-[110px] flex items-stretch gap-3 p-2.5 rounded-lg border transition-all ${
         isSelected 
           ? 'border-primary bg-accent/50' 
           : 'border-border bg-card hover:border-primary/50 hover:bg-accent/30'
@@ -148,12 +148,18 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
           </h3>
         </div>
 
-        {/* 第二行：简介 */}
-        {repository.description && (
-          <p className='text-xs text-muted-foreground line-clamp-2 mb-1.5'>
-            {repository.description}
-          </p>
-        )}
+        {/* 第二行：简介 - 固定高度占位 */}
+        <div className='h-[34px] mb-1.5'>
+          {repository.description ? (
+            <p className='text-xs text-muted-foreground line-clamp-2'>
+              {repository.description}
+            </p>
+          ) : (
+            <p className='text-xs text-muted-foreground/30 italic'>
+              No description
+            </p>
+          )}
+        </div>
 
         {/* 第三行：(星星 数字) Public/Private Forks Wiki标签 - 底部对齐 */}
         <div className='flex items-end gap-2.5 text-xs text-muted-foreground mt-auto'>
