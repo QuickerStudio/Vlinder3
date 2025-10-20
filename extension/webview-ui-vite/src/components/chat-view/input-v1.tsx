@@ -215,32 +215,35 @@ const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef)
 					resources={attachedResources}
 					onRemove={handleRemoveResource}
 				/>
-			<InputTextArea
-				{...props}
-				ref={localTextareaRef}
-				value={props.value}
-				onChange={handleTextareaChange}
-				onKeyDown={handleKeyDown}
-				setShowPopover={setShowPopover}
-				height={props.height}
-			/>
-				{props.showPartnerPanel && (
-					<div
-						style={{
-							marginTop: 8,
-							border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
-							borderRadius: 8,
-							height: 120,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							color: "var(--vscode-descriptionForeground, #9aa0a6)",
-							background: "transparent",
-						}}
-					>
+				<div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+					{props.showPartnerPanel && (
+						<div
+							style={{
+								border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
+								borderRadius: 8,
+								flex: "0 0 70%",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								color: "var(--vscode-descriptionForeground, #9aa0a6)",
+								background: "transparent",
+							}}
+						>
 
+						</div>
+					)}
+					<div style={{ flex: props.showPartnerPanel ? "0 0 30%" : 1 }}>
+						<InputTextArea
+							{...props}
+							ref={localTextareaRef}
+							value={props.value}
+							onChange={handleTextareaChange}
+							onKeyDown={handleKeyDown}
+							setShowPopover={setShowPopover}
+							height={props.height}
+						/>
 					</div>
-				)}
+				</div>
 			</div>
 
 			<FileDialog
