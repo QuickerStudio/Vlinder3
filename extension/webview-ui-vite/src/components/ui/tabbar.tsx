@@ -26,8 +26,8 @@ const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
 				className={cn("tabbar", isOpen && "open", className)} 
 				{...props}
 			>
-				{/* 1. 👤 用户图标 (User) */}
-				<li title="User">
+				{/* 1. 👤 用户图标 (Partner) */}
+				<li title="Partner">
 					<svg viewBox="0 0 24 24" width="14" height="14">
 						<g stroke="none" fill="currentColor">
 							<path d="M12,13c3.309,0,6-2.691,6-6V6c0-3.309-2.691-6-6-6S6,2.691,6,6v1C6,10.309,8.691,13,12,13z"></path>
