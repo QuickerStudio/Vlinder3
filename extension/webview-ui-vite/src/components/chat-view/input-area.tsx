@@ -70,6 +70,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [textareaHeight, setTextareaHeight] = useState(120) // Control textarea height
 	const [isDragHandleHovered, setIsDragHandleHovered] = useState(false) // Shared hover state for drag handle and circular progress
+	const [showPartnerPanel, setShowPartnerPanel] = useState(false)
 	
 	// Automatic Mode toggle state
 	const { alwaysAllowWriteOnly, setAlwaysAllowWriteOnly } = useExtensionState()
@@ -144,6 +145,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onBlur={() => setIsTextAreaFocused(false)}
 							onPaste={handlePaste}
 							height={textareaHeight}
+							showPartnerPanel={showPartnerPanel}
 						/>
 					<Thumbnails
 						images={selectedImages}
@@ -180,6 +182,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 							</Button>
 						)}
 					</div>
+
 				</div>
 
 				<div className="flex justify-between items-center px-1 pt-1">
@@ -190,6 +193,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onFileTypeSelect={handleFileTypeSelect}
 							onCameraClick={selectImages}
 							cameraDisabled={shouldDisableImages}
+							onPartnerClick={() => setShowPartnerPanel((v) => !v)}
 							className="scale-75 origin-center"
 						/>
 						

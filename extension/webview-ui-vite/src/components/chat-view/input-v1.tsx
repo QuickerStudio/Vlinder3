@@ -24,6 +24,7 @@ type InputOpts = {
 	thumbnailsHeight: number
 	onInsertAt?: () => void
 	height?: number // Add height property
+	showPartnerPanel?: boolean
 }
 
 const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef) => {
@@ -223,6 +224,23 @@ const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef)
 				setShowPopover={setShowPopover}
 				height={props.height}
 			/>
+				{props.showPartnerPanel && (
+					<div
+						style={{
+							marginTop: 8,
+							border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
+							borderRadius: 8,
+							height: 120,
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							color: "var(--vscode-descriptionForeground, #9aa0a6)",
+							background: "transparent",
+						}}
+					>
+
+					</div>
+				)}
 			</div>
 
 			<FileDialog

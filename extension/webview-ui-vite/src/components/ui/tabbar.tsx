@@ -5,10 +5,11 @@ export interface TabbarProps extends React.HTMLAttributes<HTMLUListElement> {
 	onFileTypeSelect?: (fileType: 'word' | 'powerpoint' | 'excel') => void
 	onCameraClick?: () => void
 	cameraDisabled?: boolean
+	onPartnerClick?: () => void
 }
 
 const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
-	({ className, onFileTypeSelect, onCameraClick, cameraDisabled, ...props }, ref) => {
+	({ className, onFileTypeSelect, onCameraClick, cameraDisabled, onPartnerClick, ...props }, ref) => {
 		const [isOpen, setIsOpen] = React.useState(false)
 
 		const handleToggle = () => {
@@ -27,7 +28,7 @@ const Tabbar = React.forwardRef<HTMLUListElement, TabbarProps>(
 				{...props}
 			>
 				{/* 1. 👤 用户图标 (Partner) */}
-				<li title="Partner">
+				<li title="Partner" onClick={onPartnerClick} style={{ cursor: onPartnerClick ? 'pointer' : undefined }}>
 					<svg viewBox="0 0 24 24" width="14" height="14">
 						<g stroke="none" fill="currentColor">
 							<path d="M12,13c3.309,0,6-2.691,6-6V6c0-3.309-2.691-6-6-6S6,2.691,6,6v1C6,10.309,8.691,13,12,13z"></path>
