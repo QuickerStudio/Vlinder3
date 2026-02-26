@@ -79,6 +79,7 @@ export type GlobalState = {
 	codeCloneStatus: Record<string, { isCloned: boolean; localPath: string; clonedAt: string }> | undefined
 	wikiCloneStatus: Record<string, { isCloned: boolean; localPath: string; clonedAt: string }> | undefined
 	githubAgentSettings: { enabled: boolean; selectedModel: string | null; customPrompt: string } | undefined
+	queuedTasks: string[] | undefined
 }
 
 export class GlobalStateManager {

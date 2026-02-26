@@ -1,7 +1,8 @@
-import React, { useCallback, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useEvent } from "react-use"
 import { CheckCircle2, Circle, Clock, XCircle, Loader2, Plus, X, User, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { vscode } from "@/utils/vscode"
 
 export type TodoStatus = "pending" | "in_progress" | "completed" | "cancelled"
 export type TodoPriority = "low" | "medium" | "high" | "critical"
@@ -46,19 +47,29 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 	const [inputValue, setInputValue] = useState("")
 	const inputRef = useRef<HTMLInputElement>(null)
 
+	// Persist queue to backend whenever it changes
+	useEffect(() => {
+		vscode.postMessage({ type: "updateQueuedTasks", tasks: queuedTasks } as any)
+	}, [queuedTasks])
+
 	const handleMessage = useCallback((e: MessageEvent) => {
 		const msg = e.data
+
+		// Restore persisted queue on launch
+		if (msg.type === "queuedTasksSync" && Array.isArray(msg.tasks)) {
+			setQueuedTasks(msg.tasks)
+			return
+		}
+
 		if (msg.type === "todoListUpdated" && Array.isArray(msg.todos)) {
 			const incoming: TodoItem[] = msg.todos
 			const mode: string = msg.mode ?? "merge"
 
 			setCurrentTodos((prev) => {
 				if (mode === "replace") {
-					// Keep user tasks, replace all agent tasks
 					const userTasks = prev.filter((t) => t.source === "user")
 					return [...incoming.map((t) => ({ ...t, source: "agent" as TodoSource })), ...userTasks]
 				}
-				// merge: upsert agent tasks by id, preserve user tasks
 				const merged = [...prev]
 				for (const item of incoming) {
 					const idx = merged.findIndex((t) => t.id === item.id)
@@ -71,11 +82,28 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 				return merged
 			})
 
-			// Promote matching queued tasks to current (mark as user-sourced pending)
+			// Remove queue items that Claude has picked up (name match)
 			setQueuedTasks((prev) => {
-				const promotedIds = new Set(incoming.map((t) => t.task.toLowerCase()))
-				return prev.filter((q) => !promotedIds.has(q.toLowerCase()))
+				const pickedUp = new Set(incoming.map((t) => t.task.toLowerCase()))
+				return prev.filter((q) => !pickedUp.has(q.toLowerCase()))
 			})
+			return
+		}
+
+		// Clear current tasks when a new task starts
+		if (msg.type === "action" && msg.action === "chatButtonTapped") {
+			setCurrentTodos([])
+			return
+		}
+
+		// Clear current tasks when task completes (attempt_completion tool)
+		if (msg.type === "claudeMessage") {
+			try {
+				const tool = JSON.parse(msg.claudeMessage?.text ?? "{}")
+				if (tool?.tool === "attempt_completion") {
+					setCurrentTodos([])
+				}
+			} catch {}
 		}
 	}, [])
 

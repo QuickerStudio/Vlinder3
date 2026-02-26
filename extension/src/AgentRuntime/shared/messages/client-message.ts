@@ -255,5 +255,9 @@ export type WebviewMessage =
 			attachements?: Resource[]
 			bool?: boolean
 	  }
+	| {
+			type: "updateQueuedTasks"
+			tasks: string[]
+	  }
 
 export type ClaudeAskResponse = "yesButtonTapped" | "noButtonTapped" | "messageResponse"

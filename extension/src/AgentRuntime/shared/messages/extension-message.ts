@@ -172,7 +172,14 @@ type TodoListUpdatedMessage = {
 		task: string
 		status: "pending" | "in_progress" | "completed" | "cancelled"
 		priority?: "low" | "medium" | "high" | "critical"
+		source?: "agent" | "user"
 	}>
+	mode?: "merge" | "replace"
+}
+
+type QueuedTasksSyncMessage = {
+	type: "queuedTasksSync"
+	tasks: string[]
 }
 
 export type ExtensionMessage =
@@ -197,6 +204,7 @@ export type ExtensionMessage =
 	| PostClaudeMessage
 	| PromptEditorLoadedMessage
 	| TodoListUpdatedMessage
+	| QueuedTasksSyncMessage
 
 type NonPartial<T> = {
 	[P in keyof T]: T[P]
