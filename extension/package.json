@@ -106,7 +106,7 @@
 			},
 			{
 				"command": "vlinder-main.popoutButtonTapped",
-				"title": "Open in Editor",
+				"title": "Multiple Edit Window",
 				"icon": "$(link-external)"
 			},
 			{

@@ -5,11 +5,10 @@ import { vscode } from "../../utils/vscode"
 import { cn } from "@/lib/utils"
 import Thumbnails from "../thumbnails/thumbnails"
 import TaskText from "./task-text"
-import CreditsInfo from "./credits-info"
 import { useExtensionState } from "@/context/extension-state-context"
 import { useCollapseState } from "@/hooks/use-collapse-state"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
-import { FoldVertical } from "lucide-react"
+import { FoldVertical, Download } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { rpcClient } from "@/lib/rpc-client"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
@@ -18,8 +17,6 @@ interface TaskHeaderProps {
 	firstMsg?: ClaudeMessage
 	onClose: () => void
 	isHidden: boolean
-	vlinderCredits?: number
-	vscodeUriScheme?: string
 	elapsedTime?: number
 	lastMessageAt?: number
 }
@@ -38,8 +35,6 @@ function formatElapsedTime(ms: number): string {
 export default function TaskHeader({
 	firstMsg,
 	onClose,
-	vlinderCredits,
-	vscodeUriScheme,
 	elapsedTime,
 	lastMessageAt,
 }: TaskHeaderProps) {
@@ -66,62 +61,68 @@ export default function TaskHeader({
 	return (
 		<section className="pb-1">
 			<Collapsible open={isOpen} onOpenChange={setIsOpen}>
-				<div className="flex flex-wrap">
-					<div style={{ flex: "1 1 0%" }}></div>
+				<div className="flex items-start gap-1">
+					{/* Task title — takes remaining space */}
+					<div className="flex-1 min-w-0 pt-0.5">
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div>
+									<TaskText text={currentTask?.name ?? currentTask?.task ?? firstMsg?.text} />
+								</div>
+							</TooltipTrigger>
+							{timingTooltip && (
+								<TooltipContent avoidCollisions side="bottom" className="whitespace-pre-line">
+									{timingTooltip}
+								</TooltipContent>
+							)}
+						</Tooltip>
+					</div>
 
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<VSCodeButton appearance="icon">Export</VSCodeButton>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							<DropdownMenuItem onClick={handleDownload}>Export</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => exportTaskFiles.mutate({ taskId: currentTaskId ?? "-" })}>
-								Export (Task Files)
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					{/* Right-side buttons */}
+					<div className="flex items-center shrink-0">
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<VSCodeButton appearance="icon" onClick={collapseAll}>
+									<FoldVertical
+										size={16}
+										className={cn("transition-transform", isAllCollapsed && "rotate-180")}
+									/>
+								</VSCodeButton>
+							</TooltipTrigger>
+							<TooltipContent avoidCollisions side="left">
+								{isAllCollapsed ? "Expand All Messages" : "Collapse All Messages"}
+							</TooltipContent>
+						</Tooltip>
 
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<VSCodeButton appearance="icon" onClick={collapseAll}>
-								<FoldVertical
-									size={16}
-									className={cn("transition-transform", isAllCollapsed && "rotate-180")}
-								/>
-							</VSCodeButton>
-						</TooltipTrigger>
-						<TooltipContent avoidCollisions side="left">
-							{isAllCollapsed ? "Expand All Messages" : "Collapse All Messages"}
-						</TooltipContent>
-					</Tooltip>
-					<VSCodeButton appearance="icon" onClick={onClose}>
-						<span className="codicon codicon-close"></span>
-					</VSCodeButton>
-					<div className="basis-full flex">
-						<div key={currentTask?.name ?? currentTask?.task ?? firstMsg?.text} className="w-full">
+						<DropdownMenu>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<div>
-										<TaskText text={currentTask?.name ?? currentTask?.task ?? firstMsg?.text} />
-									</div>
+									<DropdownMenuTrigger asChild>
+										<VSCodeButton appearance="icon">
+											<Download size={14} />
+										</VSCodeButton>
+									</DropdownMenuTrigger>
 								</TooltipTrigger>
-								{timingTooltip && (
-									<TooltipContent avoidCollisions side="bottom" className="whitespace-pre-line">
-										{timingTooltip}
-									</TooltipContent>
-								)}
+								<TooltipContent avoidCollisions side="left">Export</TooltipContent>
 							</Tooltip>
-						</div>
+							<DropdownMenuContent>
+								<DropdownMenuItem onClick={handleDownload}>Export</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => exportTaskFiles.mutate({ taskId: currentTaskId ?? "-" })}>
+									Export (Task Files)
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+
+						<VSCodeButton appearance="icon" onClick={onClose}>
+							<span className="codicon codicon-close"></span>
+						</VSCodeButton>
 					</div>
 				</div>
 
 				<CollapsibleContent className="flex flex-col pt-1 gap-2">
-					<div
-						className="flex flex-col pt-1 gap-2 w-full"
-						key={currentTask?.name ?? currentTask?.task ?? firstMsg?.text}>
+					<div className="flex flex-col pt-1 gap-2 w-full">
 						{firstMsg?.images && firstMsg.images.length > 0 && <Thumbnails images={firstMsg.images} />}
 					</div>
-					<CreditsInfo vlinderCredits={vlinderCredits} vscodeUriScheme={vscodeUriScheme} />
 				</CollapsibleContent>
 			</Collapsible>
 		</section>
