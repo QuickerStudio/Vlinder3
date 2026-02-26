@@ -2,7 +2,7 @@
 
 import path from "path"
 import { getCwd } from "../../../utils"
-import { fileExistsAtPath } from "../../../../AgentRuntime/utils/path-helpers"
+import { fileExistsAtPath } from "../../../../WorkSpace/path-helpers"
 
 /**
  * Data structure for each diff block (HEAD vs updated).

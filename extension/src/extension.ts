@@ -3,7 +3,7 @@ import { ExtensionProvider } from "./AgentRuntime/providers/extension-provider"
 import { amplitudeTracker } from "./AgentRuntime/utils/amplitude"
 import * as path from "path"
 import { extensionName } from "./AgentRuntime/shared/constants"
-import "./AgentRuntime/utils/path-helpers"
+import "./WorkSpace/path-helpers"
 import {
 	DIFF_VIEW_URI_SCHEME,
 	INLINE_DIFF_VIEW_URI_SCHEME,

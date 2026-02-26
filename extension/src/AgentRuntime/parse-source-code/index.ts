@@ -3,7 +3,7 @@ import { globby, Options } from "globby"
 import os from "os"
 import * as path from "path"
 import { LanguageParser, loadRequiredLanguageParsers } from "./language-parser"
-import { arePathsEqual, fileExistsAtPath } from "../utils/path-helpers"
+import { arePathsEqual, fileExistsAtPath } from "../../WorkSpace/path-helpers"
 
 export const LIST_FILES_LIMIT = 200
 

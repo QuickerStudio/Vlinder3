@@ -5,7 +5,7 @@ import PCR from "puppeteer-chromium-resolver"
 
 import puppeteer, { Browser, launch, Page } from "puppeteer-core"
 import * as vscode from "vscode"
-import { fileExistsAtPath } from "../AgentRuntime/utils/path-helpers"
+import { fileExistsAtPath } from "../WorkSpace/path-helpers"
 interface PCRStats {
 	puppeteer: { launch: typeof launch }
 	executablePath: string

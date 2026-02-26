@@ -6,7 +6,7 @@
 import * as vscode from "vscode"
 import * as path from "path"
 import * as fs from "fs/promises"
-import { createDirectoriesForFile } from "../../utils/fs"
+import { createDirectoriesForFile } from "../../../WorkSpace/fs"
 import * as diff from "diff"
 import { MainAgent } from "../../../agent/main-agent"
 import delay from "delay"
