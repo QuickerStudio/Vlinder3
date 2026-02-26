@@ -35,6 +35,7 @@ import { MultiReplaceStringToolParams } from "../schema/multi-replace-string"
 import { InsertEditToolParams } from "../schema/insert-edit"
 import { TimerToolParams } from "../schema/timer"
 import { VscodeApiToolParams } from "../schema/vscode-api"
+import { UpdateTodoToolParams } from "../schema/update-todo"
 
 export type UpsertMemoryInput = {
 	milestoneName: string
@@ -76,6 +77,7 @@ export type ToolParams =
 	| PatternSearchToolParams
 	| VscodeApiToolParams
 	| TimerToolParams
+	| UpdateTodoToolParams
 
 export type ToolName = ToolParams["name"]
 

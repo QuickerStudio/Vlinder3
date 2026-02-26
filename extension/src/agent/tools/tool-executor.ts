@@ -30,6 +30,7 @@ import {
 	InsertEditTool,
 	TimerTool,
 	VscodeApiTool,
+	UpdateTodoTool,
 } from "."
 import { SearchSymbolsTool } from "./runners/search-symbols.tool"
 import { BaseAgentTool, FullToolParams } from "./base-agent.tool"
@@ -156,6 +157,7 @@ export class ToolExecutor {
 			timer: TimerTool,
 			spawn_agent: SpawnAgentTool,
 			exit_agent: ExitAgentTool,
+			update_todo: UpdateTodoTool,
 		} as const
 
 		const ToolClass = toolMap[params.name as keyof typeof toolMap]

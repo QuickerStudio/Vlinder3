@@ -11,6 +11,7 @@ import MentionPopover, { popoverOptions } from "./mention-popover"
 import ScrapeDialog from "./scrape-dialog"
 import { FileNode } from "./file-tree"
 import { attachmentsAtom } from "./atoms"
+import PartnerPanel from "./partner-panel"
 
 type InputOpts = {
 	value: string
@@ -233,13 +234,11 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 								borderRadius: 8,
 								flex: "0 0 70%",
 								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								color: "var(--vscode-descriptionForeground, #9aa0a6)",
-								background: "transparent",
+								alignItems: "stretch",
+								overflow: "hidden",
 							}}
 						>
-
+							<PartnerPanel className="w-full" />
 						</div>
 					)}
 					<div style={{ flex: props.showPartnerPanel ? "0 0 30%" : 1 }}>

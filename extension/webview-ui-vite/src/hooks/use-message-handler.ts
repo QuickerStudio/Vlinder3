@@ -327,6 +327,13 @@ export const useChatMessageHandling = (
 				primaryButtonText: undefined,
 				secondaryButtonText: undefined,
 			},
+			update_todo: {
+				...baseState,
+				textAreaDisabled: false,
+				enableButtons: false,
+				primaryButtonText: undefined,
+				secondaryButtonText: undefined,
+			},
 		}
 
 			const updates = toolButtonMap[tool.tool] || {
