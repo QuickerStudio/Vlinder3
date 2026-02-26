@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/utils/dateFormatter"
 import { type HistoryItem } from "extension/shared/history-item"
-import { CheckCircle2, Clock, Loader2, Trash2, Calendar, Coins, Zap, Download, Pin } from "lucide-react"
+import { CheckCircle2, Clock, Loader2, Trash2, Calendar, Coins, Zap, Download, Pin, Pencil } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import ConversationPreview from './conversation-preview'
+import { vscode } from "@/utils/vscode"
 
 type HistoryItemProps = {
 	item: HistoryItem
@@ -57,6 +58,17 @@ const HistoryItem = ({ item, onSelect, onDelete, onExport, onPin }: HistoryItemP
 				{/* 第一行：任务标题 + 对话预览 + 右侧操作按钮 */}
 				<div className="flex justify-between items-center gap-3 leading-none">
 					<div className="flex items-center gap-2 flex-1 min-w-0">
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-6 w-6 p-0 shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+							title="Rename"
+							onClick={(e) => {
+								e.stopPropagation()
+								vscode.postMessage({ type: "renameTask", taskId: item.id })
+							}}>
+							<Pencil size={13} />
+						</Button>
 						<div
 							className="text-sm flex-1 truncate leading-tight"
 							dangerouslySetInnerHTML={{ __html: item.name ?? item.task }}></div>

@@ -35,6 +35,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog"
 import TokenInfo from "@/components/task-header/token-info"
+import CreditsInfo from "@/components/task-header/credits-info"
 import { useExtensionState } from "@/context/extension-state-context"
 
 type DistributedKeys<T> = T extends any ? keyof T : never
@@ -93,7 +94,7 @@ const ProviderManager: React.FC = () => {
 	const [providerSettings, setProviderSettings] = useAtom(providerSettingsAtom)
 	const [error, setError] = useState<string>("")
 	const [showApplyModel, setShowApplyModel] = useState(false)
-	const { currentTask, currentContextTokens, currentContextWindow } = useExtensionState()
+	const { currentTask, currentContextTokens, currentContextWindow, user, uriScheme } = useExtensionState()
 
 	// Query existing providers
 	const { data: providersData, refetch } = rpcClient.listProviders.useQuery({})
@@ -413,6 +414,7 @@ const ProviderManager: React.FC = () => {
 						currentContextWindow={currentContextWindow}
 					/>
 				)}
+				<CreditsInfo vlinderCredits={user?.credits} vscodeUriScheme={uriScheme} />
 				<div className="flex items-center justify-between">
 					<span className="text-sm font-medium">Provider Settings</span>
 				</div>

@@ -144,10 +144,7 @@ const PreferencesTabNew: React.FC = () => {
 						<Card className="max-w-md w-full mx-auto bg-transparent border-0 shadow-none">
 							<CardHeader>
 								<div className="flex items-start justify-between gap-4">
-									<div className="flex-1">
-										<CardTitle className="text-xl font-bold text-white capitalize">Main Architecture Model</CardTitle>
-										<CardDescription className="text-sm text-gray-300">Choose your default code-completion model</CardDescription>
-									</div>
+									<div className="flex-1" />
 									<TooltipProvider>
 										<Tooltip delayDuration={200}>
 											<TooltipTrigger asChild>
