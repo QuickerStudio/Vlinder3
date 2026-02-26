@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { useEvent } from "react-use"
-import { CheckCircle2, Circle, Clock, XCircle, ChevronDown, ChevronRight, Loader2 } from "lucide-react"
+import { CheckCircle2, Circle, Clock, XCircle, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ExtensionMessage } from "extension/shared/messages/extension-message"
 
 export type TodoStatus = "pending" | "in_progress" | "completed" | "cancelled"
 export type TodoPriority = "low" | "medium" | "high" | "critical"
@@ -13,6 +12,17 @@ export interface TodoItem {
 	status: TodoStatus
 	priority?: TodoPriority
 }
+
+const MOCK_TODOS: TodoItem[] = [
+	{ id: "1", task: "Analyze existing authentication code", status: "completed", priority: "high" },
+	{ id: "2", task: "Design new database schema for user roles", status: "completed", priority: "high" },
+	{ id: "3", task: "Implement role-based middleware", status: "in_progress", priority: "critical" },
+	{ id: "4", task: "Update API endpoints with auth checks", status: "pending", priority: "high" },
+	{ id: "5", task: "Update frontend components for roles", status: "pending", priority: "medium" },
+	{ id: "6", task: "Write unit tests for auth middleware", status: "pending", priority: "medium" },
+	{ id: "7", task: "Write integration tests", status: "pending", priority: "low" },
+	{ id: "8", task: "Update legacy session handler", status: "cancelled", priority: "low" },
+]
 
 const statusIcon = (status: TodoStatus) => {
 	switch (status) {
@@ -39,19 +49,17 @@ interface PartnerPanelProps {
 }
 
 const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
-	const [todos, setTodos] = useState<TodoItem[]>([])
-	const [isExpanded, setIsExpanded] = useState(true)
+	const [todos, setTodos] = useState<TodoItem[]>(MOCK_TODOS)
 
 	const handleMessage = useCallback((e: MessageEvent) => {
-		const msg: ExtensionMessage = e.data
-		if (msg.type === "todoListUpdated" && Array.isArray((msg as any).todos)) {
-			setTodos((msg as any).todos)
+		const msg = e.data
+		if (msg.type === "todoListUpdated" && Array.isArray(msg.todos)) {
+			setTodos(msg.todos)
 		}
 	}, [])
 
 	useEvent("message", handleMessage)
 
-	const pending = todos.filter((t) => t.status === "pending").length
 	const inProgress = todos.filter((t) => t.status === "in_progress").length
 	const completed = todos.filter((t) => t.status === "completed").length
 
@@ -68,11 +76,8 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 
 	return (
 		<div className={cn("flex flex-col h-full overflow-hidden", className)}>
-			{/* Header */}
-			<button
-				className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors shrink-0"
-				onClick={() => setIsExpanded((v) => !v)}>
-				{isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+			{/* Header — always visible, no collapse */}
+			<div className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-muted-foreground shrink-0">
 				<span className="font-medium">Task Plan</span>
 				<span className="ml-auto flex gap-1.5">
 					{inProgress > 0 && (
@@ -82,35 +87,33 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 						{completed}/{todos.length}
 					</span>
 				</span>
-			</button>
+			</div>
 
-			{/* Todo list */}
-			{isExpanded && (
-				<div className="flex-1 overflow-y-auto px-2 pb-1 space-y-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-					{todos.map((item) => (
-						<div
-							key={item.id}
-							className={cn(
-								"flex items-start gap-1.5 py-0.5 rounded text-[11px]",
-								item.status === "completed" && "opacity-50",
-								item.status === "cancelled" && "opacity-30 line-through"
-							)}>
-							{statusIcon(item.status)}
-							<span className={cn(
-								"flex-1 leading-tight",
-								item.status === "in_progress" && "text-foreground font-medium"
-							)}>
-								{item.task}
+			{/* Scrollable todo list */}
+			<div className="flex-1 overflow-y-auto px-2 pb-1 space-y-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+				{todos.map((item) => (
+					<div
+						key={item.id}
+						className={cn(
+							"flex items-start gap-1.5 py-0.5 rounded text-[11px]",
+							item.status === "completed" && "opacity-50",
+							item.status === "cancelled" && "opacity-30 line-through"
+						)}>
+						{statusIcon(item.status)}
+						<span className={cn(
+							"flex-1 leading-tight",
+							item.status === "in_progress" && "text-foreground font-medium"
+						)}>
+							{item.task}
+						</span>
+						{item.priority && item.priority !== "low" && (
+							<span className={cn("text-[10px] shrink-0", priorityColor[item.priority])}>
+								{item.priority === "critical" ? "!" : item.priority === "high" ? "↑" : "~"}
 							</span>
-							{item.priority && item.priority !== "low" && (
-								<span className={cn("text-[10px] shrink-0", priorityColor[item.priority])}>
-									{item.priority === "critical" ? "!" : item.priority === "high" ? "↑" : "~"}
-								</span>
-							)}
-						</div>
-					))}
-				</div>
-			)}
+						)}
+					</div>
+				))}
+			</div>
 		</div>
 	)
 }

@@ -233,9 +233,10 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 								border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
 								borderRadius: 8,
 								flex: "0 0 70%",
-								display: "flex",
-								alignItems: "stretch",
+								height: props.height ?? 120,
 								overflow: "hidden",
+								display: "flex",
+								flexDirection: "column",
 							}}
 						>
 							<PartnerPanel className="w-full" />
