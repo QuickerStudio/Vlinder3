@@ -252,7 +252,7 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 							onChange={handleTextareaChange}
 							onKeyDown={handleKeyDown}
 							setShowPopover={setShowPopover}
-							height={props.showPartnerPanel ? props.height : undefined}
+							height={props.height}
 						/>
 					</div>
 				</div>
