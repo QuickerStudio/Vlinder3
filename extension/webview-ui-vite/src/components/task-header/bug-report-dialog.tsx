@@ -9,7 +9,7 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import { vscode } from '@/utils/vscode'
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react'
+import { Bug } from 'lucide-react'
 import { useState } from 'react'
 
 export default function BugReportDialog() {
@@ -23,7 +23,9 @@ export default function BugReportDialog() {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<VSCodeButton appearance="icon">Report Bug</VSCodeButton>
+				<Button variant="ghost" size="icon" title="Report Bug">
+					<Bug className="size-4" />
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
