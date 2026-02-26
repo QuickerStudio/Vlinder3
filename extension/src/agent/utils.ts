@@ -8,6 +8,7 @@ import { lstat } from "fs/promises"
 import { ChatTool } from "../AgentRuntime/shared/new-tools"
 // Workspace root path utilities — source of truth moved to WorkSpace/cwd.ts
 export { getCwd, cwd, getReadablePath } from "../WorkSpace/cwd"
+import { cwd, getReadablePath } from "../WorkSpace/cwd"
 declare global {
 	interface String {
 		toPosix(): string

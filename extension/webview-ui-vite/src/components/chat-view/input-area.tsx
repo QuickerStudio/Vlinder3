@@ -194,6 +194,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onCameraClick={selectImages}
 							cameraDisabled={shouldDisableImages}
 							onPartnerClick={() => setShowPartnerPanel((v) => !v)}
+							onFilesClick={() => setInputValue(inputValue + "@")}
 							className="scale-75 origin-center"
 						/>
 						
