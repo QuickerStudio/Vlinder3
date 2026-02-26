@@ -233,13 +233,13 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 								border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
 								borderRadius: 8,
 								flex: "0 0 70%",
-								height: props.height ?? 120,
+								height: props.height ? props.height - 32 : 88,
 								overflow: "hidden",
 								display: "flex",
 								flexDirection: "column",
 							}}
 						>
-							<PartnerPanel className="w-full" />
+							<PartnerPanel className="w-full h-full" />
 						</div>
 					)}
 					<div style={{ flex: props.showPartnerPanel ? "0 0 30%" : 1 }}>
