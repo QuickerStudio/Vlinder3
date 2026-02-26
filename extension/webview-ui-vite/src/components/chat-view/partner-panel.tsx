@@ -46,17 +46,20 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 	const [queuedTasks, setQueuedTasks] = useState<string[]>([])
 	const [inputValue, setInputValue] = useState("")
 	const inputRef = useRef<HTMLInputElement>(null)
+	// Prevent initial render from overwriting persisted queue before sync arrives
+	const isInitialized = useRef(false)
 
-	// Persist queue to backend whenever it changes
 	useEffect(() => {
+		if (!isInitialized.current) return
 		vscode.postMessage({ type: "updateQueuedTasks", tasks: queuedTasks } as any)
 	}, [queuedTasks])
 
 	const handleMessage = useCallback((e: MessageEvent) => {
 		const msg = e.data
 
-		// Restore persisted queue on launch
+		// Restore persisted queue on launch — mark initialized after first sync
 		if (msg.type === "queuedTasksSync" && Array.isArray(msg.tasks)) {
+			isInitialized.current = true
 			setQueuedTasks(msg.tasks)
 			return
 		}
@@ -68,15 +71,16 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 			setCurrentTodos((prev) => {
 				if (mode === "replace") {
 					const userTasks = prev.filter((t) => t.source === "user")
-					return [...incoming.map((t) => ({ ...t, source: "agent" as TodoSource })), ...userTasks]
+					return [...incoming.map((t) => ({ ...t, source: (t.source ?? "agent") as TodoSource })), ...userTasks]
 				}
 				const merged = [...prev]
 				for (const item of incoming) {
 					const idx = merged.findIndex((t) => t.id === item.id)
+					const normalized = { ...item, source: (item.source ?? "agent") as TodoSource }
 					if (idx >= 0) {
-						merged[idx] = { ...item, source: "agent" }
+						merged[idx] = normalized
 					} else {
-						merged.push({ ...item, source: "agent" })
+						merged.push(normalized)
 					}
 				}
 				return merged
@@ -85,22 +89,30 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 			// Remove queue items that Claude has picked up (name match)
 			setQueuedTasks((prev) => {
 				const pickedUp = new Set(incoming.map((t) => t.task.toLowerCase()))
-				return prev.filter((q) => !pickedUp.has(q.toLowerCase()))
+				const filtered = prev.filter((q) => !pickedUp.has(q.toLowerCase()))
+				if (filtered.length !== prev.length) {
+					// Persist the updated queue
+					vscode.postMessage({ type: "updateQueuedTasks", tasks: filtered } as any)
+				}
+				return filtered
 			})
 			return
 		}
 
 		// Clear current tasks when a new task starts
-		if (msg.type === "action" && msg.action === "chatButtonTapped") {
-			setCurrentTodos([])
+		if (msg.type === "claudeMessages" || (msg.type === "action" && msg.action === "chatButtonTapped")) {
+			// Only clear if it's a fresh task (claudeMessages with empty array = new task)
+			if (msg.type === "action" || (Array.isArray(msg.claudeMessages) && msg.claudeMessages.length === 0)) {
+				setCurrentTodos([])
+			}
 			return
 		}
 
-		// Clear current tasks when task completes (attempt_completion tool)
+		// Clear current tasks when task completes
 		if (msg.type === "claudeMessage") {
 			try {
-				const tool = JSON.parse(msg.claudeMessage?.text ?? "{}")
-				if (tool?.tool === "attempt_completion") {
+				const text = msg.claudeMessage?.text
+				if (typeof text === "string" && text.includes('"tool":"attempt_completion"')) {
 					setCurrentTodos([])
 				}
 			} catch {}
@@ -108,6 +120,16 @@ const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
 	}, [])
 
 	useEvent("message", handleMessage)
+
+	// Mark initialized if no queuedTasksSync arrives within 500ms (no persisted queue)
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (!isInitialized.current) {
+				isInitialized.current = true
+			}
+		}, 500)
+		return () => clearTimeout(timer)
+	}, [])
 
 	const addQueuedTask = () => {
 		const trimmed = inputValue.trim()
