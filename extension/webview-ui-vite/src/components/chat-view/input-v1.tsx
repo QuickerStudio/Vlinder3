@@ -209,6 +209,8 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 		setAttachedResources((prev) => prev.filter((resource) => resource.id !== id))
 	}
 
+	const panelHeight = props.height ? props.height - 32 : 88
+
 	return (
 		<>
 			<div className="relative w-full">
@@ -233,7 +235,7 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 								border: "1px dashed var(--vscode-input-border, rgba(255,255,255,0.2))",
 								borderRadius: 8,
 								flex: "0 0 70%",
-								height: props.height ? props.height - 32 : 88,
+								height: panelHeight,
 								overflow: "hidden",
 								display: "flex",
 								flexDirection: "column",
@@ -250,7 +252,7 @@ const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 							onChange={handleTextareaChange}
 							onKeyDown={handleKeyDown}
 							setShowPopover={setShowPopover}
-							height={props.height}
+							height={props.showPartnerPanel ? props.height : undefined}
 						/>
 					</div>
 				</div>
