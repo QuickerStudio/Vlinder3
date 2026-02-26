@@ -5,22 +5,22 @@ import { ToolResponseV2 } from "../../types"
 export class UpdateTodoTool extends BaseAgentTool<UpdateTodoToolParams> {
 	async execute(): Promise<ToolResponseV2> {
 		const { input, updateAsk } = this.params
-		const { todos } = input
+		const { todos, mode = "merge" } = input
 
 		if (!todos || !Array.isArray(todos)) {
 			return this.toolResponse("error", "Invalid todos input: expected an array")
 		}
 
-		// Push the todo list to the webview
+		// Push update to webview — mode tells frontend how to merge
 		this.vlinders.providerRef
 			.deref()
 			?.getWebviewManager()
 			?.postMessageToWebview({
 				type: "todoListUpdated",
 				todos,
+				mode,
 			} as any)
 
-		// Update tool state to approved (read-only, auto-approve)
 		await updateAsk(
 			"tool",
 			{
@@ -35,13 +35,7 @@ export class UpdateTodoTool extends BaseAgentTool<UpdateTodoToolParams> {
 			this.ts
 		)
 
-		const summary = todos
-			.map((t) => `[${t.status}] ${t.task}`)
-			.join("\n")
-
-		return this.toolResponse(
-			"success",
-			`Todo list updated with ${todos.length} item(s):\n${summary}`
-		)
+		const summary = todos.map((t) => `[${t.status}] ${t.task}`).join("\n")
+		return this.toolResponse("success", `Todo list updated (${mode}) with ${todos.length} item(s):\n${summary}`)
 	}
 }
