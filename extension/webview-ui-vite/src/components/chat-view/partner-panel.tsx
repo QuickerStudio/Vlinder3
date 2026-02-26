@@ -15,16 +15,6 @@ export interface TodoItem {
 	source: TodoSource
 }
 
-const MOCK_TODOS: TodoItem[] = [
-	{ id: "1", task: "Analyze existing authentication code", status: "completed", priority: "high", source: "agent" },
-	{ id: "2", task: "Design new database schema for user roles", status: "completed", priority: "high", source: "agent" },
-	{ id: "3", task: "Implement role-based middleware", status: "in_progress", priority: "critical", source: "agent" },
-	{ id: "4", task: "Update API endpoints with auth checks", status: "pending", priority: "high", source: "agent" },
-	{ id: "5", task: "Add OAuth2 login support", status: "pending", priority: "high", source: "user" },
-	{ id: "6", task: "Write unit tests for auth middleware", status: "pending", priority: "medium", source: "agent" },
-	{ id: "7", task: "Write integration tests", status: "pending", priority: "low", source: "agent" },
-	{ id: "8", task: "Dark mode for settings page", status: "pending", priority: "low", source: "user" },
-]
 
 const statusIcon = (status: TodoStatus) => {
 	switch (status) {
@@ -51,7 +41,7 @@ interface PartnerPanelProps {
 }
 
 const PartnerPanel: React.FC<PartnerPanelProps> = ({ className }) => {
-	const [currentTodos, setCurrentTodos] = useState<TodoItem[]>(MOCK_TODOS)
+	const [currentTodos, setCurrentTodos] = useState<TodoItem[]>([])
 	const [queuedTasks, setQueuedTasks] = useState<string[]>([])
 	const [inputValue, setInputValue] = useState("")
 	const inputRef = useRef<HTMLInputElement>(null)

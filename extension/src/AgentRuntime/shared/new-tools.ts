@@ -347,7 +347,9 @@ export type UpdateTodoTool = {
 		task: string
 		status: "pending" | "in_progress" | "completed" | "cancelled"
 		priority?: "low" | "medium" | "high" | "critical"
+		source?: "agent" | "user"
 	}>
+	mode?: "merge" | "replace"
 }
 
 export type ChatTool = (
