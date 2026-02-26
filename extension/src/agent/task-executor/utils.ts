@@ -1,15 +1,15 @@
-import {
+﻿import {
 	ClaudeAsk,
 	ClaudeSay,
 	ClaudeMessage,
 	ToolStatus,
 	V1ClaudeMessage,
 	isV1ClaudeMessage,
-} from "../../shared/messages/extension-message"
-import { ClaudeAskResponse } from "../../shared/messages/client-message"
+} from "../../AgentRuntime/shared/messages/extension-message"
+import { ClaudeAskResponse } from "../../AgentRuntime/shared/messages/client-message"
 import { StateManager } from "../state-manager"
-import { ExtensionProvider } from "../../providers/extension-provider"
-import { ChatTool } from "../../shared/new-tools"
+import { ExtensionProvider } from "../../AgentRuntime/providers/extension-provider"
+import { ChatTool } from "../../AgentRuntime/shared/new-tools"
 import { AskManager } from "./ask-manager"
 import { merge } from "lodash"
 import { DeepPartial } from "ai"

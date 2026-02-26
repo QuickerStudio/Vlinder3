@@ -55,7 +55,7 @@ const copyAssetsPlugin = {
 			}
 
 			// Copy migrations
-			const migrationsSrcDir = path.join(__dirname, "src", "db", "migrations")
+			const migrationsSrcDir = path.join(__dirname, "src", "AgentRuntime", "db", "migrations")
 			const migrationsDestDir = path.join(targetDir, "db", "migrations")
 			fs.mkdirSync(migrationsDestDir, { recursive: true })
 			copyRecursiveSync(migrationsSrcDir, migrationsDestDir)

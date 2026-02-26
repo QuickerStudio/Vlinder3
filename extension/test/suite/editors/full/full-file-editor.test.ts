@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 import * as assert from "assert"
 import * as fs from "fs"
 import * as path from "path"
-import { DiffViewProvider } from "../../../../src/integrations/editor/diff-view-provider"
+import { DiffViewProvider } from "../../../../src/AgentRuntime/integrations/editor/diff-view-provider"
 // import { DiffViewProvider } from "@/integrations/editor/diff-view-provider"
 
 // Helper function to read file content, with clear error handling for test clarity

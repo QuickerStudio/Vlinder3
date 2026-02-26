@@ -1,11 +1,11 @@
-import * as assert from "assert"
+﻿import * as assert from "assert"
 import * as vscode from "vscode"
 import * as sinon from "sinon"
 import {
 	TerminalRegistry,
 	TerminalManager,
 	TerminalInfo,
-} from "../../../../src/integrations/terminal/terminal-manager"
+} from "../../../../src/AgentRuntime/integrations/terminal/terminal-manager"
 import "mocha"
 
 describe("TerminalRegistry Tests", () => {

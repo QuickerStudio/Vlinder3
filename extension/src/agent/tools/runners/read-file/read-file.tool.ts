@@ -1,4 +1,4 @@
-import * as path from "path"
+﻿import * as path from "path"
 import { serializeError } from "serialize-error"
 import dedent from "dedent"
 import { z } from "zod"

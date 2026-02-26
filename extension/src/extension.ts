@@ -1,22 +1,22 @@
-import * as vscode from "vscode"
-import { ExtensionProvider } from "./providers/extension-provider"
-import { amplitudeTracker } from "./utils/amplitude"
+﻿import * as vscode from "vscode"
+import { ExtensionProvider } from "./AgentRuntime/providers/extension-provider"
+import { amplitudeTracker } from "./AgentRuntime/utils/amplitude"
 import * as path from "path"
-import { extensionName } from "./shared/constants"
-import "./utils/path-helpers"
+import { extensionName } from "./AgentRuntime/shared/constants"
+import "./AgentRuntime/utils/path-helpers"
 import {
 	DIFF_VIEW_URI_SCHEME,
 	INLINE_DIFF_VIEW_URI_SCHEME,
 	INLINE_MODIFIED_URI_SCHEME,
 	MODIFIED_URI_SCHEME,
-} from "./integrations/editor/decoration-controller"
-import { PromptStateManager } from "./providers/state/prompt-state-manager"
-import DB from "./db"
-import { OpenRouterModelCache } from "./api/providers/config/openrouter-cache"
-import { SecretStateManager } from "./providers/state/secret-state-manager"
-import { fetchVlinderUser } from "./api/providers/vlinder"
-import { GlobalStateManager } from "./providers/state/global-state-manager"
-import { TerminalSecurityState } from "./integrations/terminal/security-state"
+} from "./AgentRuntime/integrations/editor/decoration-controller"
+import { PromptStateManager } from "./AgentRuntime/providers/state/prompt-state-manager"
+import DB from "./AgentRuntime/db"
+import { OpenRouterModelCache } from "./AgentRuntime/api/providers/config/openrouter-cache"
+import { SecretStateManager } from "./AgentRuntime/providers/state/secret-state-manager"
+import { fetchVlinderUser } from "./AgentRuntime/api/providers/vlinder"
+import { GlobalStateManager } from "./AgentRuntime/providers/state/global-state-manager"
+import { TerminalSecurityState } from "./AgentRuntime/integrations/terminal/security-state"
 
 /*
 Built using https://github.com/microsoft/vscode-webview-ui-toolkit

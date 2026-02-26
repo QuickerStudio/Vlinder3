@@ -1,7 +1,7 @@
-import * as path from 'path';
+﻿import * as path from 'path';
 import * as fs from 'fs/promises';
 import { serializeError } from 'serialize-error';
-import { getReadablePath } from '../../utils';
+import { getReadablePath } from "../../utils"
 import { BaseAgentTool } from '../base-agent.tool';
 import { MoveToolParams } from '../schema/move';
 

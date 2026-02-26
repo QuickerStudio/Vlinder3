@@ -6,10 +6,13 @@ import path from "path"
 export default defineConfig({
 	plugins: [react()],
 	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "src"),
-			extension: path.resolve(__dirname, "../src"),
-		},
+		alias: [
+			{ find: "@", replacement: path.resolve(__dirname, "src") },
+			// Moved directories now live under AgentRuntime/
+			{ find: /^extension\/(api|db|integrations|parse-source-code|providers|router|shared|utils)(.*)$/, replacement: path.resolve(__dirname, "../src/AgentRuntime/$1$2") },
+			// Fallback: everything else under extension/ maps to ../src/
+			{ find: /^extension\/(.*)$/, replacement: path.resolve(__dirname, "../src/$1") },
+		],
 	},
 	build: {
 		outDir: "build",

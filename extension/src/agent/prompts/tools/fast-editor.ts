@@ -1,4 +1,4 @@
-import { ToolPromptSchema } from '../utils/utils';
+﻿import { ToolPromptSchema } from '../utils/utils';
 
 export const fastEditorToolPrompt: ToolPromptSchema = {
 	name: 'fast_editor',
@@ -206,7 +206,7 @@ Ensure all file paths are correct and relative to the workspace:
       },
       {
         "path": "src/ComponentB.tsx",
-        "oldString": "import { util } from '../utils'",
+        "oldString": "import { util } from '../AgentRuntime/utils'",
         "newString": "import { util } from '@/lib/utils'"
       }
     ]

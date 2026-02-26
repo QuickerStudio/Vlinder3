@@ -1,4 +1,4 @@
-import { vlinderSSEResponse } from "../shared/vlinder"
+import { vlinderSSEResponse } from "../AgentRuntime/shared/vlinder"
 
 type ChunkCallback = (chunk: vlinderSSEResponse) => Promise<void>
 

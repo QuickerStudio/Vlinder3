@@ -1,4 +1,4 @@
-import dedent from "dedent"
+﻿import dedent from "dedent"
 import { buildPromptFromTemplate, PromptConfig, promptTemplate } from "../utils/utils"
 import osName from "os-name"
 import defaultShell from "default-shell"

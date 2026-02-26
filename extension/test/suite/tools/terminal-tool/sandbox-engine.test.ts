@@ -1,6 +1,6 @@
-import * as assert from "assert"
-import { SandboxEngine } from "../../../../src/integrations/terminal/sandbox/sandbox-engine"
-import { TerminalSecurityPolicy } from "../../../../src/integrations/terminal/sandbox/policy.types"
+﻿import * as assert from "assert"
+import { SandboxEngine } from "../../../../src/AgentRuntime/integrations/terminal/sandbox/sandbox-engine"
+import { TerminalSecurityPolicy } from "../../../../src/AgentRuntime/integrations/terminal/sandbox/policy.types"
 import "mocha"
 
 describe("SandboxEngine Tests", () => {

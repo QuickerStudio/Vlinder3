@@ -1,4 +1,4 @@
-import { ToolPromptSchema } from '../utils/utils';
+﻿import { ToolPromptSchema } from '../utils/utils';
 
 export const replaceStringPrompt: ToolPromptSchema = {
 	name: 'replace_string',

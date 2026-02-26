@@ -1,10 +1,10 @@
-import * as assert from "assert"
+﻿import * as assert from "assert"
 import {
 	compressedTools,
 	CompressToolExecution,
 	compressToolFromMsg,
-} from "../../../../src/utils/context-managment/compress-chat"
-import { ApiHandler } from "../../../../src/api"
+} from "../../../../src/AgentRuntime/utils/context-managment/compress-chat"
+import { ApiHandler } from "../../../../src/AgentRuntime/api"
 import type { MessageParam, TextBlockParam, ImageBlockParam } from "@anthropic-ai/sdk/resources/messages.mjs"
 import apiHistory from "./api_conversation_history.json"
 import apiHistory2 from "./api_conversation_history_2.json"

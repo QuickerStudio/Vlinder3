@@ -1,6 +1,6 @@
-import * as path from "path"
-import { DiffViewProvider } from "../../../../integrations/editor/diff-view-provider"
-import { ClaudeSayTool } from "../../../../shared/messages/extension-message"
+﻿import * as path from "path"
+import { DiffViewProvider } from "../../../../AgentRuntime/integrations/editor/diff-view-provider"
+import { ClaudeSayTool } from "../../../../AgentRuntime/shared/messages/extension-message"
 import { getCwd, getReadablePath, isTextBlock } from "../../../utils"
 import { BaseAgentTool, FullToolParams } from "../../base-agent.tool"
 import { AgentToolOptions } from "../../types"
@@ -15,7 +15,7 @@ import {
 	SEPARATOR,
 	REPLACE_HEAD,
 } from "./utils"
-import { InlineEditHandler } from "../../../../integrations/editor/inline-editor"
+import { InlineEditHandler } from "../../../../AgentRuntime/integrations/editor/inline-editor"
 import { ToolResponseV2 } from "../../../types"
 import PQueue from "p-queue"
 

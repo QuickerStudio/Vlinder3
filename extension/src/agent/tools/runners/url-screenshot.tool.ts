@@ -1,9 +1,9 @@
-import * as path from "path"
+﻿import * as path from "path"
 import fs from "fs/promises"
 import { ToolResponseV2 } from "../../types"
 import { BaseAgentTool } from "../base-agent.tool"
 import type { AskConfirmationResponse } from "../types"
-import { ChatTool } from "../../../shared/new-tools"
+import { ChatTool } from "../../../AgentRuntime/shared/new-tools"
 import { UrlScreenshotToolParams } from "../schema/url_screenshot"
 
 export class UrlScreenshotTool extends BaseAgentTool<UrlScreenshotToolParams> {

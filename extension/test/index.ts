@@ -1,4 +1,4 @@
-import "../src/utils/path-helpers"
+import "../src/AgentRuntime/utils/path-helpers"
 import * as path from "node:path"
 import { runTests } from "@vscode/test-electron"
 import { fileURLToPath } from "node:url"

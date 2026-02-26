@@ -1,4 +1,4 @@
-import dedent from 'dedent';
+﻿import dedent from 'dedent';
 import { ToolPromptSchema } from '../utils/utils';
 
 export const renamePrompt: ToolPromptSchema = {

@@ -1,8 +1,8 @@
-// file-editor.tool.ts
+﻿// file-editor.tool.ts
 
 import path from "path"
 import { getCwd } from "../../../utils"
-import { fileExistsAtPath } from "../../../../utils/path-helpers"
+import { fileExistsAtPath } from "../../../../AgentRuntime/utils/path-helpers"
 
 /**
  * Data structure for each diff block (HEAD vs updated).

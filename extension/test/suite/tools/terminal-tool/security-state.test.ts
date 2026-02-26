@@ -1,6 +1,6 @@
-import * as assert from "assert"
-import { TerminalSecurityState } from "../../../../src/integrations/terminal/security-state"
-import { TerminalSecurityPolicy } from "../../../../src/integrations/terminal/sandbox/policy.types"
+﻿import * as assert from "assert"
+import { TerminalSecurityState } from "../../../../src/AgentRuntime/integrations/terminal/security-state"
+import { TerminalSecurityPolicy } from "../../../../src/AgentRuntime/integrations/terminal/sandbox/policy.types"
 import "mocha"
 
 describe("TerminalSecurityState Tests", () => {

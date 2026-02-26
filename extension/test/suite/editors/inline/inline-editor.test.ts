@@ -1,6 +1,6 @@
-import * as vscode from "vscode"
+﻿import * as vscode from "vscode"
 import * as assert from "assert"
-import { InlineEditHandler } from "../../../../src/integrations/editor/inline-editor"
+import { InlineEditHandler } from "../../../../src/AgentRuntime/integrations/editor/inline-editor"
 import * as fs from "fs"
 import * as path from "path"
 import {
@@ -11,7 +11,7 @@ import {
 	SEARCH_HEAD,
 	SEPARATOR,
 } from "../../../../src/agent/tools/runners/coders/utils"
-import { findAndReplace } from "../../../../src/integrations/editor/utils"
+import { findAndReplace } from "../../../../src/AgentRuntime/integrations/editor/utils"
 
 const readBlock = (filePath: string, extension = "ts") => {
 	const block6FilePath = path.join(__dirname, `${filePath}File.${extension}`)

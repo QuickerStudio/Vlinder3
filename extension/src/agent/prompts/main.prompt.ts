@@ -1,4 +1,4 @@
-import { toolPrompts } from "./tools/index" // assuming you put all tools in a tools folder
+﻿import { toolPrompts } from "./tools/index" // assuming you put all tools in a tools folder
 import os from "os"
 import osName from "os-name"
 import defaultShell from "default-shell"

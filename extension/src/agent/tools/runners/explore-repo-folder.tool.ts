@@ -1,6 +1,6 @@
-import * as path from "path"
+﻿import * as path from "path"
 import { serializeError } from "serialize-error"
-import { parseSourceCodeForDefinitionsTopLevel } from "../../../parse-source-code"
+import { parseSourceCodeForDefinitionsTopLevel } from "../../../AgentRuntime/parse-source-code"
 import { BaseAgentTool } from "../base-agent.tool"
 import { ExploreRepoFolderToolParams } from "../schema/explore-repo-folder.schema"
 import { getReadablePath } from "../../utils"

@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk"
-import { ExtensionProvider } from "../../providers/extension-provider"
+import { ExtensionProvider } from "../../AgentRuntime/providers/extension-provider"
 import { VlinderAgentState, ApiHistoryItem } from "../types"
 import { IOManager } from "./io-manager"
 

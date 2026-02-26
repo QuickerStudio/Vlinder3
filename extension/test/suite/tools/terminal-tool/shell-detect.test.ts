@@ -1,5 +1,5 @@
 import * as assert from "assert"
-import { detectGitBashPath } from "../../../../src/integrations/terminal/shell-detect"
+import { detectGitBashPath } from "../../../../src/AgentRuntime/integrations/terminal/shell-detect"
 import "mocha"
 
 describe("shell-detect Tests", () => {

@@ -1,4 +1,4 @@
-import { ToolPromptSchema } from '../utils/utils';
+﻿import { ToolPromptSchema } from '../utils/utils';
 
 export const vscodeApiPrompt: ToolPromptSchema = {
 	name: 'get_vscode_api',

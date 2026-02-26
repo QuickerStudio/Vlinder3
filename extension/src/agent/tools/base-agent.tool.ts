@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk"
+﻿import Anthropic from "@anthropic-ai/sdk"
 import { MainAgent } from "../main-agent"
 import { ToolResponse, ToolResponseV2 } from "../types"
 import { AgentToolOptions, AgentToolParams, CommitInfo, ToolParams } from "./types"

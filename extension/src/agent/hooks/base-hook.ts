@@ -1,4 +1,4 @@
-import { MainAgent } from "../main-agent"
+﻿import { MainAgent } from "../main-agent"
 import { StateManager } from "../state-manager"
 import { ToolExecutor } from "../tools/tool-executor"
 import { Tool } from "../tools/schema"
