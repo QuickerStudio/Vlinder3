@@ -23,40 +23,50 @@ type InputOpts = {
 	onPaste: (e: React.ClipboardEvent) => void
 	thumbnailsHeight: number
 	onInsertAt?: () => void
-	height?: number // Add height property
+	height?: number
 	showPartnerPanel?: boolean
+	textareaRef?: React.RefObject<HTMLTextAreaElement>
 }
 
-const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef) => {
+export type InputV1Ref = {
+	textarea: HTMLTextAreaElement | null
+	insertAt: () => void
+}
+
+const InputV2 = forwardRef<InputV1Ref, InputOpts>((props, forwardedRef) => {
 	const handleInsertAt = () => {
-		if (props.onInsertAt) {
-			props.onInsertAt()
-		} else {
-			const newText = props.value + "@"
-			props.onChange({
-				target: { value: newText },
-				persist: () => {},
-			} as React.ChangeEvent<HTMLTextAreaElement>)
-			setTimeout(() => {
-				if (localTextareaRef.current) {
-					localTextareaRef.current.focus()
-					localTextareaRef.current.setSelectionRange(newText.length, newText.length)
-				}
-			}, 0)
-		}
+		const newText = props.value + "@"
+		props.onChange({
+			target: { value: newText },
+			persist: () => {},
+		} as React.ChangeEvent<HTMLTextAreaElement>)
+		setTextareaValue(newText)
+		setShowPopover(true)
+		setFocusedIndex(0)
+		setCursorPosition(newText.length)
 	}
 	const [showPopover, setShowPopover] = useState(false)
 	const [textareaValue, setTextareaValue] = useState(props.value ?? "")
 	const [cursorPosition, setCursorPosition] = useState(0)
 	const [focusedIndex, setFocusedIndex] = useState(-1)
 	const localTextareaRef = useRef<HTMLTextAreaElement>(null)
+	// Sync external textareaRef with localTextareaRef
+	const setRefs = (el: HTMLTextAreaElement | null) => {
+		;(localTextareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el
+		if (props.textareaRef) {
+			;(props.textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el
+		}
+	}
 	const [openDialog, setOpenDialog] = useState<string | null>(null)
 	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
 	const [scrapeUrl, setScrapeUrl] = useState("")
 	const [scrapeDescription, setScrapeDescription] = useState("")
 	const [fileTree, setFileTree] = useState<FileNode[]>([])
 	const [attachedResources, setAttachedResources] = useAtom(attachmentsAtom)
-	useImperativeHandle(forwardedRef, () => localTextareaRef.current!, [])
+	useImperativeHandle(forwardedRef, () => ({
+		textarea: localTextareaRef.current,
+		insertAt: handleInsertAt,
+	}))
 
 	useEffect(() => {
 		vscode.postMessage({ type: "fileTree" })
@@ -235,7 +245,7 @@ const InputV2 = forwardRef<HTMLTextAreaElement, InputOpts>((props, forwardedRef)
 					<div style={{ flex: props.showPartnerPanel ? "0 0 30%" : 1 }}>
 						<InputTextArea
 							{...props}
-							ref={localTextareaRef}
+							ref={setRefs}
 							value={props.value}
 							onChange={handleTextareaChange}
 							onKeyDown={handleKeyDown}
