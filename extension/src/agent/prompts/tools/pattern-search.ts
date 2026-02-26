@@ -50,7 +50,7 @@ export const patternSearchPrompt: ToolPromptSchema = {
 			description: 'GOOD: Find how "BaseAgentTool" is used across known tool files',
 			output: `<pattern_search>
   <searchPattern>BaseAgentTool</searchPattern>
-  <files>["src/agent/v1/tools/runners/fast-editor.tool.ts", "src/agent/v1/tools/runners/grep-search.tool.ts", "src/agent/v1/tools/runners/pattern-search.tool.ts"]</files>
+  <files>["src/agent/tools/runners/fast-editor.tool.ts", "src/agent/tools/runners/grep-search.tool.ts", "src/agent/tools/runners/pattern-search.tool.ts"]</files>
   <contextLinesBefore>3</contextLinesBefore>
   <contextLinesAfter>3</contextLinesAfter>
 </pattern_search>`,
@@ -59,7 +59,7 @@ export const patternSearchPrompt: ToolPromptSchema = {
 			description: 'GOOD: Compare how "execute()" method is implemented in different tools',
 			output: `<pattern_search>
   <searchPattern>async execute()</searchPattern>
-  <files>["src/agent/v1/tools/runners/*.tool.ts"]</files>
+  <files>["src/agent/tools/runners/*.tool.ts"]</files>
   <contextLinesBefore>10</contextLinesBefore>
   <contextLinesAfter>15</contextLinesAfter>
 </pattern_search>`,
@@ -220,12 +220,12 @@ Step 2: Examine HOW they use it with context
 #### Pattern 2: Comparing Implementations
 \`\`\`
 Step 1: List all tool files
-  <list_files><path>src/agent/v1/tools/runners</path></list_files>
+  <list_files><path>src/agent/tools/runners</path></list_files>
 
 Step 2: Compare how they implement execute()
   <pattern_search>
     <searchPattern>async execute()</searchPattern>
-    <files>["src/agent/v1/tools/runners/*.tool.ts"]</files>
+    <files>["src/agent/tools/runners/*.tool.ts"]</files>
     <contextLinesBefore>10</contextLinesBefore>
     <contextLinesAfter>20</contextLinesAfter>
   </pattern_search>
@@ -286,10 +286,10 @@ Step 2: See the calling context in each file
 
 **Workflow 1: Understanding a New Tool's Architecture**
 \`\`\`
-1. <list_files><path>src/agent/v1/tools/runners</path></list_files>
+1. <list_files><path>src/agent/tools/runners</path></list_files>
 2. <pattern_search>
      <searchPattern>BaseAgentTool</searchPattern>
-     <files>["src/agent/v1/tools/runners/*.tool.ts"]</files>
+     <files>["src/agent/tools/runners/*.tool.ts"]</files>
      <contextLinesBefore>5</contextLinesBefore>
      <contextLinesAfter>5</contextLinesAfter>
    </pattern_search>

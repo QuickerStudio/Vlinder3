@@ -1,16 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk"
-import { ExtensionProvider } from "../../../providers/extension-provider"
-import { isV1ClaudeMessage } from "../../../shared/messages/extension-message"
-import { toolResponseToAIState } from "../../../shared/format-tools"
-import { VLINDER_ERROR_CODES, VlinderError, vlinderSSEResponse } from "../../../shared/vlinder"
-import { ChatTool } from "../../../shared/new-tools"
+import { ExtensionProvider } from "../../providers/extension-provider"
+import { isV1ClaudeMessage } from "../../shared/messages/extension-message"
+import { toolResponseToAIState } from "../../shared/format-tools"
+import { VLINDER_ERROR_CODES, VlinderError, vlinderSSEResponse } from "../../shared/vlinder"
+import { ChatTool } from "../../shared/new-tools"
 import { ChunkProcessor } from "../chunk-proccess"
 import { StateManager } from "../state-manager"
 import { ToolExecutor } from "../tools/tool-executor"
 import { ApiHistoryItem, ToolResponseV2, UserContent } from "../types"
 import { cleanUIMessages, formatImagesIntoBlocks, isTextBlock } from "../utils"
 import { TaskError, TaskExecutorUtils, TaskState } from "./utils"
-import { CustomProviderError } from "../../../api/providers/custom-provider"
+import { CustomProviderError } from "../../api/providers/custom-provider"
 
 export class TaskExecutor extends TaskExecutorUtils {
 	public state: TaskState = TaskState.IDLE

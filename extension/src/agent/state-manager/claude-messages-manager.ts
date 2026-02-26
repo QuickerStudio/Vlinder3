@@ -1,11 +1,11 @@
 import { findLastIndex } from "lodash"
-import { ExtensionProvider } from "../../../providers/extension-provider"
+import { ExtensionProvider } from "../../providers/extension-provider"
 import { VlinderAgentState, ClaudeMessage } from "../types"
 import { IOManager } from "./io-manager"
-import { getApiMetrics } from "../../../shared/get-api-metrics"
-import { isV1ClaudeMessage } from "../../../shared/messages/extension-message"
+import { getApiMetrics } from "../../shared/get-api-metrics"
+import { isV1ClaudeMessage } from "../../shared/messages/extension-message"
 import { StateManager } from "."
-import { ChatTool } from "../../../shared/new-tools"
+import { ChatTool } from "../../shared/new-tools"
 
 interface ClaudeMessagesManagerOptions {
 	state: VlinderAgentState

@@ -1,9 +1,9 @@
-import { ClaudeAsk, ClaudeMessage, V1ClaudeMessage } from "../../../shared/messages/extension-message"
-import { ClaudeAskResponse } from "../../../shared/messages/client-message"
+import { ClaudeAsk, ClaudeMessage, V1ClaudeMessage } from "../../shared/messages/extension-message"
+import { ClaudeAskResponse } from "../../shared/messages/client-message"
 import { AskDetails, AskResponse } from "./utils"
 import { StateManager } from "../state-manager"
-import { ChatTool, mustRequestApprovalTools, mustRequestApprovalTypes, readOnlyTools } from "../../../shared/new-tools"
-import { WebviewManager } from "../../../providers/webview/webview-manager"
+import { ChatTool, mustRequestApprovalTools, mustRequestApprovalTypes, readOnlyTools } from "../../shared/new-tools"
+import { WebviewManager } from "../../providers/webview/webview-manager"
 interface PendingAsk {
 	resolve: (value: AskResponse) => void
 	reject: (error: Error) => void

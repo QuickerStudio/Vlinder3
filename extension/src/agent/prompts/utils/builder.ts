@@ -8,7 +8,7 @@ import {
 	TemplateValidationResult,
 	TemplateProcessingOptions,
 } from "./utils"
-import { ConditionalBlock, conditionalBlocks, templatePlaceHolder } from "../../../../shared/agent/prompt"
+import { ConditionalBlock, conditionalBlocks, templatePlaceHolder } from "../../../shared/agent/prompt"
 
 function processConditionalBlocks(template: string, features: Record<ConditionalBlock, boolean>): string {
 	let processed = template

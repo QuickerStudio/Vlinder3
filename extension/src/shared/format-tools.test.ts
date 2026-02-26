@@ -6,7 +6,7 @@
 // 	isTextBlock,
 // } from "./format-tools"
 // import { TextBlockParam, ImageBlockParam } from "@anthropic-ai/sdk/resources/messages.mjs"
-// import type { ToolResponseV2 } from "../agent/v1/types"
+// import type { ToolResponseV2 } from "../agent/types"
 // import { example } from "./format-tools.utils"
 // import { estimateTokenCountFromMessages, smartTruncation } from "../utils/context-management"
 

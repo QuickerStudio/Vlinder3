@@ -2,10 +2,10 @@ import * as path from "path"
 import * as os from "os"
 import * as vscode from "vscode"
 import { Anthropic } from "@anthropic-ai/sdk"
-import { ClaudeMessage, ClaudeSayTool, isV1ClaudeMessage } from "../../shared/messages/extension-message"
-import "../../utils/path-helpers"
+import { ClaudeMessage, ClaudeSayTool, isV1ClaudeMessage } from "../shared/messages/extension-message"
+import "../utils/path-helpers"
 import { lstat } from "fs/promises"
-import { ChatTool } from "../../shared/new-tools"
+import { ChatTool } from "../shared/new-tools"
 declare global {
 	interface String {
 		toPosix(): string

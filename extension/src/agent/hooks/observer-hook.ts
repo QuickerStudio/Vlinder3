@@ -3,11 +3,11 @@ import { ApiHistoryItem, MainAgent } from "../main-agent"
 import { promptTemplate } from "../prompts/utils/utils"
 import { BaseHook, HookOptions } from "./base-hook"
 import { PromptBuilder } from "../prompts/utils/builder"
-import { ApiMetrics } from "../../../api/api-utils"
-import { V1ClaudeMessage } from "../../../shared/messages/extension-message"
+import { ApiMetrics } from "../../api/api-utils"
+import { V1ClaudeMessage } from "../../shared/messages/extension-message"
 import { spawnAgentTool } from "../tools/schema/agents/agent-spawner"
-import { ApiManager } from "../../../api/api-handler"
-import { serverRPC } from "../../../router/utils/extension-server"
+import { ApiManager } from "../../api/api-handler"
+import { serverRPC } from "../../router/utils/extension-server"
 
 /**
  * Options specific to the memory hook

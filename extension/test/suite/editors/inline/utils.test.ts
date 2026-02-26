@@ -7,7 +7,7 @@ import {
 	SEARCH_HEAD,
 	SEPARATOR,
 	REPLACE_HEAD,
-} from "../../../../src/agent/v1/tools/runners/coders/utils"
+} from "../../../../src/agent/tools/runners/coders/utils"
 
 describe("DiffBlockManager - parseDiffBlocks", () => {
 	let manager: DiffBlockManager

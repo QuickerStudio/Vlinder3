@@ -4,7 +4,7 @@
 // import DB from "./index"
 // import * as schema from "./schema"
 // import { ClaudeMessage, V1ClaudeMessage, isV1ClaudeMessage } from "../shared/messages/extension-message"
-// import { ApiHistoryItem, FileVersion, SubAgentState } from "../agent/v1/types"
+// import { ApiHistoryItem, FileVersion, SubAgentState } from "../agent/types"
 // import { GlobalStateManager } from "../providers/state/global-state-manager"
 
 // async function readJsonFile<T>(filePath: string): Promise<T | null> {

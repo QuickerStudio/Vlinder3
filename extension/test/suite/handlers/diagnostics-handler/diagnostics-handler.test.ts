@@ -1,4 +1,4 @@
-import { DiagnosticsHandler } from "../../../../src/agent/v1/handlers/diagnostics-handler"
+import { DiagnosticsHandler } from "../../../../src/agent/handlers/diagnostics-handler"
 import * as assert from "assert"
 import dedent from "dedent"
 import path from "path"

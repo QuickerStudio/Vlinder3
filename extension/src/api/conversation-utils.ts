@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
 import { ApiHandler } from "."
-import { ApiHistoryItem, MainAgent } from "../agent/v1/main-agent"
+import { ApiHistoryItem, MainAgent } from "../agent/main-agent"
 import { ClaudeMessage } from "../shared/messages/extension-message"
 import { isTextBlock } from "../shared/format-tools"
 import { truncateHalfConversation, estimateTokenCount, smartTruncation } from "../utils/context-managment"

@@ -3,10 +3,10 @@ import { ToolName } from "../../tools/types"
 import defaultShell from "default-shell"
 import os from "os"
 import { PromptBuilder } from "./builder"
-import { GlobalStateManager } from "../../../../providers/state/global-state-manager"
+import { GlobalStateManager } from "../../../providers/state/global-state-manager"
 import { toolPrompts } from "../tools"
-import { templatePlaceHolder, ConditionalBlock } from "../../../../shared/agent/prompt"
-import { ApiManager } from "../../../../providers/state/api-manager"
+import { templatePlaceHolder, ConditionalBlock } from "../../../shared/agent/prompt"
+import { ApiManager } from "../../../providers/state/api-manager"
 
 // Add these to types.ts
 export interface TemplateValidationResult {

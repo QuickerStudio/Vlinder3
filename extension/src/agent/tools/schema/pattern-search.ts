@@ -86,7 +86,7 @@ const patternSearchSchema = z.object({
 const patternSearchExamples = [
 	'<tool name="pattern_search">\n' +
 	'  <searchPattern>fast-editor<' + '/searchPattern>\n' +
-	'  <files>["extension/src/agent/v1/tools/runners/fast-editor.tool.ts"]<' + '/files>\n' +
+	'  <files>["extension/src/agent/tools/runners/fast-editor.tool.ts"]<' + '/files>\n' +
 	'  <caseSensitive>false<' + '/caseSensitive>\n' +
 	'  <contextLinesBefore>5<' + '/contextLinesBefore>\n' +
 	'  <contextLinesAfter>5<' + '/contextLinesAfter>\n' +

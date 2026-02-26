@@ -2,7 +2,7 @@ import { z } from "zod"
 import { procedure } from "../utils"
 import { router } from "../utils/router"
 import { vlinderConfig } from "../../api/providers/config/vlinder"
-import { observerHookDefaultPrompt } from "../../agent/v1/hooks/observer-hook"
+import { observerHookDefaultPrompt } from "../../agent/hooks/observer-hook"
 import * as vscode from "vscode"
 import {
 	Uri,

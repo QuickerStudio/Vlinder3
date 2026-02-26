@@ -1,7 +1,7 @@
 // import * as assert from "assert"
-// import { PromptBuilder } from "../../../../src/agent/v1/prompts/utils/builder"
-// import { PromptConfig, promptTemplate } from "../../../../src/agent/v1/prompts/utils/utils"
-// import { mainPrompts } from "../../../../src/agent/v1/prompts/main.prompt"
+// import { PromptBuilder } from "../../../../src/agent/prompts/utils/builder"
+// import { PromptConfig, promptTemplate } from "../../../../src/agent/prompts/utils/utils"
+// import { mainPrompts } from "../../../../src/agent/prompts/main.prompt"
 
 // describe("PromptBuilder with Conditional Blocks", () => {
 // 	const testTemplate = `

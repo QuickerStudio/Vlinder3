@@ -3,7 +3,7 @@ import path from "path"
 import * as vscode from "vscode"
 import { promises as fs } from "fs"
 import { extensionName } from "../../shared/constants"
-import { GitHandler } from "../../agent/v1/handlers/git-handler"
+import { GitHandler } from "../../agent/handlers/git-handler"
 import {
 	BaseExtensionState,
 	ClaudeMessage,

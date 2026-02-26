@@ -10,7 +10,7 @@ import {
 	REPLACE_HEAD,
 	SEARCH_HEAD,
 	SEPARATOR,
-} from "../../../../src/agent/v1/tools/runners/coders/utils"
+} from "../../../../src/agent/tools/runners/coders/utils"
 import { findAndReplace } from "../../../../src/integrations/editor/utils"
 
 const readBlock = (filePath: string, extension = "ts") => {

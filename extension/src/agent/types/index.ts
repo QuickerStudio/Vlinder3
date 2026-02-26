@@ -1,11 +1,11 @@
 import * as vscode from "vscode"
 import { Anthropic } from "@anthropic-ai/sdk"
 import { ResultPromise } from "execa"
-import { ApiConfiguration, ApiConstructorOptions, ProviderSettings } from "../../../api"
-import { ExtensionProvider } from "../../../providers/extension-provider"
-import { ClaudeAskResponse } from "../../../shared/messages/client-message"
-import { HistoryItem } from "../../../shared/history-item"
-import { ClaudeMessage } from "../../../shared/messages/extension-message"
+import { ApiConfiguration, ApiConstructorOptions, ProviderSettings } from "../../api"
+import { ExtensionProvider } from "../../providers/extension-provider"
+import { ClaudeAskResponse } from "../../shared/messages/client-message"
+import { HistoryItem } from "../../shared/history-item"
+import { ClaudeMessage } from "../../shared/messages/extension-message"
 import { SpawnAgentOptions } from "../tools/schema/agents/agent-spawner"
 import { ToolName } from "../tools/types"
 
@@ -157,6 +157,6 @@ export interface VlinderAgentState {
 }
 
 // Re-export types from other files to centralize type definitions
-export type { ClaudeMessage } from "../../../shared/messages/extension-message"
+export type { ClaudeMessage } from "../../shared/messages/extension-message"
 
 export type VsCodeDiagnostics = [vscode.Uri, vscode.Diagnostic[]][]

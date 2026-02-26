@@ -11,7 +11,7 @@ import {
 	vlinderSSEResponse,
 } from "../../shared/vlinder"
 import { WebSearchResponseDto } from "../interfaces"
-import { ApiHistoryItem } from "../../agent/v1/main-agent"
+import { ApiHistoryItem } from "../../agent/main-agent"
 import { cloneDeep } from "lodash"
 import delay from "delay"
 import { ModelInfo } from "./types"

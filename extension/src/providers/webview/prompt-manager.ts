@@ -1,5 +1,5 @@
-import { PromptBuilder } from "../../agent/v1/prompts/utils/builder"
-import { buildPromptFromTemplate } from "../../agent/v1/prompts/utils/utils"
+import { PromptBuilder } from "../../agent/prompts/utils/builder"
+import { buildPromptFromTemplate } from "../../agent/prompts/utils/utils"
 import { WebviewMessage } from "../../shared/messages/client-message"
 import { ExtensionMessage } from "../../shared/messages/extension-message"
 import { getNonce, getUri } from "../../utils"

@@ -51,7 +51,7 @@ export const spawnAgentPrompt: ToolPromptSchema = {
 			output: `<spawn_agent>
 <agentName>tester</agentName>
 <instructions>Create comprehensive integration tests for the pattern-search tool. Generate diverse test data, write real integration tests, run them, analyze results, fix any issues, and iterate until 100% pass rate. Document all findings and provide quality metrics.</instructions>
-<files>extension/src/agent/v1/tools/runners/pattern-search.tool.ts</files>
+<files>extension/src/agent/tools/runners/pattern-search.tool.ts</files>
 </spawn_agent>`,
 		},
 		{

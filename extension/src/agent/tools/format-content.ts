@@ -1,6 +1,6 @@
 import * as path from "path"
 import * as vscode from "vscode"
-import { Resource } from "../../../shared/messages/client-message"
+import { Resource } from "../../shared/messages/client-message"
 import * as fs from "fs/promises"
 import { getCwd } from "../utils"
 export async function readFile(relPath: string): Promise<string> {
