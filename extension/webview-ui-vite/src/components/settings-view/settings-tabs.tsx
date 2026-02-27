@@ -6,6 +6,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AdvancedTab from "./advanced-tab"
 import ClosePageButton from "./close-page-button"
+import BugReportDialog from "../task-header/bug-report-dialog"
 import { SettingsFooter } from "./settings-footer"
 import { Label } from "../ui/label"
 import { Separator } from "../ui/separator"
@@ -90,7 +91,10 @@ const SettingsPage: React.FC = () => {
 		<div className="container mx-auto px-4 max-[280px]:px-2 py-4 max-w-[500px] flex flex-col h-full overflow-x-hidden">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-bold mb-2">Settings</h1>
-				<ClosePageButton />
+				<div className="flex items-center">
+					<BugReportDialog />
+					<ClosePageButton />
+				</div>
 			</div>
 		<p className="text-xs text-muted-foreground mb-4">Manage your extension preferences</p>
 

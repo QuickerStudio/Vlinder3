@@ -212,9 +212,15 @@ export class MainAgent {
 		this.stateManager.state.claudeMessages = []
 		this.stateManager.state.apiConversationHistory = []
 
+		// Inject queued user tasks into context
+		const queuedTasks = GlobalStateManager.getInstance().getGlobalState("queuedTasks") ?? []
+		const queueSection = queuedTasks.length > 0
+			? `\n\n<user_task_queue>\nThe user has queued the following tasks to be completed after your current plan:\n${queuedTasks.map((t, i) => `${i + 1}. ${t}`).join("\n")}\nPrioritize completing your agent-designed subtasks first, then address these queued tasks in order.\n</user_task_queue>`
+			: ""
+
 		let textBlock: Anthropic.TextBlockParam = {
 			type: "text",
-			text: `Here is our task for this conversation, you must remember it all time unless i tell you otherwise.\n<task>\n${task}\n</task>`,
+			text: `Here is our task for this conversation, you must remember it all time unless i tell you otherwise.\n<task>\n${task}${queueSection}\n</task>`,
 		}
 		let imageBlocks: Anthropic.ImageBlockParam[] = formatImagesIntoBlocks(images)
 		amplitudeTracker.taskStart(this.stateManager.state.taskId)

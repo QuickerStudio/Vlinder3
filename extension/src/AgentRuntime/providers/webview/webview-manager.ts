@@ -389,11 +389,19 @@ export class WebviewManager {
 						break
 					case "webviewDidLaunch":
 						await this.postBaseStateToWebview()
+						// Restore persisted queue to frontend
+						const savedQueue = GlobalStateManager.getInstance().getGlobalState("queuedTasks")
+						if (savedQueue && savedQueue.length > 0) {
+							this.postMessageToWebview({ type: "queuedTasksSync", tasks: savedQueue })
+						}
 						break
 					case "newTask":
 						await this.provider
 							.getTaskManager()
 							.handleNewTask(message.text, message.images, message.attachements)
+						break
+					case "updateQueuedTasks":
+						await GlobalStateManager.getInstance().updateGlobalState("queuedTasks", message.tasks ?? [])
 						break
 					// case ""
 

@@ -5,8 +5,6 @@ import TaskHeader from "../task-header/task-header"
 
 interface ChatHeaderProps {
 	task?: ClaudeMessage
-	apiMetrics: V1ClaudeMessage["apiMetrics"]
-	selectedModelSupportsPromptCache: boolean
 	onClose: () => void
 	isHidden: boolean
 	vlinderCredits: number
@@ -15,8 +13,6 @@ interface ChatHeaderProps {
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
 	task,
-	apiMetrics,
-	selectedModelSupportsPromptCache,
 	onClose,
 	isHidden,
 	vlinderCredits,
@@ -27,12 +23,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 	return (
 		<TaskHeader
 			firstMsg={task}
-			tokensIn={apiMetrics?.inputTokens ?? 0}
-			tokensOut={apiMetrics?.outputTokens ?? 0}
-			doesModelSupportPromptCache={selectedModelSupportsPromptCache}
-			cacheWrites={apiMetrics?.inputCacheWrite}
-			cacheReads={apiMetrics?.inputCacheRead}
-			totalCost={apiMetrics?.cost ?? 0}
 			onClose={onClose}
 			isHidden={isHidden}
 			vlinderCredits={vlinderCredits}

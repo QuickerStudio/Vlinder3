@@ -165,6 +165,23 @@ type PromptEditorLoadedMessage = {
 	type: "promptEditorLoaded"
 }
 
+type TodoListUpdatedMessage = {
+	type: "todoListUpdated"
+	todos: Array<{
+		id: string
+		task: string
+		status: "pending" | "in_progress" | "completed" | "cancelled"
+		priority?: "low" | "medium" | "high" | "critical"
+		source?: "agent" | "user"
+	}>
+	mode?: "merge" | "replace"
+}
+
+type QueuedTasksSyncMessage = {
+	type: "queuedTasksSync"
+	tasks: string[]
+}
+
 export type ExtensionMessage =
 	| ConfgiureApiRequiredMessage
 	| DisabledToolsMessage
@@ -186,6 +203,8 @@ export type ExtensionMessage =
 	| RequestStatus
 	| PostClaudeMessage
 	| PromptEditorLoadedMessage
+	| TodoListUpdatedMessage
+	| QueuedTasksSyncMessage
 
 type NonPartial<T> = {
 	[P in keyof T]: T[P]

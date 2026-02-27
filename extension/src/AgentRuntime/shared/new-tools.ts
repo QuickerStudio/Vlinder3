@@ -340,6 +340,18 @@ export type LocalTimeTool = {
 	localTime?: number
 }
 
+export type UpdateTodoTool = {
+	tool: "update_todo"
+	todos: Array<{
+		id: string
+		task: string
+		status: "pending" | "in_progress" | "completed" | "cancelled"
+		priority?: "low" | "medium" | "high" | "critical"
+		source?: "agent" | "user"
+	}>
+	mode?: "merge" | "replace"
+}
+
 export type ChatTool = (
 	| ExitAgentTool
 	| SpawnAgentTool
@@ -374,6 +386,7 @@ export type ChatTool = (
 	| ReadImageTool
 	| VscodeApiTool
 	| LocalTimeTool
+	| UpdateTodoTool
 ) & {
 	ts: number
 	approvalState?: ToolStatus
@@ -394,6 +407,7 @@ export const readOnlyTools: ChatTool["tool"][] = [
 	"url_screenshot",
 	"add_interested_file",
 	"think",
+	"update_todo",
 ] as const
 
 export const mustRequestApprovalTypes: (ChatTool["tool"] | string)[] = [

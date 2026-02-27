@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, useCallback, useEffect, useState, useRef } from "react"
 import Thumbnails from "../thumbnails/thumbnails"
 import { Button } from "../ui/button"
-import InputV1 from "./input-v1"
+import InputV1, { InputV1Ref } from "./input-v1"
 import { SendHorizonal } from "lucide-react"
 import { AbortButton } from "./abort-button"
 import { vscode } from "@/utils/vscode"
@@ -68,6 +68,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 	const [_, setIsTextAreaFocused] = useState(false)
 	const [handleAbort, isAborting] = useHandleAbort(isRequestRunning)
 	const containerRef = useRef<HTMLDivElement>(null)
+	const inputV1Ref = useRef<InputV1Ref>(null)
 	const [textareaHeight, setTextareaHeight] = useState(120) // Control textarea height
 	const [isDragHandleHovered, setIsDragHandleHovered] = useState(false) // Shared hover state for drag handle and circular progress
 	const [showPartnerPanel, setShowPartnerPanel] = useState(false)
@@ -126,20 +127,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 						<InputV1
 							isRequestRunning={isRequestRunning}
 							thumbnailsHeight={thumbnailsHeight}
-							ref={inputRef}
+							ref={inputV1Ref}
+							textareaRef={inputRef}
 							value={inputValue}
 							disabled={textAreaDisabled}
 							onChange={(e) => setInputValue(e.target.value)}
-							onInsertAt={() => {
-								const newText = inputValue + "@"
-								setInputValue(newText)
-								setTimeout(() => {
-									if (inputRef.current) {
-										inputRef.current.focus()
-										inputRef.current.setSelectionRange(newText.length, newText.length)
-									}
-								}, 0)
-							}}
+							onInsertAt={() => inputV1Ref.current?.insertAt()}
 							onKeyDown={handleKeyDown}
 							onFocus={() => setIsTextAreaFocused(true)}
 							onBlur={() => setIsTextAreaFocused(false)}
@@ -194,6 +187,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 							onCameraClick={selectImages}
 							cameraDisabled={shouldDisableImages}
 							onPartnerClick={() => setShowPartnerPanel((v) => !v)}
+						onFilesClick={() => inputV1Ref.current?.insertAt()}
 							className="scale-75 origin-center"
 						/>
 						

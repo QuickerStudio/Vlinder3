@@ -416,7 +416,7 @@ export const openCodeFolderInExplorer = procedure
 // ============================================================================
 // Workspace Operations — moved to WorkSpace/workspace-operations.ts
 // ============================================================================
-export { openCodeFolder, openCodeInVSCode, addCodeToWorkspace } from "../../../../WorkSpace/workspace-operations"
+export { openCodeFolder, openCodeInVSCode, addCodeToWorkspace } from "../../../WorkSpace/workspace-operations"
 
 // ============================================================================
 // Commit Activity Operations

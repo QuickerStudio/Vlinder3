@@ -28,6 +28,7 @@ import { multiReplaceStringTool } from "./multi-replace-string"
 import { insertEditTool } from "./insert-edit"
 import { timerTool } from "./timer"
 import { vscodeApiTool } from "./vscode-api"
+import { updateTodoTool } from "./update-todo"
 
 export const tools = [
 	thinkTool,
@@ -58,6 +59,7 @@ export const tools = [
 	timerTool,
 	spawnAgentTool,
 	exitAgentTool,
+	updateTodoTool,
 ] as const
 
 export type Tool = (typeof tools)[number]
@@ -90,6 +92,7 @@ export {
 	thinkTool,
 	spawnAgentTool as subAgentTool,
 	exitAgentTool as exitSubAgentTool,
+	updateTodoTool,
 }
 
 /**

@@ -23,6 +23,7 @@ import { fastEditorToolPrompt } from './fast-editor';
 import { timerPrompt } from './timer';
 import { patternSearchPrompt } from './pattern-search';
 import { readImagePrompt } from './read-image';
+import { updateTodoPrompt } from './update-todo';
 
 export const toolPrompts = [
 	// Core interaction
@@ -69,4 +70,5 @@ export const toolPrompts = [
 	
 	// Advanced features
 	timerPrompt,
+	updateTodoPrompt,
 ];

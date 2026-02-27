@@ -304,18 +304,10 @@ const ChatView: React.FC<ChatViewProps> = ({
 							<TaskHeader
 								key={`header-${firstTaskMsg.ts}`}
 								firstMsg={firstTaskMsg}
-								tokensIn={currentTask.tokensIn}
-								tokensOut={currentTask.tokensOut}
 								elapsedTime={elapsedTime}
-								doesModelSupportPromptCache={selectedModelSupportsPromptCache}
-								cacheWrites={currentTask.cacheWrites}
-								cacheReads={currentTask.cacheReads}
-								totalCost={currentTask.totalCost}
 								onClose={() => vscode.postMessage({ type: "clearTask" })}
 								isHidden={isHidden}
 								lastMessageAt={currentTask.ts}
-								vlinderCredits={user?.credits ?? 0}
-								vscodeUriScheme={uriScheme}
 							/>
 							<ChatMessages
 								key={`messages-${firstTaskMsg.ts}`}
